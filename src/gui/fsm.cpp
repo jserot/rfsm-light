@@ -528,10 +528,7 @@ void Fsm::exportDot(QString fname, QStringList options)
       QString src_id = transition->srcState()->getId();
       QString dst_id = transition->dstState()->getId();
       QString label = dotTransitionLabel(transition->getLabel());
-      if ( transition->isInitial() ) 
-        os << src_id << " -> " << dst_id << "\n";
-      else
-        os << src_id << " -> " << dst_id << " [label=\"" << label << "\"]\n";
+      os << src_id << " -> " << dst_id << " [label=\"" << label << "\"]\n";
       }
     }
   os << "}\n";
