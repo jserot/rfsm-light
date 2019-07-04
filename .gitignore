@@ -5,6 +5,7 @@
 *.cmi
 *.cmo
 _build/
+binaries/
 CHANGELOG.txt
 CHANGELOG.html
 README.txt
@@ -24,7 +25,8 @@ Info.plist
 TAGS
 /etc/doc/
 examples/*/*.fsm
-examples/*/*.{c,h}
+examples/*/*.c
+examples/*/*.h
 examples/*/rfsm.output
 examples/*/dot/
 examples/*/sim/

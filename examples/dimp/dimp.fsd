@@ -1,6 +1,12 @@
 {
   "ios": [
     {
+      "desc": "",
+      "kind": "var",
+      "name": "c",
+      "type": "int"
+    },
+    {
       "desc": "ValueChanges 0:0 25:1 35:0 75:1 95:0 145:1 175:0",
       "kind": "in",
       "name": "e",
@@ -23,46 +29,60 @@
       "kind": "out",
       "name": "s",
       "type": "bool"
+    },
+    {
+      "desc": "Sporadic 25 75",
+      "kind": "in",
+      "name": "startStop",
+      "type": "event"
     }
   ],
   "name": "dimp",
   "states": [
     {
-      "id": "_init",
-      "x": 227.0,
-      "y": 68.0
-    },
-    {
-      "id": "E2",
-      "x": 75.0,
-      "y": 350.0
+      "id": "E0",
+      "x": 147.0,
+      "y": 129.0
     },
     {
       "id": "E1",
-      "x": 182.0,
-      "y": 235.0
+      "x": 239.0,
+      "y": 273.0
     },
     {
-      "id": "E0",
-      "x": 73.0,
-      "y": 102.0
+      "id": "E2",
+      "x": 151.0,
+      "y": 482.0
+    },
+    {
+      "id": "_init",
+      "x": 268.0,
+      "y": 66.0
     }
   ],
   "transitions": [
     {
-      "actions": "k:=k-1",
-      "dst_state": "E2",
-      "event": "h",
-      "guard": "k>0",
-      "location": 3,
-      "src_state": "E2"
+      "actions": "s:=0",
+      "dst_state": "E0",
+      "event": "",
+      "guard": "",
+      "location": 0,
+      "src_state": "_init"
     },
     {
-      "actions": "k:=k+1",
+      "actions": "k:=1",
       "dst_state": "E1",
       "event": "h",
       "guard": "e=1",
-      "location": 3,
+      "location": 0,
+      "src_state": "E0"
+    },
+    {
+      "actions": "k:=2*k-1,s:=1",
+      "dst_state": "E2",
+      "event": "h",
+      "guard": "e=0",
+      "location": 0,
       "src_state": "E1"
     },
     {
@@ -74,28 +94,20 @@
       "src_state": "E2"
     },
     {
-      "actions": "k:=2*k-1,s:=1",
-      "dst_state": "E2",
-      "event": "h",
-      "guard": "e=0",
-      "location": 0,
-      "src_state": "E1"
-    },
-    {
-      "actions": "k:=1",
+      "actions": "k:=k+1",
       "dst_state": "E1",
       "event": "h",
       "guard": "e=1",
-      "location": 0,
-      "src_state": "E0"
+      "location": 3,
+      "src_state": "E1"
     },
     {
-      "actions": "s:=0",
-      "dst_state": "E0",
-      "event": "",
-      "guard": "",
-      "location": 0,
-      "src_state": "_init"
+      "actions": "k:=k-1",
+      "dst_state": "E2",
+      "event": "h",
+      "guard": "k>0",
+      "location": 3,
+      "src_state": "E2"
     }
   ]
 }

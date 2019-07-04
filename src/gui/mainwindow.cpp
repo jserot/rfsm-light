@@ -35,9 +35,9 @@ MainWindow::MainWindow()
     QSplitter *splitter = new QSplitter;
 
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    sizePolicy.setHorizontalStretch(0);
-    sizePolicy.setVerticalStretch(0);
-    sizePolicy.setHeightForWidth(splitter->sizePolicy().hasHeightForWidth());
+    //sizePolicy.setHorizontalStretch(0);
+    //sizePolicy.setVerticalStretch(0);
+    //sizePolicy.setHeightForWidth(splitter->sizePolicy().hasHeightForWidth());
     splitter->setSizePolicy(sizePolicy);
     splitter->setMinimumSize(QSize(0, 300));
     splitter->setOrientation(Qt::Horizontal);
@@ -45,7 +45,7 @@ MainWindow::MainWindow()
     setCentralWidget(splitter);
 
     fsm = new Fsm(this);
-    fsm->setSceneRect(QRectF(0, 0, 400, 600));
+    fsm->setSceneRect(QRectF(0, 0, 600, 600));
     // connect(fsm, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
     // connect(fsm, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
     connect(fsm, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
@@ -63,7 +63,8 @@ MainWindow::MainWindow()
     QVBoxLayout *editLayout = new QVBoxLayout;
 
     view = new QGraphicsView(fsm);
-    view->setMinimumWidth(200);
+    view->setMinimumWidth(300);
+    view->setMaximumWidth(400);
     view->setMinimumHeight(400);
 
     editLayout->addWidget(view);
@@ -73,10 +74,8 @@ MainWindow::MainWindow()
     splitter->addWidget(editor);
 
     results = new QTabWidget(splitter);
-    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    sizePolicy1.setHeightForWidth(results->sizePolicy().hasHeightForWidth());
-    results->setSizePolicy(sizePolicy);
-    results->setMinimumSize(QSize(150, 150));
+    results->setMinimumHeight(400);
+    results->setMinimumWidth(300);
     results->setDocumentMode(false);
     results->setTabsClosable(true);
     results->setMovable(true);
@@ -98,8 +97,8 @@ MainWindow::MainWindow()
     compilerPaths = new CompilerPaths("rfsm-light.ini", this);
     compilerOptions = new CompilerOptions("options_spec.txt", this);
 #else
-    compilerPaths = new CompilerPaths("rfsm-light.ini", this);
-    compilerOptions = new CompilerOptions("options_spec.txt", this);
+    compilerPaths = new CompilerPaths(":rfsm-light.ini", this);
+    compilerOptions = new CompilerOptions(":options_spec.txt", this);
 #endif
     initDir = compilerPaths->getPath("INITDIR");
 
@@ -142,7 +141,7 @@ void MainWindow::fsmModified()
 
 void MainWindow::about()
 {
-    QMessageBox::about(this, tr("About RFSM Light"), tr("A Finite State Diagram Editor, Simulator and Compiler\n(C) J. Sérot, 2019\ngithub.com/jserot/rfsm-light\njocelyn.serot@uca.fr"));
+    QMessageBox::about(this, tr("About RFSM Light"), tr("Finite State Diagram Editor, Simulator and Compiler\ngithub.com/jserot/rfsm-light\n(C) J. Sérot, 2019 (jocelyn.serot@uca.fr)"));
 }
 
 // Actions
