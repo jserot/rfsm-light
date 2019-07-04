@@ -477,6 +477,7 @@ void MainWindow::saveAs()
   QString fname = QFileDialog::getSaveFileName( this, "Save to file", "", "FSM file (*.fsd)");
   if ( fname.isEmpty() ) return;
   saveToFile(fname);
+  currentFileName = fname;
 }
 
 // Diagram editing
