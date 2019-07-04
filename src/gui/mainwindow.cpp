@@ -626,9 +626,14 @@ void MainWindow::openResultFile(QString fname)
   QFileInfo f(fname);
   QString wDir = f.canonicalPath();
   qDebug() << "Displaying file : " << fname;
+  QStringList genOpts = compilerOptions->getOptions("general");
   if ( f.suffix() == "dot" ) {
-    dotTransform(f, wDir);
-    openResultFile(changeSuffix(fname, ".gif"));
+    if ( genOpts.contains("-dot_external_viewer") )
+      customView("DOTVIEWER", fname, wDir);
+    else {
+      dotTransform(f, wDir);
+      openResultFile(changeSuffix(fname, ".gif"));
+      }
     }
   else if ( f.suffix() == "vcd" ) {
     QString vcdFileName = changeSuffix(fname, ".vcd");
@@ -734,6 +739,7 @@ void MainWindow::generate(QString target, QString targetOption, bool withTestben
   }
   else
     targetDirOpt += "-target_dir .";
+  if ( genOpts.contains("-dot_external_viewer") ) genOpts.removeOne("-dot_external_viewer");
   QStringList opts = genOpts + compilerOptions->getOptions(target);
   if ( target == "sim" ) {
     QFileInfo fi(fname);
