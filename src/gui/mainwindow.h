@@ -167,7 +167,7 @@ private:
     void exportRfsmModel();
     void exportRfsmTestbench();
     void dotTransform(QFileInfo f, QString wDir);
-    bool executeCmd(QString wDir, QString cmd);
+    bool executeCmd(QString wDir, QString cmd, bool sync=true);
     void scaleImage(double factor);
 
     bool unsaved_changes;

@@ -23,6 +23,7 @@ config-stamp
 Info.plist
 TAGS
 /etc/doc/
+examples/*/*.fsm
 examples/*/rfsm.output
 examples/*/dot/
 examples/*/sim/

@@ -769,7 +769,7 @@ void MainWindow::dotTransform(QFileInfo f, QString wDir)
 
 // External command execution
 
-bool MainWindow::executeCmd(QString wDir, QString cmd)
+bool MainWindow::executeCmd(QString wDir, QString cmd, bool sync)
 {
   bool r = false;
   qDebug() << "Executing command \"" << cmd << "\" in " << wDir;
@@ -779,13 +779,19 @@ bool MainWindow::executeCmd(QString wDir, QString cmd)
     qDebug() << "Command failed to start" << endl;
     return false;
     }
-  r = proc.waitForFinished();
-  // qDebug() << "Process finished" << endl;
-  if ( r == true ) r = proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 0;
-  proc.kill();
-  proc.close();
-  proc.terminate();
-  return r;
+  if ( sync ) {
+    qDebug() << "executeCmd: waiting for process to finish" << endl;
+    r = proc.waitForFinished(-1);  // No time out
+    if ( r == true ) r = proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 0;
+    proc.kill();
+    proc.close();
+    proc.terminate();
+    return r;
+    }
+  else { // This does not work :(
+    qDebug() << "executeCmd: async process launched" << endl;
+    return true;
+    }
 }
 
 void MainWindow::readProcStdout()
