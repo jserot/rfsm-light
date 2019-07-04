@@ -72,8 +72,8 @@ public slots:
     void setMode(Mode mode);
 
 signals:
-    /* void stateInserted(State *item); */
-    /* void transitionInserted(Transition *item); */
+    void stateInserted(State *item);
+    void transitionInserted(Transition *item);
     void fsmModified();
     void stateSelected(State *item);
     void transitionSelected(Transition *item);

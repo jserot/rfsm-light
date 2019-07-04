@@ -52,8 +52,8 @@ public:
    MainWindow();
 
 private slots:
-    /* void stateInserted(State *); */
-    /* void transitionInserted(State *); */
+    void stateInserted(State *);
+    void transitionInserted(Transition *);
     void stateSelected(State *);
     void transitionSelected(Transition *);
     void nothingSelected();

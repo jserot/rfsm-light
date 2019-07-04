@@ -151,7 +151,7 @@ void Fsm::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     switch ( mode ) {
         case InsertState:
             state = addState(mouseEvent->scenePos(), statePrefix + QString::number(stateCounter++));
-            //emit stateInserted(state);
+            emit stateInserted(state);
             emit fsmModified();
             break;
         case InsertPseudoState:
@@ -181,7 +181,7 @@ void Fsm::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
               Transition *transition = addTransition(state, state, "", "", "", location);
               transition->updatePosition();
               emit fsmModified();
-              // emit transitionInserted(transition);
+              emit transitionInserted(transition);
               }
             }
             break;
@@ -271,7 +271,7 @@ void Fsm::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         State::Location location = srcState == dstState ? srcState->locateEvent(mouseEvent) : State::None;
         Transition *transition = addTransition(srcState, dstState, "", "", "", location);
         transition->updatePosition();
-        // emit transitionInserted(transition);
+        emit transitionInserted(transition);
         emit fsmModified();
         }
       }

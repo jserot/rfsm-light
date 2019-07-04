@@ -46,8 +46,8 @@ MainWindow::MainWindow()
 
     fsm = new Fsm(this);
     fsm->setSceneRect(QRectF(0, 0, 600, 600));
-    // connect(fsm, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
-    // connect(fsm, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
+    connect(fsm, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
+    connect(fsm, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
     connect(fsm, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
     connect(fsm, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
     connect(fsm, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
@@ -112,13 +112,16 @@ MainWindow::MainWindow()
 }
 
 
-// void MainWindow::stateInserted(State *state)
-// {
-// }
+void MainWindow::stateInserted(State *state)
+{
+  properties_panel->setSelectedItem(state);
+}
 
-// void MainWindow::transitionInserted(Transition *transition)
-// {
-// }
+void MainWindow::transitionInserted(Transition *transition)
+{
+  qDebug() << "Transition inserted";
+  properties_panel->setSelectedItem(transition);
+}
 
 
 void MainWindow::stateSelected(State *state)
