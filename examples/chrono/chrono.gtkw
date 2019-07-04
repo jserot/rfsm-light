@@ -1,0 +1,25 @@
+[*]
+[*] GTKWave Analyzer v3.3.54 (w)1999-2014 BSI
+[*] Wed Jul  3 09:57:06 2019
+[*]
+[dumpfile] "/Users/jserot/Dev/ml/rfsm/light/src/gui/rfsm-light.app/Contents/MacOS/chrono.vcd"
+[dumpfile_mtime] "Wed Jul  3 09:56:18 2019"
+[dumpfile_size] 560
+[savefile] "/Users/jserot/Dev/ml/rfsm/light/examples/chrono/chrono.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*-5.045955 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[sst_width] 198
+[signals_width] 150
+[sst_expanded] 1
+[sst_vpaned_height] 166
+@28
+top.h
+top.startStop
+top.chrono.\chrono.state
+@25
+top.chrono.\chrono.c[7:0]
+[pattern_trace] 1
+[pattern_trace] 0

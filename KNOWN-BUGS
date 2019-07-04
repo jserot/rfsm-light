@@ -1,0 +1,19 @@
+Known bugs and limitations
+
+* Multi-events and multi-FSM models are not supported by the VHDL backend
+
+* There's no bound check for values with a ranged-integer type
+
+* Synchronous interpretation of actions is not (yet) supported by the CTask and SystemC backends
+
+* The implementation of cascaded event synchronisation in SystemC using delta-cycles is fragile
+
+* The concept of transition priority used in RFSM is not supported; as a result, simulation may fail due to
+  non-deterministic situations.
+
+* A portable way of building on Linux distros is still missing
+
+* The font selection dialog does not work on MacOS 10.9 (this seems to be a bug in Qt < 5.12)
+
+* Due to the syntax of the RFSM language, the name of FSM inputs, outputs and local variables
+  _must_ start with a lowercase identifier.

@@ -1,0 +1,22 @@
+When building from sources
+
+Pre-requisites
+--------------
+
+- Ocaml compiler (>=4.06) with the following packages installed (preferably using OPAM 2) :
+  . ocamlfind
+  . ocamlbuild
+  . ocamlgraph
+  . menhir
+  . lascar
+  
+- a working Qt5 installation
+
+Building
+--------
+
+Decompress the archive, cd to the source directory and type :
+
+1. ./configure [options]
+2. ./make
+3. ./make install
