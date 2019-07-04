@@ -37,10 +37,13 @@ txt:
 	pandoc -o CHANGELOG.html CHANGELOG.md
 	pandoc -o README.txt README.md
 	pandoc -o README.html README.md
+	pandoc -o doc/Using.txt doc/Using.md
 
 html:
 	pandoc -o README.html README.md
 	open -a Safari README.html
+	pandoc -o doc/Using.html doc/Using.md
+	open -a Safari doc/Using.html
 
 clean:
 	(cd src/lib; make clean)
