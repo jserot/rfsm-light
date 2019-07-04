@@ -97,8 +97,10 @@ MainWindow::MainWindow()
     compilerPaths = new CompilerPaths("rfsm-light.ini", this);
     compilerOptions = new CompilerOptions("options_spec.txt", this);
 #else
-    compilerPaths = new CompilerPaths(":rfsm-light.ini", this);
-    compilerOptions = new CompilerOptions(":options_spec.txt", this);
+    QString appDir = QApplication::applicationDirPath();
+    qDebug() << "APPDIR=" << appDir;
+    compilerPaths = new CompilerPaths(appDir + "/rfsm-light.ini", this);
+    compilerOptions = new CompilerOptions(appDir + "/options_spec.txt", this);
 #endif
     initDir = compilerPaths->getPath("INITDIR");
 

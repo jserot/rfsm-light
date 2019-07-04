@@ -1,0 +1,36 @@
+* GUI
+- Option -dot_external_viewer (using DOTVIEWER compiler path)
+- Support for saving and reading .opts file
+- Less-minimalistic About dialog
+- Populate examples dir 
+- VHDL and SystemC syntax highlighters
+- Use Dot widget instead of translating to gif via external command (links in etc/doc)
+- Export to SCXML ?
+- Allow attachement of priorities to transitions
+- Dedicated input fields for stimuli instead of raw text field ?
+- Re-implement IO handling with a List (or Table) ModelView ?
+- When reading from file, do not erase existing model before file reading completed successfully
+- Allow resizing of state boxes
+- Change cursor shape according to currently selected tool
+- Draw state boxes with round corners
+- Add properties (labels) to states ?
+
+COMPILER
+
+- rewrite menhir parser with $sloc+%inline (cf OCaml 4.08 srcs)
+- support for synchronous actions in CTask and SystemC
+- bound check for ranged integers
+- check for coherency in reaction responses (see src/lib/simul.ml)
+- var and output attr on states (Moore-style)
+- clarify mechanism for delta-waits insertion in SystemC backend
+- VHDL implementation of models with multiple input events
+- VHDL implementation of event and variable synchronized models
+- FreeRTOS (or other RTOS) specialized C-backend
+- SCXML backend (www.w3.org/TR/scxml, Yakindu, ...)
+- SMV backend (with predicated states for connection to model-checking tools)
+- foreign function interfacing
+
+BUILD
+- ocamlbuild -> dune ?
+- use cmake for building GUI ?
+
