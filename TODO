@@ -1,5 +1,6 @@
 * DIST
 - a small video on youtube showing how to create, draw, simulate and compile a small FSD
+- update windows install guide (currently simply copied from Rfsm)
 
 * GUI
 - Support for saving and reading .opts file

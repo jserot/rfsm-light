@@ -1,6 +1,7 @@
 ## RFSM-Light 
 
 ![](./doc/snapshot.png)
+![](./doc/wave.png)
 
 **RFSM-Light** is a simplified version of the [RFSM](https://github.com/jserot/rfsm) State Diagram
 simulator and compiler. 

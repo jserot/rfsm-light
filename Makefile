@@ -10,7 +10,7 @@ QMAKE_WIN = C:/Qt/Qt5.8.0/5.8/mingw53_32/bin/qmake.exe
 MAKE_WIN = C:/Qt/Qt5.8.0/Tools/mingw530_32/bin/mingw32-make
 QMAKE_UNIX=qmake
 
-.PHONY: lib compiler gui clean install dist html
+.PHONY: lib compiler gui clean install dist html doc
 
 all: lib compiler gui
 
@@ -44,6 +44,9 @@ html:
 	open -a Safari README.html
 	pandoc -o doc/Using.html doc/Using.md
 	open -a Safari doc/Using.html
+
+doc:
+	(cd doc; pandoc -o Using.pdf Using.md)
 
 clean:
 	(cd src/lib; make clean)
@@ -83,6 +86,7 @@ macos-dist:
 	@echo "** Building"
 	(cd src/compiler; make)
 	(cd src/gui; make)
+	make doc
 	make macos-install
 	make macos-installer
 
@@ -96,8 +100,8 @@ macos-install:
 	cp ./src/gui/etc/options_spec.txt $(MACOS_DIST)/RfsmLight.app/Contents/MacOS
 	cp ./dist/macos/INSTALL $(MACOS_DIST)/INSTALL
 	mkdir $(MACOS_DIST)/doc
-#	cp -r doc/lib $(MACOS_DIST)/doc
-#	cp  doc/um/rfsm.pdf $(MACOS_DIST)/doc/rfsm-manual.pdf
+	cp -r doc/imgs $(MACOS_DIST)/doc
+	cp  doc/Using.{pdf,html} $(MACOS_DIST)/doc
 	mkdir $(MACOS_DIST)/examples
 	cp -r examples/* $(MACOS_DIST)/examples
 	make txt
@@ -171,6 +175,7 @@ win32-install:
 	cp ./dist/windows/icons/*.{bmp,ico} $(WIN_INSTALL_DIR)
 #	cp ./dist/windows/rfsm-light.ini $(WIN_INSTALL_DIR)
 	mkdir $(WIN_INSTALL_DIR)/doc
+	cp  dist/windows/windows-install-guide.pdf $(WIN_INSTALL_DIR)/doc
 	mkdir $(WIN_INSTALL_DIR)/examples
 	cp -r examples/* $(WIN_INSTALL_DIR)/examples
 	@echo "Done"
