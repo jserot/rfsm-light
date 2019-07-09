@@ -4,10 +4,10 @@
 
 * GUI
 - Support for saving and reading .opts file
-- Less-minimalistic About dialog
 - Populate examples dir 
 - Fix toolbars alignment (left, center, right)
 - VHDL and SystemC syntax highlighters
+- Less-minimalistic About dialog
 - Use Dot widget instead of translating to gif via external command (links in etc/doc)
 - Export to SCXML ?
 - Allow attachement of priorities to transitions

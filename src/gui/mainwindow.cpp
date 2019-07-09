@@ -156,7 +156,11 @@ void MainWindow::fsmModified()
 
 void MainWindow::about()
 {
-    QMessageBox::about(this, tr("About RFSM Light"), tr("Finite State Diagram Editor, Simulator and Compiler\ngithub.com/jserot/rfsm-light\n(C) J. Sérot, 2019 (jocelyn.serot@uca.fr)"));
+    QMessageBox::about(this,
+      tr("About RFSM Light"),
+      tr("<p>Finite State Diagram Editor, Simulator and Compiler</p>\
+         <p><a href=\"github.com/jserot/rfsm-light\">github.com/jserot/rfsm-light</a></p>\
+         <p>(C) J. Sérot (jocelyn.serot@uca.fr), 2019"));
 }
 
 // Actions
