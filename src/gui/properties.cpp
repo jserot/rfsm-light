@@ -163,7 +163,7 @@ void PropertiesPanel::createTransitionPanel()
 {
     transition_panel = new QGroupBox("Transition properties");
     QGridLayout* transitionLayout = new QGridLayout();
-    transition_panel->setMaximumHeight(150);
+    transition_panel->setMaximumHeight(180);
 
     QLabel* startLabel = new QLabel("Start State");
     transition_start_state_field = new QComboBox();
@@ -177,18 +177,19 @@ void PropertiesPanel::createTransitionPanel()
 
     QLabel* eventLabel = new QLabel("Event");
     transition_event_field = new QLineEdit();
-    transitionLayout->addWidget(eventLabel, 2, 0, 1, 1);
-    transitionLayout->addWidget(transition_event_field, 2, 1, 1, 1);
+    //transition_event_field->setMinimumWidth(50);
+    transitionLayout->addWidget(eventLabel, 2, 0, 1, 2);
+    transitionLayout->addWidget(transition_event_field, 2, 2, 1, 4);
 
     QLabel* guardLabel = new QLabel("Guard");
     transition_guard_field = new QLineEdit();
-    transitionLayout->addWidget(guardLabel, 2, 2, 1, 1);
-    transitionLayout->addWidget(transition_guard_field, 2, 3, 1, 3);
+    transitionLayout->addWidget(guardLabel, 3, 0, 1, 2);
+    transitionLayout->addWidget(transition_guard_field, 3, 2, 1, 4);
 
     QLabel* actionsLabel = new QLabel("Action(s)");
     transition_actions_field = new QLineEdit();
-    transitionLayout->addWidget(actionsLabel, 3, 0, 1, 1);
-    transitionLayout->addWidget(transition_actions_field, 3, 1, 1, 5);
+    transitionLayout->addWidget(actionsLabel, 4, 0, 1, 2);
+    transitionLayout->addWidget(transition_actions_field, 4, 2, 1, 4);
 
     transition_panel->setLayout(transitionLayout);
 }
