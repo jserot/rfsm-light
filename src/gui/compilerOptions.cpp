@@ -198,7 +198,7 @@ void CompilerOptions::buttonClicked(QAbstractButton *button)
   QString action = button->text();
   if ( action == "Save" ) {
     QString fname;
-    fname = QFileDialog::getSaveFileName(parent, "Save options to file", "", "OTS file (*.ots)");
+    fname = QFileDialog::getSaveFileName(parent, "Save options to file", "", "OPTS file (*.opts)");
     if ( fname.isEmpty() ) return;
     qDebug() << "Saving to file " << fname;
     saveToFile(fname);
@@ -206,7 +206,7 @@ void CompilerOptions::buttonClicked(QAbstractButton *button)
     }
   else if ( action == "Open" ) {
     QString fname;
-    fname = QFileDialog::getOpenFileName(parent, "Open file", "", "OTS file (*.ots)");
+    fname = QFileDialog::getOpenFileName(parent, "Open file", "", "OPTS file (*.opts)");
     if ( fname.isEmpty() ) return;
     qDebug() << "Opening file " << fname;
     logMessage("Reading compiler options from file " + fname);
