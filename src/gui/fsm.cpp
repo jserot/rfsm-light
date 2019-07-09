@@ -204,6 +204,7 @@ void Fsm::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 removeItem(item);
                 delete item;
                 }
+              emit transitionDeleted(transition);
               emit fsmModified();
               }
               break;
@@ -212,6 +213,7 @@ void Fsm::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
               state = qgraphicsitem_cast<State *>(item);
               state->removeTransitions();
               removeItem(item);
+              emit stateDeleted(state);
               emit fsmModified();
               delete item;
               break;

@@ -47,7 +47,9 @@ MainWindow::MainWindow()
     fsm = new Fsm(this);
     fsm->setSceneRect(QRectF(0, 0, 600, 600));
     connect(fsm, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
+    connect(fsm, SIGNAL(stateDeleted(State*)), this, SLOT(stateDeleted(State*)));
     connect(fsm, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
+    connect(fsm, SIGNAL(transitionDeleted(Transition*)), this, SLOT(transitionDeleted(Transition*)));
     connect(fsm, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
     connect(fsm, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
     connect(fsm, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
@@ -117,12 +119,20 @@ void MainWindow::stateInserted(State *state)
   properties_panel->setSelectedItem(state);
 }
 
+void MainWindow::stateDeleted(State *)
+{
+  properties_panel->unselectItem();
+}
+
 void MainWindow::transitionInserted(Transition *transition)
 {
-  qDebug() << "Transition inserted";
   properties_panel->setSelectedItem(transition);
 }
 
+void MainWindow::transitionDeleted(Transition *)
+{
+  properties_panel->unselectItem();
+}
 
 void MainWindow::stateSelected(State *state)
 {
@@ -362,18 +372,18 @@ void MainWindow::createMenus()
 
 void MainWindow::createToolbars()
 {
+     QWidget *spacer1 = new QWidget(this);
+     spacer1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+     QWidget *spacer2 = new QWidget(this);
+     spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
      fileToolBar = addToolBar(tr("File"));
      fileToolBar->addAction(newDiagramAction);
      fileToolBar->addAction(openFileAction);
      fileToolBar->addAction(saveFileAction);
 
-     QWidget *lSpacer = new QWidget(this);
-     lSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-     QWidget *rSpacer = new QWidget(this);
-     rSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
      editToolBar = addToolBar(tr("Edit"));
-     editToolBar->addWidget(lSpacer); 
+     editToolBar->addWidget(spacer1); 
      editToolBar->addAction(selectItemAction);
      editToolBar->addAction(addStateAction);
      editToolBar->addAction(addInitStateAction);
@@ -382,7 +392,7 @@ void MainWindow::createToolbars()
      editToolBar->addAction(deleteItemAction);
 
      compileToolBar = addToolBar(tr("Compile"));
-     compileToolBar->addWidget(rSpacer);
+     compileToolBar->addWidget(spacer2);
      compileToolBar->addAction(generateDotAction);
      compileToolBar->addAction(generateCTaskAction);
      compileToolBar->addAction(generateSystemCModelAction);

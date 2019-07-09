@@ -54,6 +54,8 @@ public:
 private slots:
     void stateInserted(State *);
     void transitionInserted(Transition *);
+    void stateDeleted(State *);
+    void transitionDeleted(Transition *);
     void stateSelected(State *);
     void transitionSelected(Transition *);
     void nothingSelected();
