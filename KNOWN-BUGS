@@ -1,12 +1,10 @@
 Known bugs and limitations
 
-* Multi-events and multi-FSM models are not supported by the VHDL backend
+* multi-FSM models are not supported (use RFSM if required)
 
-* There's no bound check for values with a ranged-integer type
+* Multi-events FSM models are not supported by the VHDL backend
 
 * Synchronous interpretation of actions is not (yet) supported by the CTask and SystemC backends
-
-* The implementation of cascaded event synchronisation in SystemC using delta-cycles is fragile
 
 * The concept of transition priority used in RFSM is not supported; as a result, simulation may fail due to
   non-deterministic situations.
