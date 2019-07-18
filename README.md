@@ -33,8 +33,11 @@ files to be viewed using the [gtkwave](http://gtkwave.sourceforge.net) software
 
 ## DOCUMENTATION
 
-There's no user manual for the moment. Meanwhile, a minimalistic "Howto" is available
-[here](./doc/using.md).
+There's no user manual for the moment.
+
+A minimalistic "Howto" is available [here](./doc/using.md).
+
+This short [video](https://youtu.be/SLB0Hw2DQ88) can also be used as a tutorial.
 
 ## INSTALLATION
 
