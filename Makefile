@@ -97,14 +97,12 @@ win-installer:
 
 clean:
 	(cd src; make clean)
-	(cd doc/um; make clean)
-	rm -f doc/lib/*
+	(cd doc; make clean)
 
 clobber: clean
 	(cd src; make clean)
-	(cd doc/um; make clobber)
-	rm -f doc/lib/*
-	\rm -f src/rfsm.app/Contents/MacOS/rfsm
+	(cd doc; make clobber)
+	\rm -f src/rfsm-light.app/Contents/MacOS/rfsm
 	\rm -f *~
 	\rm -f README.html CHANGES.html
 

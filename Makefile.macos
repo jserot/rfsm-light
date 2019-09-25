@@ -1,0 +1,77 @@
+# Makefile to build the MacOS distribution
+
+include VERSION
+
+QMAKE=/Developer/Qt5.8/5.8/clang_64/bin/qmake
+
+DOTPROGRAM="dot"
+DOTVIEWER="open -a Graphviz"
+VCDVIEWER="open -a gtkwave"
+TXTVIEWER="open"
+
+OPAM_PREFIX=`opam var prefix`
+RFSMC=$(OPAM_PREFIX)/bin/rfsmc
+RFSMMAKE=$(OPAM_PREFIX)/bin/rfsmmake
+RFSMLIB=$(OPAM_PREFIX)/share/rfsm
+RFSMC_SRC_DIR=/Users/jserot/Dev/ml/rfsm/rfsmc
+
+.PHONY: build install installer
+
+all: build
+
+INSTALL_DIR=/tmp/rfsm-light
+
+build:
+	@echo "** Building"
+	(cd src; $(QMAKE) -spec macx-clang -o Makefile main.pro CONFIG+=x86_64; make)
+	(cd doc; make)
+
+CHANGES.txt: CHANGES.md
+	pandoc -o CHANGES.txt CHANGES.md
+README.txt: README.md
+	pandoc -o README.txt README.md
+
+install: CHANGES.txt README.txt
+	@echo "** Installing in $(INSTALL_DIR)"
+	rm -rf $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)
+	cp -r src/rfsm-light.app $(INSTALL_DIR)/RfsmLight.app
+	cp $(RFSMC) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmc
+	cp $(RFSMMAKE) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmmake
+	cp ./dist/macos/rfsm-light.ini $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
+	cp ./etc/options_spec.txt $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
+	cp ./dist/macos/INSTALL $(INSTALL_DIR)/INSTALL
+	mkdir $(INSTALL_DIR)/doc
+	cp  doc/Using.{pdf,html} $(INSTALL_DIR)/doc
+	cp -r doc/imgs $(INSTALL_DIR)/doc
+	mkdir $(INSTALL_DIR)/examples
+	cp -r examples/* $(INSTALL_DIR)/examples
+	cp {CHANGES.txt,KNOWN-BUGS,LICENSE,README.txt} $(INSTALL_DIR)
+
+RFSM_VOLUME=RfsmLight-$(VERSION)
+
+installer:
+	@echo "** Creating disk image"
+	rm -f /tmp/RfsmLight.dmg
+	hdiutil create -size 16m -fs HFS+ -volname "$(RFSM_VOLUME)" /tmp/RfsmLight.dmg
+	hdiutil attach /tmp/RfsmLight.dmg
+	cp -r $(INSTALL_DIR)/RfsmLight.app /Volumes/$(RFSM_VOLUME)
+	ln -s /Applications /Volumes/$(RFSM_VOLUME)/Applications
+	cp -r $(INSTALL_DIR)/examples /Volumes/$(RFSM_VOLUME)/Examples
+	cp -r $(INSTALL_DIR)/doc /Volumes/$(RFSM_VOLUME)/Documentation
+	cp $(INSTALL_DIR)/{CHANGES.txt,KNOWN-BUGS,LICENSE,README.txt,INSTALL} /Volumes/$(RFSM_VOLUME)
+	hdiutil detach /Volumes/$(RFSM_VOLUME)
+	hdiutil convert /tmp/RfsmLight.dmg -format UDZO -o /tmp/RfsmLight_ro.dmg
+	@echo "** Copying disk image into ./binaries"
+	mv /tmp/RfsmLight_ro.dmg ./binaries/RfsmLight-$(VERSION).dmg
+
+clean:
+	(cd src; make clean)
+	(cd doc; make clean)
+
+clobber: clean
+	(cd src; make clean)
+	(cd doc/um; make clobber)
+	\rm -f src/rfsm-light.app/Contents/MacOS/rfsm
+	\rm -f *~
+

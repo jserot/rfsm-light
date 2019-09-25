@@ -6,8 +6,8 @@
 *.cmo
 _build/
 binaries/
-CHANGELOG.txt
-CHANGELOG.html
+CHANGES.txt
+CHANGES.html
 README.txt
 README.html
 doc/Using.txt
