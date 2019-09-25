@@ -33,7 +33,7 @@
 #include <QVBoxLayout>
 #include <stdexcept>
 #include <QMessageBox>
-#include <qDebug>
+//#include <qDebug>
 
 PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 {
@@ -116,7 +116,7 @@ void PropertiesPanel::createIoPanel()
 
     QStringList ios;
     for(auto io : main_window->getFsm()->ios()) {
-      qDebug() << "Adding IO " << io->toString();
+      //qDebug() << "Adding IO " << io->toString();
       ios << io->toString();
     }
     ios_model = new QStringListModel(ios);
@@ -223,7 +223,7 @@ void PropertiesPanel::unselectItem()
 
 void PropertiesPanel::setSelectedItem(State* state)
 {
-    qDebug() << "State " << state->getId() << " selected";
+    //qDebug() << "State " << state->getId() << " selected";
     transition_panel->hide();
     itransition_panel->hide();
     if ( ! state->isPseudo() ) {
@@ -235,7 +235,7 @@ void PropertiesPanel::setSelectedItem(State* state)
 
 void PropertiesPanel::setSelectedItem(Transition* transition)
 {
-    qDebug() << "Transition " << transition->toString() << " selected";
+    //qDebug() << "Transition " << transition->toString() << " selected";
     selected_item = transition;
     state_panel->hide();
 

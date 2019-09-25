@@ -16,7 +16,7 @@ ifeq ($(PLATFORM), macos)
 	make -f Makefile.macos
 endif
 ifeq ($(PLATFORM), linux)
-	(cd src; $(QMAKE) rfsm.pro; make)
+	(cd src; $(QMAKE) main.pro; make)
 endif
 
 doc: 
@@ -35,6 +35,13 @@ README.html: README.md
 
 
 install:
+ifeq ($(PLATFORM), macos)
+	make -f Makefile.macos install
+endif
+ifeq ($(PLATFORM), windows)
+	make -f Makefile.windows install
+endif
+ifeq ($(PLATFORM), linux)
 	mkdir -p $(INSTALL_LIBDIR)
 	cp ./platform $(INSTALL_LIBDIR)
 	mkdir -p $(INSTALL_BINDIR)
@@ -42,14 +49,12 @@ install:
 	cp $(RFSMC) $(INSTALL_BINDIR)
 #	sed -e 's,__LIBDIR__,$(INSTALL_LIBDIR),' ./etc/rfsmmake > $(INSTALL_BINDIR)/rfsmmake
 #	chmod a+x $(INSTALL_BINDIR)/rfsmmake
-ifeq ($(PLATFORM), macos)
-	cp -r src/rfsm.app $(INSTALL_BINDIR)
-else
-	cp src/rfsm $(INSTALL_BINDIR)/rfsm
-endif
-ifeq ($(BUILD_DOC),yes)
-	mkdir -p $(INSTALL_DOCDIR)
-	cp -r doc/um/rfsm-gui.pdf $(INSTALL_DOCDIR)
+	cp -r src/rfsm-light $(INSTALL_BINDIR)
+	cp ./etc/options_spec.txt $(INSTALL_BINDIR)
+	echo "COMPILER=" $(RFSMC) > $(INSTALL_BINDIR)/rfsm-light.ini
+	echo "DOTVIEWER=" $(DOTVIEWER) >> $(INSTALL_BINDIR)/rfsm-light.ini
+	echo "VCDVIEWER=" $(VCDVIEWER) >> $(INSTALL_BINDIR)/rfsm-light.ini
+	echo "TXTVIEWER=" $(TXTVIEWER) >> $(INSTALL_BINDIR)/rfsm-light.ini
 endif
 
 ###### Building the MacOS distribution

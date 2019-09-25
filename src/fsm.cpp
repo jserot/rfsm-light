@@ -17,7 +17,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QFile>
 #include <QTextStream>
-#include <qDebug>
 
 QString Fsm::statePrefix = "S";
 int Fsm::stateCounter = 0;
@@ -351,7 +350,7 @@ void Fsm::check_model(bool withStimuli)
 void Fsm::readFromFile(QString fname)
 {
     QFile file(fname);
-    qDebug() << "Opening file " << file.fileName();
+    //qDebug() << "Opening file " << file.fileName();
     file.open(QIODevice::ReadOnly);
     if ( file.error() != QFile::NoError ) {
       QMessageBox::warning(mainWindow, "","Cannot open file " + file.fileName());

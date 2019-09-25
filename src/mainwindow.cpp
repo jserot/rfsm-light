@@ -100,7 +100,7 @@ MainWindow::MainWindow()
     compilerOptions = new CompilerOptions("options_spec.txt", this);
 #else
     QString appDir = QApplication::applicationDirPath();
-    qDebug() << "APPDIR=" << appDir;
+    //qDebug() << "APPDIR=" << appDir;
     compilerPaths = new CompilerPaths(appDir + "/rfsm-light.ini", this);
     compilerOptions = new CompilerOptions(appDir + "/options_spec.txt", this);
 #endif
@@ -312,7 +312,7 @@ void MainWindow::updateViewActions()
   if ( widget == NULL ) goto unselect;
   // qDebug() << widget->whatsThis();
   if ( widget->whatsThis() == "ImageViewer" ) {
-    qDebug() << "ImageViewer currently selected";
+    //qDebug() << "ImageViewer currently selected";
     ImageViewer* viewer = static_cast<ImageViewer*>(widget);
     bool b = viewer->isFittedToWindow();
     fitToWindowAction->setEnabled(true);
@@ -323,7 +323,7 @@ void MainWindow::updateViewActions()
     return;
     }
  unselect:
-    qDebug() << "No imageViewer currently selected";
+    //qDebug() << "No imageViewer currently selected";
     fitToWindowAction->setEnabled(false);
     zoomInAction->setEnabled(false);
     zoomOutAction->setEnabled(false);
@@ -617,7 +617,7 @@ void MainWindow::addResultTab(QString fname)
 
 void MainWindow::closeResultTab(int index)
 {
-  qDebug() << "Closing tab " << index;
+  //qDebug() << "Closing tab " << index;
   QWidget *edit = results->widget(index);
   if ( edit == NULL ) return; 
   QVariant v = edit->property("attachedSyntaxHighlighter");
@@ -639,7 +639,7 @@ void MainWindow::openResultFile(QString fname)
   // QString fullName = f.canonicalFilePath();
   QFileInfo f(fname);
   QString wDir = f.canonicalPath();
-  qDebug() << "Displaying file : " << fname;
+  //qDebug() << "Displaying file : " << fname;
   QStringList genOpts = compilerOptions->getOptions("general");
   if ( f.suffix() == "dot" ) {
     if ( genOpts.contains("-dot_external_viewer") )
@@ -670,7 +670,7 @@ void MainWindow::customView(QString toolName, QString fname, QString wDir)
    QFile sFile(sName);
    QString args = sFile.exists() ? fname + " " + sName : fname;
    CommandLine cmd(toolPath, args);
-   qDebug() << "customView cmd: " << cmd.toString() << endl;
+   //qDebug() << "customView cmd: " << cmd.toString() << endl;
    if ( ! executeCmd(wDir, cmd.toString() ) ) {
      QMessageBox::warning(this, "", "Could not start " + toolName);
      addResultTab(fname);
@@ -693,13 +693,14 @@ QStringList MainWindow::compile(QString type, QString sFname, QString baseCmd)
   QFileInfo fi(sFname);
   QString wDir = fi.absolutePath();
   // QDir dir(wDir);
-  qDebug() << "compile: srcFile=" << sFname << " wDir=" << wDir;
+  //qDebug() << "compile: srcFile=" << sFname << " wDir=" << wDir;
   QString compiler = compilerPaths->getPath("COMPILER");
   if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmc"; // Last chance..
   // if ( targetDir != "" ) dir.mkdir(targetDir);
   // Clean target directory
   // removeFiles(wDir + "/" + targetDir, eraseFirst);
   CommandLine cmd(compiler, baseCmd + " " + sFname);
+  qDebug() << "compile command: " << cmd.toString();
   compileErrors.clear();
   if ( executeCmd(wDir, cmd.toString()) )
     return getOutputFiles(type, wDir);
@@ -731,7 +732,7 @@ QStringList MainWindow::getOutputFiles(QString type, QString wDir)
       res.append(wDir+"/"+of);
     }
   ff.close();
-  qDebug() << "Output files: " << res;
+  //qDebug() << "Output files: " << res;
   return res;
 }
 
@@ -796,15 +797,15 @@ void MainWindow::dotTransform(QFileInfo f, QString wDir)
 bool MainWindow::executeCmd(QString wDir, QString cmd, bool sync)
 {
   bool r = false;
-  qDebug() << "Executing command \"" << cmd << "\" in " << wDir;
+  //qDebug() << "Executing command \"" << cmd << "\" in " << wDir;
   proc.setWorkingDirectory(wDir);
   proc.start(cmd);
   if ( proc.error() == QProcess::FailedToStart ) {
-    qDebug() << "Command failed to start" << endl;
+    //qDebug() << "Command failed to start" << endl;
     return false;
     }
   if ( sync ) {
-    qDebug() << "executeCmd: waiting for process to finish" << endl;
+    //qDebug() << "executeCmd: waiting for process to finish" << endl;
     r = proc.waitForFinished(-1);  // No time out
     if ( r == true ) r = proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 0;
     proc.kill();
@@ -813,7 +814,7 @@ bool MainWindow::executeCmd(QString wDir, QString cmd, bool sync)
     return r;
     }
   else { // This does not work :(
-    qDebug() << "executeCmd: async process launched" << endl;
+    //qDebug() << "executeCmd: async process launched" << endl;
     return true;
     }
 }
@@ -840,7 +841,7 @@ void MainWindow::setCodeFont()
 {
   bool ok;
   QFont font = QFontDialog::getFont(&ok, QFont("Courier", 10), this);
-  qDebug() << "Got font " << font.toString();
+  //qDebug() << "Got font " << font.toString();
   if ( ok ) {
     for ( int i=0; i<results->count(); i++ )
       (static_cast<QPlainTextEdit*>(results->widget(i)))->document()->setDefaultFont(font);
@@ -907,8 +908,8 @@ void MainWindow::setCompilerOptions()
   compilerOptions->edit(this);
   QStringList opts = compilerOptions->getOptions("general");
   traceMode = opts.contains("-debug");
-  if ( traceMode ) qDebug() << "Debug mode activated";
-  else qDebug() << "Debug mode desactivated";
+  //if ( traceMode ) qDebug() << "Debug mode activated";
+  //else qDebug() << "Debug mode desactivated";
 }
 
 // Logging 
