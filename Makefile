@@ -1,185 +1,110 @@
-include VERSION
 include config
+include platform
 
-APPNAME=rfsm-light
+QMAKE=qmake
 
-BIN_INSTALLED = src/compiler/rfsmc.opt
+.PHONY: build install clean
 
-QMAKE_MACOS = /Developer/Qt5.8/5.8/clang_64/bin/qmake 
-QMAKE_WIN = C:/Qt/Qt5.8.0/5.8/mingw53_32/bin/qmake.exe
-MAKE_WIN = C:/Qt/Qt5.8.0/Tools/mingw530_32/bin/mingw32-make
-QMAKE_UNIX=qmake
+all: build
 
-.PHONY: lib compiler gui clean install dist html doc
-
-all: lib compiler gui
-
-lib:
-			(cd src/lib; make native)
-
-compiler:
-			(cd src/compiler; make native)
-			mv src/compiler/main.native src/compiler/rfsmc.opt
-
-gui:
-ifeq ($(PLATFORM), win32)
-	(cd src/gui; $(QMAKE_WIN) -spec win32-g++ main.pro; $(MAKE_WIN))
+build:
+#	cat src/gui/builtin_options.txt src/compiler/options_spec.txt > src/gui/options_spec.txt
+ifeq ($(PLATFORM), windows)
+	make -f Makefile.windows build
 endif
 ifeq ($(PLATFORM), macos)
-	(cd src/gui; $(QMAKE_MACOS) -spec macx-clang CONFIG+=x86_64 main.pro; make)
+	make -f Makefile.macos
 endif
-ifeq ($(PLATFORM), unix)
-	(cd src/gui; $(QMAKE_UNIX) main.pro; make)
+ifeq ($(PLATFORM), linux)
+	(cd src; $(QMAKE) rfsm.pro; make)
 endif
 
-txt:
-	pandoc -o CHANGELOG.txt CHANGELOG.md
-	pandoc -o CHANGELOG.html CHANGELOG.md
-	pandoc -o README.txt README.md
-	pandoc -o README.html README.md
-	pandoc -o doc/Using.txt doc/Using.md
+doc: 
+ifeq ($(BUILD_DOC),yes)
+	(cd doc/um; make)
+endif
 
 html:
+	pandoc -o CHANGES.html CHANGES.md
 	pandoc -o README.html README.md
-	open -a Safari README.html
-	pandoc -o doc/Using.html doc/Using.md
-	open -a Safari doc/Using.html
 
-doc:
-	(cd doc; pandoc -o Using.pdf Using.md)
+CHANGES.html: CHANGES.md
+	pandoc -o CHANGES.html CHANGES.md
+README.html: README.md
+	pandoc -o README.html README.md
 
-clean:
-	(cd src/lib; make clean)
-	(cd src/compiler; make clean)
-	(cd src/gui; make clean)
-	(cd examples; make clean)
-
-clobber: clean
-	(cd src/lib; make clobber)
-	(cd src/compiler; make clobber)
-	(cd examples; make clobber)
-	\rm -f src/gui/rfsm-light.app/Contents/MacOS/rfsm
-	\rm -f *~
 
 install:
+	mkdir -p $(INSTALL_LIBDIR)
+	cp ./platform $(INSTALL_LIBDIR)
 	mkdir -p $(INSTALL_BINDIR)
-	cp src/compiler/rfsmc.opt $(INSTALL_BINDIR)/rfsmc
+#	cp $(RFSMC) $(RFSMMAKE) $(INSTALL_BINDIR)
+	cp $(RFSMC) $(INSTALL_BINDIR)
+#	sed -e 's,__LIBDIR__,$(INSTALL_LIBDIR),' ./etc/rfsmmake > $(INSTALL_BINDIR)/rfsmmake
+#	chmod a+x $(INSTALL_BINDIR)/rfsmmake
 ifeq ($(PLATFORM), macos)
-	cp -r src/gui/rfsm-light.app $(INSTALL_BINDIR)/RfsmLight
+	cp -r src/rfsm.app $(INSTALL_BINDIR)
 else
-	cp src/gui/rfsm-light $(INSTALL_BINDIR)/rfsm-light
+	cp src/rfsm $(INSTALL_BINDIR)/rfsm
+endif
+ifeq ($(BUILD_DOC),yes)
+	mkdir -p $(INSTALL_DOCDIR)
+	cp -r doc/um/rfsm-gui.pdf $(INSTALL_DOCDIR)
 endif
 
-SRCTMPDIR=/tmp
-SRCDISTNAME=rfsml-source
-SRCDISTDIR=$(SRCTMPDIR)/$(SRCDISTNAME)
-EXCLUDES=--exclude .git --exclude .gitignore --exclude .DS_Store
-SRCTARBALL=$(SRCDISTNAME).tar
-
-MACOS_DIST=/tmp/rfsm-light
+###### Building the MacOS distribution
 
 macos-dist:
 	@echo "** Cleaning"
 	make clobber
-	@echo "** Configuring for MacOS distribution"
-	./configure -platform macos -dot "dot" -dotviewer "open -a Graphviz" -vcdviewer "open -a gtkwave" -txtviewer "open"
-	@echo "** Building"
-	(cd src/compiler; make)
-	(cd src/gui; make)
-	make doc
-	make macos-install
-	make macos-installer
+#	@echo "** Configuring for MacOS distribution"
+#	./configure -platform macos -dot "dot" -dotviewer "open -a Graphviz" -vcdviewer "open -a gtkwave" -txtviewer "open"
+	make -f Makefile.macos build
+	make -f Makefile.macos install
+	make -f Makefile.macos installer
 
-macos-install:
-	@echo "** Installing in $(MACOS_DIST)"
-	rm -rf $(MACOS_DIST)
-	mkdir $(MACOS_DIST)
-	cp -r src/gui/rfsm-light.app $(MACOS_DIST)/RfsmLight.app
-	cp src/compiler/main.native $(MACOS_DIST)/RfsmLight.app/Contents/MacOS/rfsmc
-	cp ./dist/macos/rfsm-light.ini $(MACOS_DIST)/RfsmLight.app/Contents/MacOS
-	cp ./src/gui/etc/options_spec.txt $(MACOS_DIST)/RfsmLight.app/Contents/MacOS
-	cp ./dist/macos/INSTALL $(MACOS_DIST)/INSTALL
-	mkdir $(MACOS_DIST)/doc
-	cp -r doc/imgs $(MACOS_DIST)/doc
-	cp  doc/Using.{pdf,html} $(MACOS_DIST)/doc
-	mkdir $(MACOS_DIST)/examples
-	cp -r examples/* $(MACOS_DIST)/examples
-	make txt
-	cp {CHANGELOG.txt,KNOWN-BUGS,LICENSE,README.txt} $(MACOS_DIST)
+###### Building the Windows distribution
 
-RFSM_VOLUME=RfsmLight-$(VERSION)
+WIN_SRC_DIR=~/Desktop/SF1/Qt/rfsm-gui
+CURRENT_SRC_DIR=`pwd`
+RFSMC_SRC_DIR=/Users/jserot/Dev/ml/rfsm/rfsmc
 
-macos-installer:
-	@echo "** Creating disk image"
-	rm -f /tmp/RfsmLight.dmg
-	hdiutil create -size 16m -fs HFS+ -volname "$(RFSM_VOLUME)" /tmp/RfsmLight.dmg
-	hdiutil attach /tmp/RfsmLight.dmg
-	cp -r $(MACOS_DIST)/RfsmLight.app /Volumes/$(RFSM_VOLUME)
-	ln -s /Applications /Volumes/$(RFSM_VOLUME)/Applications
-	cp -r $(MACOS_DIST)/examples /Volumes/$(RFSM_VOLUME)/Examples
-	cp -r $(MACOS_DIST)/doc /Volumes/$(RFSM_VOLUME)/Documentation
-	cp $(MACOS_DIST)/{CHANGELOG.txt,KNOWN-BUGS,LICENSE,README.txt,INSTALL} /Volumes/$(RFSM_VOLUME)
-	hdiutil detach /Volumes/$(RFSM_VOLUME)
-	hdiutil convert /tmp/RfsmLight.dmg -format UDZO -o /tmp/RfsmLight_ro.dmg
-	@echo "** Copying disk image into ./binaries"
-	mv /tmp/RfsmLight_ro.dmg ./binaries/RfsmLight-$(VERSION).dmg
-
-WIN_SRC_DIR=~/Desktop/SF1/Caml
-
-win32-pre:
+win-pre:
 	@echo "** Preparing Windows version.."
 	@echo "** Cleaning source directory.."
 	make clobber
+	@echo "Building documentation"
+	(cd doc/um; make)
 	@echo "** Copying source tree"
-	if [ -d $(WIN_SRC_DIR)/rfsm-light ]; then rm -rf $(WIN_SRC_DIR)/rfsm-light.bak; mv $(WIN_SRC_DIR)/rfsm-light $(WIN_SRC_DIR)/rfsm-light.bak; fi
-	(cd ..; cp -r light $(WIN_SRC_DIR)/rfsm-light)
+	if [ -d $(WIN_SRC_DIR) ]; then rm -rf $(WIN_SRC_DIR); fi
+	cp -r $(CURRENT_SRC_DIR) $(WIN_SRC_DIR)
+	mkdir $(WIN_SRC_DIR)/examples
+	cp -r $(RFSMC_SRC_DIR)/examples/{single,multi} $(WIN_SRC_DIR)/examples
 	@echo "** Done"
-	@echo "** Now, make win32-{compiler,gui,install,installer} from Windows"
-	@echo "** And then, back to MacOS and make win32-post"
+	@echo "** Now, make win-{build,install,installer} from Windows"
 
-win32-post:
-	@echo "** Copying win32 installer exe in ./binaries"
-	cp $(WIN_SRC_DIR)/rfsm-light/dist/windows/RfsmLight_setup.exe ./binaries
-
-win32-compiler:
-	@echo "***********************************************************************"
-	@echo "**** WARNING: this make step must be invoked from a [Cygwin] shell ****"
-	@echo "***********************************************************************"
-	@echo "** Building compiler"
-	make compiler
-	@echo "** Done"
-
-win32-gui:
+win-build:
 	@echo "******************************************************************************"
 	@echo "**** WARNING: this make step must be invoked from a [mingw32(MSYS)] shell ****"
 	@echo "******************************************************************************"
-	./configure -platform win32 -dot "/C/Program Files/Graphviz/bin/dot.exe" -dotviewer "/C/Program Files/Graphviz/bin/dotty.exe" -vcdviewer "/C/Program Files/gtkwave/bin/gtkwave.exe"
-	@echo "** Building GUI"
-	make gui
-	@echo "** Done"
+	make -f Makefile.windows
 
-WIN_INSTALL_DIR=./build
+win-install:
+	make -f Makefile.windows install
 
-win32-install:
-	@echo "** Installing in $(WIN_INSTALL_DIR)"
-	rm -rf $(WIN_INSTALL_DIR)
-	mkdir $(WIN_INSTALL_DIR)
-	cp ./src/gui/release/rfsm-light.exe $(WIN_INSTALL_DIR)
-	cp ./src/gui/etc/options_spec.txt $(WIN_INSTALL_DIR)
-	mkdir $(WIN_INSTALL_DIR)/bin
-	cp ./src/compiler/_build/main.native $(WIN_INSTALL_DIR)/bin/rfsmc.exe
-	cp ../caph/dlls/{Qt5Core,Qt5Gui,Qt5Widgets,libgcc_s_dw2-1,libstdc++-6,libwinpthread-1}.dll $(WIN_INSTALL_DIR)
-	mkdir $(WIN_INSTALL_DIR)/platforms
-	cp ../caph/dlls/qwindows.dll $(WIN_INSTALL_DIR)/platforms
-	cp {CHANGELOG.txt,KNOWN-BUGS,LICENSE,README.txt} $(WIN_INSTALL_DIR)
-	cp ./dist/windows/icons/*.{bmp,ico} $(WIN_INSTALL_DIR)
-#	cp ./dist/windows/rfsm-light.ini $(WIN_INSTALL_DIR)
-	mkdir $(WIN_INSTALL_DIR)/doc
-	cp  dist/windows/windows-install-guide.pdf $(WIN_INSTALL_DIR)/doc
-	mkdir $(WIN_INSTALL_DIR)/examples
-	cp -r examples/* $(WIN_INSTALL_DIR)/examples
-	@echo "Done"
+win-installer:
+	make -f Makefile.windows installer
 
-win32-installer:
-	@echo "** Building self-installer"
-	/C/Program\ Files/Inno\ Setup\ 5/iscc ./dist/windows/RfsmLightSetup.iss
+clean:
+	(cd src; make clean)
+	(cd doc/um; make clean)
+	rm -f doc/lib/*
+
+clobber: clean
+	(cd src; make clean)
+	(cd doc/um; make clobber)
+	rm -f doc/lib/*
+	\rm -f src/rfsm.app/Contents/MacOS/rfsm
+	\rm -f *~
+	\rm -f README.html CHANGES.html
+
