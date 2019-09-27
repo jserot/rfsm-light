@@ -35,7 +35,7 @@ files to be viewed using the [gtkwave](http://gtkwave.sourceforge.net) software
 
 There's no user manual for the moment.
 
-A minimalistic "Howto" is available [here](./doc/Using.md).
+A minimalistic "Howto" is available [here](./doc/using.md).
 
 This short [video](https://youtu.be/SLB0Hw2DQ88) can also be used as a tutorial.
 
@@ -64,7 +64,7 @@ Prebuilt Windows and MacOS versions can be downloaded
 * `make install` 
 
 If you can't or don't want to build the documentation from source, pass the `--no-doc` option to
-`configure`. A pre-built `pdf` version is available [here](./doc/Using.md)
+`configure`. A pre-built `pdf` version is available [here](./doc/using.md)
 
 Building on Windows requires [Cygwin](https://cygwin.com) or [MinGW](http://www.mingw.org) which
 `gcc`, `ocaml` and `opam` installed.
