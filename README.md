@@ -35,12 +35,36 @@ files to be viewed using the [gtkwave](http://gtkwave.sourceforge.net) software
 
 There's no user manual for the moment.
 
-A minimalistic "Howto" is available [here](./doc/using.md).
+A minimalistic "Howto" is available [here](./doc/Using.md).
 
 This short [video](https://youtu.be/SLB0Hw2DQ88) can also be used as a tutorial.
 
 ## INSTALLATION
 
-Prebuilt Windows and MacOS versions can be downloaded [here](https://github.com/jserot/rfsm-light/releases/tag/v0.1a)
+### Using binary versions
 
-See the `INSTALL` file to build from sources.
+Prebuilt Windows and MacOS versions can be downloaded
+[here](https://github.com/jserot/rfsm-light/releases) (check the `Assets` tab).
+
+### Building from source 
+
+#### Pre-requisites
+
+* [ocaml](http://ocaml.org) (version>=4.08) with latest version of the following [opam](http://opam.ocaml.org) packages installed:
+  - [lascar](http://opam.ocaml.org/packages/lascar)
+  - [rfsm](http://opam.ocaml.org/packages/rfsm)
+* [Qt](http://www.qt.io) (version>=5.8)
+
+#### How to build
+
+* Get the source code: `git clone https://github.com/jserot/rfsm-light`
+* `cd rfsm-light`
+* `./configure [options]` (`./configure --help` for the list of options)
+* `make`
+* `make install` 
+
+If you can't or don't want to build the documentation from source, pass the `--no-doc` option to
+`configure`. A pre-built `pdf` version is available [here](./doc/Using.md)
+
+Building on Windows requires [Cygwin](https://cygwin.com) or [MinGW](http://www.mingw.org) which
+`gcc`, `ocaml` and `opam` installed.
