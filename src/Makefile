@@ -871,9 +871,7 @@ transition.o: transition.cpp transition.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/QPainter \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/qpainter.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/QSet \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qset.h \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qDebug \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qdebug.h
+		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qset.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o transition.o transition.cpp
 
 state.o: state.cpp state.h \
@@ -889,9 +887,7 @@ state.o: state.cpp state.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QGraphicsSceneMouseEvent \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qgraphicssceneevent.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/QPainter \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/qpainter.h \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qDebug \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qdebug.h
+		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/qpainter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o state.o state.cpp
 
 fsmIo.o: fsmIo.cpp fsmIo.h \
@@ -925,9 +921,7 @@ fsm.o: fsm.cpp fsm.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QGraphicsSceneMouseEvent \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qgraphicssceneevent.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/QFile \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qfile.h \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qDebug \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qdebug.h
+		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fsm.o fsm.cpp
 
 properties.o: properties.cpp properties.h \
@@ -987,9 +981,7 @@ properties.o: properties.cpp properties.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qtextedit.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QVBoxLayout \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QMessageBox \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qmessagebox.h \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qDebug \
-		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qdebug.h
+		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o properties.o properties.cpp
 
 stimulus.o: stimulus.cpp stimulus.h \

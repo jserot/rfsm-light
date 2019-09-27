@@ -1,38 +1,38 @@
 [Setup]
 AppId={{5D1BF4DD-8593-48B4-96CA-0225513733D7}
 AppName=RfsmLight
-AppVersion=0.1a
+AppVersion=1.0.0
 AppContact=jocelyn.serot@uca.fr
 AppCopyright=Copyright (C) 2019 J. Serot
 AppPublisher=J. Serot / Clermont-Auvergne University
 AppPublisherURL=https://github.com/jserot/rfsm-light
-LicenseFile=E:/Caml/rfsm-light/LICENSE
+LicenseFile=F:/Qt/rfsm-light/LICENSE
 UsePreviousAppDir=false
 DefaultDirName={pf}/RfsmLight
 DefaultGroupName=RfsmLight
 Compression=none
 ;Compression=lzma2
 ;SolidCompression=yes
-OutputBaseFilename=RfsmLight_setup
+OutputBaseFilename=RfsmLight-1.0.0_setup
 OutputDir=.
-WizardImageFile=E:\Caml\rfsm-light\build\rfsm.bmp
-WizardSmallImageFile=E:\Caml\rfsm-light\build\rfsm_small.bmp
+WizardImageFile=F:\Qt\rfsm-light\build\rfsm.bmp
+WizardSmallImageFile=F:\Qt\rfsm-light\build\rfsm_small.bmp
 
 [Files]
-Source: "E:\Caml\rfsm-light\build\*"; DestDir: "{app}"; Excludes:"examples"; Flags: recursesubdirs
-Source: "E:\Caml\rfsm-light\build\examples\*"; DestDir: "{code:GetDirs|0}\RfsmLightExamples"; Flags: recursesubdirs
+Source: "F:\Qt\rfsm-light\build\*"; DestDir: "{app}"; Excludes:"examples"; Flags: recursesubdirs
+Source: "F:\Qt\rfsm-light\build\examples\*"; DestDir: "{code:GetDirs|0}\RfsmLightExamples"; Flags: recursesubdirs
  
 [Icons]
-Name: "{group}\RfsmLight"; Filename: "{app}\RfsmLight.exe";IconFilename: "E:\Caml\rfsm-light\build\rfsm.ico"
-Name: "{group}\{cm:UninstallProgram,RfsmLight}"; Filename: "{uninstallexe}";IconFilename: "E:\Caml\rfsm-light\build\rfsmun.ico"
-Name: "{commondesktop}\RfsmLight"; Filename: "{app}\RfsmLight.exe";    IconFilename: "E:\Caml\rfsm-light\build\rfsm.ico"
+Name: "{group}\RfsmLight"; Filename: "{app}\RfsmLight.exe";IconFilename: "F:\Qt\rfsm-light\build\rfsm.ico"
+Name: "{group}\{cm:UninstallProgram,RfsmLight}"; Filename: "{uninstallexe}";IconFilename: "F:\Qt\rfsm-light\build\rfsmun.ico"
+Name: "{commondesktop}\RfsmLight"; Filename: "{app}\RfsmLight.exe";    IconFilename: "F:\Qt\rfsm-light\build\rfsm.ico"
 
 [Run]
 Filename: "{app}\rfsm-light.exe"; Description: "Launch application"; Flags: postinstall nowait skipifsilent unchecked
 
 [INI]
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Flags: uninsdeletesection
-Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "COMPILER"; String: "{app}\bin\rfsmc"
+Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "COMPILER"; String: "{app}\rfsmc"
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "DOTPROGRAM"; String: "{code:GetFiles|0}"
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "DOTVIEWER"; String: "{code:GetFiles|1}"
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "VCDVIEWER"; String: "{code:GetFiles|2}"

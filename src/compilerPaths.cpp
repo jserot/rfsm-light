@@ -42,6 +42,7 @@ void CompilerPaths::setDefaults()
 
 void CompilerPaths::readFromFile(QString fname)
 {
+  qDebug() << "Reading paths from file " << fname;
   QFile file(fname);
   file.open(QIODevice::ReadOnly);
   if ( file.error() != QFile::NoError ) {
@@ -51,11 +52,13 @@ void CompilerPaths::readFromFile(QString fname)
   while ( ! file.atEnd() ) {
     QString line = file.readLine();
     QStringList items = line.split("=");
-    QString key = items.at(0).trimmed();
-    QString val = items.at(1).trimmed();
-    if ( paths.keys().contains(key) ) {
-      qDebug() << "Path " << key << "<-" << val;
-      paths.insert(key, val);
+    if ( items.length() == 2 && items.at(0) != "" && items.at(1) != "" ) {
+      QString key = items.at(0).trimmed();
+      QString val = items.at(1).trimmed();
+      if ( paths.keys().contains(key) ) {
+        qDebug() << "Path " << key << "<-" << val;
+        paths.insert(key, val);
+        }
       }
     }
   file.close();

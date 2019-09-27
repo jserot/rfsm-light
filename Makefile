@@ -70,7 +70,7 @@ macos-dist:
 
 ###### Building the Windows distribution
 
-WIN_SRC_DIR=~/Desktop/SF1/Qt/rfsm-gui
+WIN_SRC_DIR=~/Desktop/SF1/Qt/rfsm-light
 CURRENT_SRC_DIR=`pwd`
 RFSMC_SRC_DIR=/Users/jserot/Dev/ml/rfsm/rfsmc
 
@@ -79,12 +79,10 @@ win-pre:
 	@echo "** Cleaning source directory.."
 	make clobber
 	@echo "Building documentation"
-	(cd doc/um; make)
+	(cd doc; make)
 	@echo "** Copying source tree"
 	if [ -d $(WIN_SRC_DIR) ]; then rm -rf $(WIN_SRC_DIR); fi
 	cp -r $(CURRENT_SRC_DIR) $(WIN_SRC_DIR)
-	mkdir $(WIN_SRC_DIR)/examples
-	cp -r $(RFSMC_SRC_DIR)/examples/{single,multi} $(WIN_SRC_DIR)/examples
 	@echo "** Done"
 	@echo "** Now, make win-{build,install,installer} from Windows"
 

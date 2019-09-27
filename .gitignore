@@ -4,6 +4,7 @@
 *.native
 *.cmi
 *.cmo
+*.bak
 _build/
 binaries/
 CHANGES.txt

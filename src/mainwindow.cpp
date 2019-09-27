@@ -95,15 +95,10 @@ MainWindow::MainWindow()
     codeFont.setFixedPitch(true);
     codeFont.setPointSize(11);
 
-#ifdef Q_OS_WIN
-    compilerPaths = new CompilerPaths("rfsm-light.ini", this);
-    compilerOptions = new CompilerOptions("options_spec.txt", this);
-#else
     QString appDir = QApplication::applicationDirPath();
-    //qDebug() << "APPDIR=" << appDir;
+    qDebug() << "APPDIR=" << appDir;
     compilerPaths = new CompilerPaths(appDir + "/rfsm-light.ini", this);
     compilerOptions = new CompilerOptions(appDir + "/options_spec.txt", this);
-#endif
     initDir = compilerPaths->getPath("INITDIR");
 
     connect(&proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readProcStdout()));

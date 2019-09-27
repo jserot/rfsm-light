@@ -1,0 +1,60 @@
+# Makefile to build the Windows distribution
+
+QMAKE=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin/qmake.exe
+MAKE=C:/Qt/Qt5.8.0/Tools/mingw530_32/bin/mingw32-make
+QTLIBDIR=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
+OTHERLIBDIR=../otherlibs
+
+DOTPROGRAM="C:/Program Files/Graphviz/bin/dot.exe"
+DOTVIEWER="C:/Program Files/Graphviz/bin/dotty.exe"
+VCDVIEWER="C:/Program Files/gtkwave/bin/gtkwave.exe"
+
+OPAM_PREFIX=C:/OCaml64/home/JS/.opam/ocaml-variants.4.08.0+mingw64c
+RFSMC=$(OPAM_PREFIX)/bin/rfsmc.exe
+RFSMMAKE=$(OPAM_PREFIX)/bin/rfsmmake.exe
+RFSMLIB=$(OPAM_PREFIX)/share/rfsm
+
+INSTALL_DIR=./build
+
+.PHONY: build install installer
+
+all: build
+
+build:
+	(cd src; $(QMAKE) -spec win32-g++ main.pro; $(MAKE))
+
+install:
+	@echo "** Installing in $(INSTALL_DIR)"
+	rm -rf $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)
+	cp ./src/release/rfsm-light.exe $(INSTALL_DIR)
+	cp ./etc/options_spec.txt $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)/bin
+	cp $(RFSMC) $(INSTALL_DIR)
+	cp $(QTLIBDIR)/{Qt5Core,Qt5Gui,Qt5Widgets}.dll $(INSTALL_DIR)
+	cp $(OTHERLIBDIR)/{libgcc_s_dw2-1,libstdc++-6,libwinpthread-1}.dll $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)/platforms
+	cp $(OTHERLIBDIR)/qwindows.dll $(INSTALL_DIR)/platforms
+	cp {CHANGES.txt,KNOWN-BUGS,LICENSE,README.txt} $(INSTALL_DIR)
+	cp ./dist/windows/icons/*.{bmp,ico} $(INSTALL_DIR)
+#	cp ./dist/windows/rfsm-light.ini $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)/doc
+	cp  dist/windows/windows-install-guide.pdf $(INSTALL_DIR)/doc
+	cp  doc/Using.pdf $(INSTALL_DIR)/doc
+	mkdir $(INSTALL_DIR)/examples
+	cp -r examples/* $(INSTALL_DIR)/examples
+	@echo "Done"
+
+installer:
+	@echo "** Building self-installer"
+	/C/Program\ Files\ \(x86\)/Inno\ Setup\ 6/iscc ./dist/windows/RfsmLightSetup.iss
+
+clean:
+	(cd src; make clean)
+	(cd doc/um; make clean)
+
+clobber: clean
+	(cd src; make clean)
+	(cd doc/um; make clobber)
+	\rm -f *~
+
