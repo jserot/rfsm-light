@@ -47,6 +47,9 @@ This short [video](https://youtu.be/SLB0Hw2DQ88) can also be used as a tutorial.
 Prebuilt Windows and MacOS versions can be downloaded
 [here](https://github.com/jserot/rfsm-light/releases) (check the `Assets` tab).
 
+For Windows, a quick Install Guide is available
+[here](https://github.com/jserot/rfsm-light/blob/master/dist/windows/windows-install-guide.pdf)
+
 ### Building from source 
 
 #### Pre-requisites
