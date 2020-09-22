@@ -667,7 +667,7 @@ void MainWindow::customView(QString toolName, QString fname, QString wDir)
    CommandLine cmd(toolPath, args);
    //qDebug() << "customView cmd: " << cmd.toString() << endl;
    if ( ! executeCmd(wDir, cmd.toString() ) ) {
-     QMessageBox::warning(this, "", "Could not start " + toolName);
+     QMessageBox::warning(this, "", "Could not start " + toolName + " : command " + cmd.toString() + " failed");
      addResultTab(fname);
      }
 }
@@ -784,7 +784,7 @@ void MainWindow::dotTransform(QFileInfo f, QString wDir)
   QString wdir = f.canonicalPath();
   CommandLine cmd(dotProgram, opts + " -Tgif -o " + dstFile + " " + srcFile);
   if ( ! executeCmd(wDir, cmd.toString()) )
-    QMessageBox::warning(this, "", "Cannot run DOT program");
+    QMessageBox::warning(this, "", "Cannot run DOT program : command " + cmd.toString() + " failed");
 }
 
 // External command execution
