@@ -1,7 +1,7 @@
 #!/bin/bash
 
 configure_options="$*"
-platform=unix
+platform=linux
 dotprogram='dot'
 dotviewer='graphviz'
 vcdviewer='gtkwave'
