@@ -634,7 +634,7 @@ void MainWindow::openResultFile(QString fname)
   // QString fullName = f.canonicalFilePath();
   QFileInfo f(fname);
   QString wDir = f.canonicalPath();
-  //qDebug() << "Displaying file : " << fname;
+  qDebug() << "Displaying file : " << fname;
   QStringList genOpts = compilerOptions->getOptions("general");
   if ( f.suffix() == "dot" ) {
     if ( genOpts.contains("-dot_external_viewer") )
@@ -665,7 +665,7 @@ void MainWindow::customView(QString toolName, QString fname, QString wDir)
    QFile sFile(sName);
    QString args = sFile.exists() ? fname + " " + sName : fname;
    CommandLine cmd(toolPath, args);
-   //qDebug() << "customView cmd: " << cmd.toString() << endl;
+   qDebug() << "customView cmd: " << cmd.toString() << endl;
    if ( ! executeCmd(wDir, cmd.toString() ) ) {
      QMessageBox::warning(this, "", "Could not start " + toolName + " : command " + cmd.toString() + " failed");
      addResultTab(fname);
@@ -792,15 +792,15 @@ void MainWindow::dotTransform(QFileInfo f, QString wDir)
 bool MainWindow::executeCmd(QString wDir, QString cmd, bool sync)
 {
   bool r = false;
-  //qDebug() << "Executing command \"" << cmd << "\" in " << wDir;
+  qDebug() << "Executing command \"" << cmd << "\" in " << wDir;
   proc.setWorkingDirectory(wDir);
   proc.start(cmd);
   if ( proc.error() == QProcess::FailedToStart ) {
-    //qDebug() << "Command failed to start" << endl;
+    qDebug() << "Command failed to start" << endl;
     return false;
     }
   if ( sync ) {
-    //qDebug() << "executeCmd: waiting for process to finish" << endl;
+    qDebug() << "executeCmd: waiting for process to finish" << endl;
     r = proc.waitForFinished(-1);  // No time out
     if ( r == true ) r = proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 0;
     proc.kill();
