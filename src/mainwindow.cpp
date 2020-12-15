@@ -15,7 +15,7 @@
 #include "fsm.h"
 #include "mainwindow.h"
 #include "command.h"
-#include "imageViewer.h"
+#include "imageviewer.h"
 #include "syntaxHighlighters.h"
 #include "compilerPaths.h"
 #include "compilerOptions.h"
