@@ -49,3 +49,5 @@ src/Makefile
 src/gui/options_spec.txt
 doc/figs/*.pdf
 doc/etc/
+videos/
+extra-docs/
