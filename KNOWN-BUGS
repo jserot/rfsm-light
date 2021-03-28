@@ -2,8 +2,6 @@ Known bugs and limitations
 
 * the drawing canvas can quickly become too small : enlarge it or allow it to be resized
 
-* VHDL options does not seem to correctly interpreted (ex: -vhdl_numeric_std)
-
 * multi-FSM models are not supported (use RFSM if required)
 
 * Multi-events FSM models are not supported by the VHDL backend

@@ -739,7 +739,7 @@ void MainWindow::generate(QString target, QString targetOption, bool withTestben
   QString targetDirOpt;
   if ( genOpts.contains("-target_dirs") ) {
     QString targetDir = "./" + target;
-    targetDirOpt += "-target_dir ./" + target;
+    targetDirOpt += "-target_dir ./" + target + " ";
     genOpts.removeOne("-target_dirs");
     QDir dir(targetDir);
     if ( ! dir.exists() ) {
@@ -748,7 +748,7 @@ void MainWindow::generate(QString target, QString targetOption, bool withTestben
       }
   }
   else
-    targetDirOpt += "-target_dir .";
+    targetDirOpt += "-target_dir . ";
   if ( genOpts.contains("-dot_external_viewer") ) genOpts.removeOne("-dot_external_viewer");
   QStringList opts = genOpts + compilerOptions->getOptions(target);
   if ( target == "sim" ) {
