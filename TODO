@@ -2,7 +2,6 @@
 - update windows install guide (currently simply copied from Rfsm)
 
 * GUI
-- Clear name and IOvars pane when invoking New
 - Fix toolbars alignment (left, center, right)
 - VHDL and SystemC syntax highlighters
 - Less-minimalistic About dialog

@@ -53,6 +53,14 @@ void Fsm::removeIo(QString name)
   myIos.remove(name);
 }
 
+void Fsm::clear(void)
+{
+  myName = "";
+  myIos.clear();
+  stateCounter = 0;
+  QGraphicsScene::clear();
+}
+
 State* Fsm::addState(QPointF pos, QString id, QString attr)
 {
   State* state = new State(id, attr);

@@ -47,6 +47,8 @@ public:
     QString name() const { return myName; }
     void setName(QString name) { myName = name; }
 
+    void clear(void);
+
     FsmIo* addIo(const QString name, QString kind, QString type, QString desc="");
     FsmIo* getIo(QString name);
     void removeIo(QString name);
@@ -104,7 +106,7 @@ private:
                               State::Location location);
 
     QString myName;
-    QMap<QString, FsmIo*> myIos; // I/Os ans local variables - TODO: split this
+    QMap<QString, FsmIo*> myIos; // I/Os and local variables - TODO: split this
     
     Mode mode;
     QGraphicsLineItem *line;  // Line being drawn
