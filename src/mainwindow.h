@@ -179,6 +179,8 @@ private:
 
     QFont codeFont;
     static QString title;
+    static int canvas_width;
+    static int canvas_height;
 
     QProcess proc; 
     QString compileErrors;

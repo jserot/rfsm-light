@@ -25,6 +25,8 @@
 #include <QVariant>
 
 QString MainWindow::title = "RFSM Light";
+int MainWindow::canvas_width = 1000;
+int MainWindow::canvas_height = 1000;
 
 MainWindow::MainWindow()
 {
@@ -45,7 +47,7 @@ MainWindow::MainWindow()
     setCentralWidget(splitter);
 
     fsm = new Fsm(this);
-    fsm->setSceneRect(QRectF(0, 0, 600, 600));
+    fsm->setSceneRect(QRectF(0, 0, canvas_width, canvas_height));
     connect(fsm, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
     connect(fsm, SIGNAL(stateDeleted(State*)), this, SLOT(stateDeleted(State*)));
     connect(fsm, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
