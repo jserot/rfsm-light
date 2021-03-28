@@ -53,9 +53,9 @@ void Fsm::removeIo(QString name)
   myIos.remove(name);
 }
 
-State* Fsm::addState(QPointF pos, QString id)
+State* Fsm::addState(QPointF pos, QString id, QString attr)
 {
-  State* state = new State(id);
+  State* state = new State(id, attr);
   state->setBrush(boxColor);
   addItem(state);
   state->setPos(pos);
@@ -149,7 +149,7 @@ void Fsm::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsItem *item;
     switch ( mode ) {
         case InsertState:
-            state = addState(mouseEvent->scenePos(), statePrefix + QString::number(stateCounter++));
+          state = addState(mouseEvent->scenePos(), statePrefix + QString::number(stateCounter++), "");
             emit stateInserted(state);
             emit fsmModified();
             break;
@@ -379,11 +379,15 @@ void Fsm::readFromFile(QString fname)
 
     for ( const auto json_state : json.at("states") ) {
       std::string id = json_state.at("id");
+      std::string attr = json_state.at("attr");
       State* state;
       if ( id == State::initPseudoId.toStdString() )
         state = addPseudoState(QPointF(json_state.at("x"), json_state.at("y")));
       else 
-        state = addState(QPointF(json_state.at("x"), json_state.at("y")), QString::fromStdString(id));
+        state = addState(QPointF(json_state.at("x"),
+                                 json_state.at("y")),
+                         QString::fromStdString(id),
+                         QString::fromStdString(attr));
       states.insert(id, state);
       stateCounter++;
       }   
@@ -444,6 +448,7 @@ void Fsm::saveToFile(QString fname)
         State* state = qgraphicsitem_cast<State *>(item);
         nlohmann::json json;
         json["id"] = state->getId().toStdString(); 
+        json["attr"] = state->getAttr().toStdString(); 
         json["x"] = state->scenePos().x(); 
         json["y"] = state->scenePos().y(); 
         json_res["states"].push_back(json);
@@ -519,8 +524,10 @@ void Fsm::exportDot(QString fname, QStringList options)
         if ( withIoDesc ) 
           os << "_ios -> " << id << " [style=\"invis\"]\n";
         }
-      else
-        os << id << " [label=\"" << id << "\", shape=circle, style=solid]\n";
+      else {
+        QString attr = state->getAttr();
+        os << id << " [label=\"" << id << "\\n" << attr <<  "\", shape=circle, style=solid]\n";
+        }
       }
     }
   for ( const auto item: items() ) {
@@ -559,6 +566,15 @@ QString stringOfTransition(Transition *t, bool abbrev=false)
     if ( ! t->getGuard().isEmpty() ) ss += " when " + t->getGuard();
     if ( ! t->getActions().isEmpty() ) ss += " with " + t->getActions();
     }
+  return ss;
+}
+
+QString stringOfState(State *s)
+{
+  QString ss;
+  ss = s->getId();
+  if ( s->getAttr() != "" ) 
+    ss += " where " + s->getAttr();
   return ss;
 }
 
@@ -607,7 +623,7 @@ void Fsm::export_rfsm_model(QTextStream& os)
     for ( State* state : states()) {
         if ( state->isPseudo() ) continue;
         if(!first) os << ", " ;
-        os << state->getId();
+        os << stringOfState(state);
         first = false;
         }
     os << ";" << "\n";
@@ -616,12 +632,12 @@ void Fsm::export_rfsm_model(QTextStream& os)
       os << indent << "vars: " << stringOfVarList(lvars) <<  ";" << "\n";
 
     os << indent;
-    os << "trans: " << "\n";
+    os << "trans: ";
     first = true;
 
     for ( Transition* transition : transitions() ) {
         if ( transition->srcState()->isPseudo() ) continue;
-        os << indent << "| " << stringOfTransition(transition);
+        os << indent << "\n  | " << stringOfTransition(transition);
         first = false;
         }
     os << ";" << "\n";

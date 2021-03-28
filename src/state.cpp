@@ -24,7 +24,7 @@ QColor State::selectedColor = Qt::darkCyan;
 QColor State::unSelectedColor = Qt::black;
 QString State::initPseudoId = "_init";
 
-State::State(QString id, QGraphicsItem *parent)
+State::State(QString id, QString attr, QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
     QPainterPath path;
@@ -38,6 +38,7 @@ State::State(QString id, QGraphicsItem *parent)
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     this->id = id;
+    this->attr = attr;
     isPseudoState = false;
 }
 
@@ -93,7 +94,9 @@ void State::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
     painter->setPen(QPen(isSelected() ? selectedColor : unSelectedColor, 1));
     painter->setBrush(boxBackground);
     painter->drawPolygon(myPolygon);
-    painter->drawText(boundingRect(), Qt::AlignHCenter | Qt::AlignVCenter, id);
+    QString lbl = id;
+    if ( attr != "" ) lbl += "\n" + attr;
+    painter->drawText(boundingRect(), Qt::AlignHCenter | Qt::AlignVCenter, lbl);
     }
 }
 

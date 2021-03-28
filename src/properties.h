@@ -47,6 +47,7 @@ class PropertiesPanel : public QFrame
 
     QGroupBox* state_panel;
     QLineEdit* state_name_field;
+    QLineEdit* state_attr_field;
 
     QGroupBox* transition_panel;
     QComboBox* transition_start_state_field;
@@ -75,6 +76,7 @@ class PropertiesPanel : public QFrame
     void setModelName(const QString& name);
 
     void setStateName(const QString& name);
+    void setStateAttr(const QString& name);
 
     void addIo();
     void removeIos();

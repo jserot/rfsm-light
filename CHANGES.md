@@ -1,5 +1,9 @@
 # Changes
 
+# 1.1.0 (Sep 25, 2019)
+
+* Allow output valuations to be attached to states 
+
 # 1.0.0 (Sep 25, 2019)
 * The application is now only a GUI to the `rfsmc` compiler (which is distributed as a separate
   `opam` package). For convenience, the, distributed MacOS and Windows

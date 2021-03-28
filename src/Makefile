@@ -60,14 +60,14 @@ SOURCES       = transition.cpp \
 		compilerPaths.cpp \
 		compilerOption.cpp \
 		compilerOptions.cpp \
-		imageViewer.cpp \
+		imageviewer.cpp \
 		debug.cpp \
 		main.cpp \
 		mainwindow.cpp qrc_resources.cpp \
 		moc_fsm.cpp \
 		moc_properties.cpp \
 		moc_stimuli.cpp \
-		moc_imageViewer.cpp \
+		moc_imageviewer.cpp \
 		moc_syntaxHighlighters.cpp \
 		moc_compilerPaths.cpp \
 		moc_compilerOptions.cpp \
@@ -84,7 +84,7 @@ OBJECTS       = transition.o \
 		compilerPaths.o \
 		compilerOption.o \
 		compilerOptions.o \
-		imageViewer.o \
+		imageviewer.o \
 		debug.o \
 		main.o \
 		mainwindow.o \
@@ -92,7 +92,7 @@ OBJECTS       = transition.o \
 		moc_fsm.o \
 		moc_properties.o \
 		moc_stimuli.o \
-		moc_imageViewer.o \
+		moc_imageviewer.o \
 		moc_syntaxHighlighters.o \
 		moc_compilerPaths.o \
 		moc_compilerOptions.o \
@@ -260,7 +260,7 @@ DIST          = /Developer/Qt5.8/5.8/clang_64/mkspecs/features/spec_pre.prf \
 		stimulus.h \
 		stimuli.h \
 		command.h \
-		imageViewer.h \
+		imageviewer.h \
 		syntaxHighlighters.h \
 		compilerPaths.h \
 		compilerOption.h \
@@ -278,7 +278,7 @@ DIST          = /Developer/Qt5.8/5.8/clang_64/mkspecs/features/spec_pre.prf \
 		compilerPaths.cpp \
 		compilerOption.cpp \
 		compilerOptions.cpp \
-		imageViewer.cpp \
+		imageviewer.cpp \
 		debug.cpp \
 		main.cpp \
 		mainwindow.cpp
@@ -644,8 +644,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents resources.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /Developer/Qt5.8/5.8/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents include/nlohmann_json.h transition.h state.h fsmIo.h fsm.h properties.h stimulus.h stimuli.h command.h imageViewer.h syntaxHighlighters.h compilerPaths.h compilerOption.h compilerOptions.h debug.h mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents transition.cpp state.cpp fsmIo.cpp fsm.cpp properties.cpp stimulus.cpp stimuli.cpp command.cpp syntaxHighlighters.cpp compilerPaths.cpp compilerOption.cpp compilerOptions.cpp imageViewer.cpp debug.cpp main.cpp mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents include/nlohmann_json.h transition.h state.h fsmIo.h fsm.h properties.h stimulus.h stimuli.h command.h imageviewer.h syntaxHighlighters.h compilerPaths.h compilerOption.h compilerOptions.h debug.h mainwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents transition.cpp state.cpp fsmIo.cpp fsm.cpp properties.cpp stimulus.cpp stimuli.cpp command.cpp syntaxHighlighters.cpp compilerPaths.cpp compilerOption.cpp compilerOptions.cpp imageviewer.cpp debug.cpp main.cpp mainwindow.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -696,9 +696,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /Developer/Qt5.8/5.8/clang_64/mkspecs/features/data/dummy.cpp
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -pipe -stdlib=libc++ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk -mmacosx-version-min=10.9 $(EXPORT_QMAKE_XARCH_CFLAGS) -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /Developer/Qt5.8/5.8/clang_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_fsm.cpp moc_properties.cpp moc_stimuli.cpp moc_imageViewer.cpp moc_syntaxHighlighters.cpp moc_compilerPaths.cpp moc_compilerOptions.cpp moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_fsm.cpp moc_properties.cpp moc_stimuli.cpp moc_imageviewer.cpp moc_syntaxHighlighters.cpp moc_compilerPaths.cpp moc_compilerOptions.cpp moc_mainwindow.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_fsm.cpp moc_properties.cpp moc_stimuli.cpp moc_imageViewer.cpp moc_syntaxHighlighters.cpp moc_compilerPaths.cpp moc_compilerOptions.cpp moc_mainwindow.cpp
+	-$(DEL_FILE) moc_fsm.cpp moc_properties.cpp moc_stimuli.cpp moc_imageviewer.cpp moc_syntaxHighlighters.cpp moc_compilerPaths.cpp moc_compilerOptions.cpp moc_mainwindow.cpp
 moc_fsm.cpp: /Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/QStringListModel \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qstringlistmodel.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/QTextStream \
@@ -759,12 +759,12 @@ moc_stimuli.cpp: /Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/Q
 		/Developer/Qt5.8/5.8/clang_64/bin/moc
 	/Developer/Qt5.8/5.8/clang_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/Developer/Qt5.8/5.8/clang_64/mkspecs/macx-clang -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers -I/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers -I/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/6.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include -F/Developer/Qt5.8/5.8/clang_64/lib stimuli.h -o moc_stimuli.cpp
 
-moc_imageViewer.cpp: /Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QScrollArea \
+moc_imageviewer.cpp: /Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QScrollArea \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qscrollarea.h \
-		imageViewer.h \
+		imageviewer.h \
 		moc_predefs.h \
 		/Developer/Qt5.8/5.8/clang_64/bin/moc
-	/Developer/Qt5.8/5.8/clang_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/Developer/Qt5.8/5.8/clang_64/mkspecs/macx-clang -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers -I/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers -I/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/6.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include -F/Developer/Qt5.8/5.8/clang_64/lib imageViewer.h -o moc_imageViewer.cpp
+	/Developer/Qt5.8/5.8/clang_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/Developer/Qt5.8/5.8/clang_64/mkspecs/macx-clang -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers -I/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers -I/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/6.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include -F/Developer/Qt5.8/5.8/clang_64/lib imageviewer.h -o moc_imageviewer.cpp
 
 moc_syntaxHighlighters.cpp: /Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/QSyntaxHighlighter \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/qsyntaxhighlighter.h \
@@ -1327,7 +1327,7 @@ compilerOptions.o: compilerOptions.cpp /Developer/Qt5.8/5.8/clang_64/lib/QtWidge
 		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qvariant.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o compilerOptions.o compilerOptions.cpp
 
-imageViewer.o: imageViewer.cpp /Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QtWidgets \
+imageviewer.o: imageviewer.cpp /Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QtWidgets \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qtwidgetsglobal.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qabstractbutton.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qabstractitemdelegate.h \
@@ -1563,7 +1563,7 @@ imageViewer.o: imageViewer.cpp /Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.frame
 		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/qwindowdefs.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/qtguiversion.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtGui.framework/Headers/QPainter
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o imageViewer.o imageViewer.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o imageviewer.o imageviewer.cpp
 
 debug.o: debug.cpp /Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/QtGlobal \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtCore.framework/Headers/qglobal.h \
@@ -1655,7 +1655,7 @@ mainwindow.o: mainwindow.cpp transition.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QStatusBar \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qstatusbar.h \
 		command.h \
-		imageViewer.h \
+		imageviewer.h \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/QScrollArea \
 		/Developer/Qt5.8/5.8/clang_64/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		syntaxHighlighters.h \
@@ -1811,8 +1811,8 @@ moc_properties.o: moc_properties.cpp
 moc_stimuli.o: moc_stimuli.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_stimuli.o moc_stimuli.cpp
 
-moc_imageViewer.o: moc_imageViewer.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_imageViewer.o moc_imageViewer.cpp
+moc_imageviewer.o: moc_imageviewer.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_imageviewer.o moc_imageviewer.cpp
 
 moc_syntaxHighlighters.o: moc_syntaxHighlighters.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_syntaxHighlighters.o moc_syntaxHighlighters.cpp

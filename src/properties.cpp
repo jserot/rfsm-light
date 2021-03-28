@@ -59,6 +59,7 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 
     connect(model_name_field, &QLineEdit::textEdited, this, &PropertiesPanel::setModelName);
     connect(state_name_field, &QLineEdit::textEdited, this, &PropertiesPanel::setStateName);
+    connect(state_attr_field, &QLineEdit::textEdited, this, &PropertiesPanel::setStateAttr);
     connect(transition_start_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionSrcState);
     connect(transition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionDstState);
     connect(transition_event_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionEvent);
@@ -147,14 +148,19 @@ void PropertiesPanel::createIoPanel()
 void PropertiesPanel::createStatePanel()
 {
     state_panel = new QGroupBox("State properties");
-    QVBoxLayout* statePanelLayout = new QVBoxLayout();
+    QGridLayout* statePanelLayout = new QGridLayout();
     state_panel->setMaximumHeight(100);
     //state_panel->setMinimumWidth(200);
 
     QLabel* nameLabel = new QLabel("Name");
     state_name_field = new QLineEdit();
-    statePanelLayout->addWidget(nameLabel);
-    statePanelLayout->addWidget(state_name_field);
+    statePanelLayout->addWidget(nameLabel, 0, 0, 1, 1);
+    statePanelLayout->addWidget(state_name_field, 0, 1, 1, 1);
+
+    QLabel* attrLabel = new QLabel("Output valuations");
+    state_attr_field = new QLineEdit();
+    statePanelLayout->addWidget(attrLabel, 1, 0, 1, 1);
+    statePanelLayout->addWidget(state_attr_field, 1, 1, 1, 1);
 
     state_panel->setLayout(statePanelLayout);
 }
@@ -230,6 +236,7 @@ void PropertiesPanel::setSelectedItem(State* state)
       selected_item = state;
       state_panel->show();
       state_name_field->setText(state->getId());
+      state_attr_field->setText(state->getAttr());
       }
 }
 
@@ -364,6 +371,16 @@ void PropertiesPanel::setStateName(const QString& name)
     State* state = qgraphicsitem_cast<State*>(selected_item);
     if(state != nullptr) {
         state->setId(name);
+        main_window->getFsm()->update();
+        main_window->setUnsavedChanges(true);
+    }
+}
+
+void PropertiesPanel::setStateAttr(const QString& attr)
+{
+    State* state = qgraphicsitem_cast<State*>(selected_item);
+    if(state != nullptr) {
+        state->setAttr(attr);
         main_window->getFsm()->update();
         main_window->setUnsavedChanges(true);
     }

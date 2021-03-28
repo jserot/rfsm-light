@@ -15,7 +15,6 @@
 - Allow resizing of state boxes
 - Change cursor shape according to currently selected tool
 - Draw state boxes with round corners
-- Add properties (labels) to states ?
 
 BUILD
 - use cmake ?
