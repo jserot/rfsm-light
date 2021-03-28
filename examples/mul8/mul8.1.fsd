@@ -1,0 +1,113 @@
+{
+  "ios": [
+    {
+      "desc": "",
+      "kind": "var",
+      "name": "a",
+      "type": "int<8>"
+    },
+    {
+      "desc": "",
+      "kind": "var",
+      "name": "acc",
+      "type": "int<16>"
+    },
+    {
+      "desc": "",
+      "kind": "var",
+      "name": "b",
+      "type": "int<8>"
+    },
+    {
+      "desc": "Periodic 10 10 100",
+      "kind": "in",
+      "name": "h",
+      "type": "event"
+    },
+    {
+      "desc": "ValueChanges 20:6",
+      "kind": "in",
+      "name": "n1",
+      "type": "int<8>"
+    },
+    {
+      "desc": "ValueChanges 20:5",
+      "kind": "in",
+      "name": "n2",
+      "type": "int<8>"
+    },
+    {
+      "desc": "",
+      "kind": "out",
+      "name": "r",
+      "type": "int<16>"
+    },
+    {
+      "desc": "",
+      "kind": "out",
+      "name": "rdy",
+      "type": "bool"
+    },
+    {
+      "desc": "ValueChanges 0:0 15:1 35:0",
+      "kind": "in",
+      "name": "start",
+      "type": "bool"
+    }
+  ],
+  "name": "mul8",
+  "states": [
+    {
+      "attr": "",
+      "id": "_init",
+      "x": 154.0,
+      "y": 103.0
+    },
+    {
+      "attr": "rdy=0",
+      "id": "Compute",
+      "x": 224.0,
+      "y": 399.0
+    },
+    {
+      "attr": "rdy=1",
+      "id": "Idle",
+      "x": 232.0,
+      "y": 164.0
+    }
+  ],
+  "transitions": [
+    {
+      "actions": "b:=b-1,acc:=acc+a::int<16>",
+      "dst_state": "Compute",
+      "event": "h",
+      "guard": "b>0",
+      "location": 3,
+      "src_state": "Compute"
+    },
+    {
+      "actions": "r:=acc",
+      "dst_state": "Idle",
+      "event": "h",
+      "guard": "b=0",
+      "location": 0,
+      "src_state": "Compute"
+    },
+    {
+      "actions": "a:=n1,b:=n2,acc:=0",
+      "dst_state": "Compute",
+      "event": "h",
+      "guard": "start=1",
+      "location": 0,
+      "src_state": "Idle"
+    },
+    {
+      "actions": "",
+      "dst_state": "Idle",
+      "event": "",
+      "guard": "",
+      "location": 0,
+      "src_state": "_init"
+    }
+  ]
+}
