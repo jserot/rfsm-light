@@ -1,6 +1,6 @@
 # Changes
 
-# 1.1.0 (Sep 25, 2019)
+# 1.1.0 (Mar 30, 2021)
 
 * Allow output valuations to be attached to states 
 
