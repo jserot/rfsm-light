@@ -25,6 +25,7 @@
 #include <QVariant>
 
 QString MainWindow::title = "RFSM Light";
+QString MainWindow::version = "1.1.0";
 int MainWindow::canvas_width = 1000;
 int MainWindow::canvas_height = 1000;
 
@@ -156,8 +157,9 @@ void MainWindow::about()
     QMessageBox::about(this,
       tr("About RFSM Light"),
       tr("<p>Finite State Diagram Editor, Simulator and Compiler</p>\
+          <p>version 1.1.0</p>\
          <p><a href=\"github.com/jserot/rfsm-light\">github.com/jserot/rfsm-light</a></p>\
-         <p>(C) J. Sérot (jocelyn.serot@uca.fr), 2019"));
+         <p>(C) J. Sérot (jocelyn.serot@uca.fr), 2019-2021"));
 }
 
 // Actions

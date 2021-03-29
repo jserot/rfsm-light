@@ -5,7 +5,7 @@
 - Allow resizing of the main canvas 
 - Fix toolbars alignment (left, center, right)
 - VHDL and SystemC syntax highlighters
-- Less-minimalistic About dialog
+- Automatic adjustement of version number in About window
 - Use Dot widget instead of translating to gif via external command (links in etc/doc)
 - Export to SCXML ?
 - Allow attachement of priorities to transitions
