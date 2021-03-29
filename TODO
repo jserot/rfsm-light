@@ -1,6 +1,3 @@
-* DIST
-- update windows install guide (currently simply copied from Rfsm)
-
 * GUI
 - Allow resizing of the main canvas 
 - Fix toolbars alignment (left, center, right)
