@@ -22,37 +22,32 @@
   "name": "chrono",
   "states": [
     {
-      "id": "_init",
-      "x": 130.0,
-      "y": 102.0
+      "attr": "",
+      "id": "Stopped",
+      "x": 228.0,
+      "y": 158.0
     },
     {
+      "attr": "",
       "id": "Running",
       "x": 230.0,
       "y": 362.0
     },
     {
-      "id": "Stopped",
-      "x": 228.0,
-      "y": 158.0
+      "attr": "",
+      "id": "_init",
+      "x": 130.0,
+      "y": 102.0
     }
   ],
   "transitions": [
     {
-      "actions": "c:=c+1",
-      "dst_state": "Running",
-      "event": "h",
-      "guard": "",
-      "location": 3,
-      "src_state": "Running"
-    },
-    {
       "actions": "",
       "dst_state": "Stopped",
-      "event": "startStop",
+      "event": "",
       "guard": "",
       "location": 0,
-      "src_state": "Running"
+      "src_state": "_init"
     },
     {
       "actions": "c:=0",
@@ -65,10 +60,18 @@
     {
       "actions": "",
       "dst_state": "Stopped",
-      "event": "",
+      "event": "startStop",
       "guard": "",
       "location": 0,
-      "src_state": "_init"
+      "src_state": "Running"
+    },
+    {
+      "actions": "c:=c+1",
+      "dst_state": "Running",
+      "event": "h",
+      "guard": "",
+      "location": 3,
+      "src_state": "Running"
     }
   ]
 }
