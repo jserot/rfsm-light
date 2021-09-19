@@ -76,8 +76,6 @@ RFSMC_SRC_DIR=/Users/jserot/Dev/ml/rfsm/rfsmc
 
 win-pre:
 	@echo "** Preparing Windows version.."
-	@echo "** Cleaning source directory.."
-	make clobber
 	@echo "Building documentation"
 	(cd doc; make)
 	@echo "** Copying source tree"
