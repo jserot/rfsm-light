@@ -1,0 +1,14 @@
+(executable
+ (name rfsmlint)
+ (flags (-w -37))
+ (link_flags (-linkall))
+ (libraries yojson ppx_deriving_yojson.runtime)
+ (preprocess (pps ppx_deriving.show ppx_deriving_yojson))
+ (modes byte native))
+
+(ocamllex
+  (modules lexer))
+
+(menhir
+  (modules parsers)
+  (flags (--base foo) (--explain)))

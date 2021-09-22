@@ -67,9 +67,9 @@ private slots:
     void editDiagram(QAction *);    
     void quit();
     void about();
-    bool checkModel(bool withTestBench);
-    void checkModelOnly();
-    void checkTestbench();
+    bool checkSyntax(bool withStimuli);
+    bool checkSyntaxWithStimuli();
+    bool checkSyntaxWithoutStimuli();
     void generateDot();
     void generateRfsmModel();
     void generateRfsmTestbench();
@@ -123,8 +123,8 @@ private:
     QAction *saveFileAsAction;
     QAction *aboutAction;
     QAction *exitAction;
-    QAction *checkModelAction;
-    QAction *checkTestbenchAction;
+    QAction *checkSyntaxWithoutStimuliAction;
+    QAction *checkSyntaxWithStimuliAction;
     QAction *generateDotAction;
     QAction *generateRfsmModelAction;
     QAction *generateRfsmTestbenchAction;

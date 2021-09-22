@@ -1,0 +1,12 @@
+(executable
+ (name parse)
+ (flags (-w -37))
+ (link_flags (-linkall))
+ (preprocess (pps ppx_deriving.show))
+ (modes byte))
+
+(ocamllex
+  (modules lexer))
+
+(menhir
+  (modules parsers))

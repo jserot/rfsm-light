@@ -304,54 +304,55 @@ bool Fsm::isItemChange(int type)
 }
 
 // Checking
+// Now carried out externally with the [rfsmlint] tool
 
-void Fsm::check_state(State *s)
-{
-  if ( ! states().contains(s) ) 
-    throw std::invalid_argument(std::string("Fsm::check_state: invalid state"));
-}
+// void Fsm::check_state(State *s)
+// {
+//   if ( ! states().contains(s) ) 
+//     throw std::invalid_argument(std::string("Fsm::check_state: invalid state"));
+// }
 
-void Fsm::check_transition(Transition *t)
-{
-  check_state(t->srcState());
-  check_state(t->dstState());
-  if ( ! t->isInitial() && t->getEvent() == "" )
-    throw std::invalid_argument(std::string( "No trigerring event for transition " + t->toString().toStdString()));
-}
+// void Fsm::check_transition(Transition *t)
+// {
+//   check_state(t->srcState());
+//   check_state(t->dstState());
+//   if ( ! t->isInitial() && t->getEvent() == "" )
+//     throw std::invalid_argument(std::string( "No trigerring event for transition " + t->toString().toStdString()));
+// }
 
-void Fsm::check_model(bool withStimuli)
-{
-  if ( name().isEmpty() ) 
-    throw std::invalid_argument(std::string("No name specified for model"));
-  if ( ! hasPseudoState() )
-    throw std::invalid_argument(std::string("No initial state specified"));
+// void Fsm::check_model(bool withStimuli)
+// {
+//   if ( name().isEmpty() ) 
+//     throw std::invalid_argument(std::string("No name specified for model"));
+//   if ( ! hasPseudoState() )
+//     throw std::invalid_argument(std::string("No initial state specified"));
 
-  QStringList inpEvents;
-  for(const auto io : this->myIos.values()) {
-    if ( ! io->name().at(0).isLower() )
-      throw std::invalid_argument(std::string("Identifier \"" + io->name().toStdString() + "\" does not start with a lowercase letter"));
-    if ( io->kind() == "in" && io->type() == "event" )
-      inpEvents.append(io->name());
-    }
-  if ( inpEvents.length() == 0 )
-    throw std::invalid_argument(std::string("No input event"));
+//   QStringList inpEvents;
+//   for(const auto io : this->myIos.values()) {
+//     if ( ! io->name().at(0).isLower() )
+//       throw std::invalid_argument(std::string("Identifier \"" + io->name().toStdString() + "\" does not start with a lowercase letter"));
+//     if ( io->kind() == "in" && io->type() == "event" )
+//       inpEvents.append(io->name());
+//     }
+//   if ( inpEvents.length() == 0 )
+//     throw std::invalid_argument(std::string("No input event"));
 
-  for ( Transition* t : transitions() ) {
-      check_transition(t);
-      if (  ! t->isInitial() && ! inpEvents.contains(t->getEvent()) )
-        throw std::invalid_argument(std::string(
-          "Trigerring event for transition " + t->toString().toStdString() + " is not listed as input"));
-    }
+//   for ( Transition* t : transitions() ) {
+//       check_transition(t);
+//       if (  ! t->isInitial() && ! inpEvents.contains(t->getEvent()) )
+//         throw std::invalid_argument(std::string(
+//           "Trigerring event for transition " + t->toString().toStdString() + " is not listed as input"));
+//     }
 
-  if ( withStimuli ) {
-    for( FsmIo* io : myIos.values()) {
-      if ( io->kind() == "in" ) {
-        if ( io->desc().kind() == Stimulus::None ) 
-          throw std::invalid_argument(std::string("No stimulus for input " + io->name().toStdString()));
-        }
-      }
-    }
-}
+//   if ( withStimuli ) {
+//     for( FsmIo* io : myIos.values()) {
+//       if ( io->kind() == "in" ) {
+//         if ( io->desc().kind() == Stimulus::None ) 
+//           throw std::invalid_argument(std::string("No stimulus for input " + io->name().toStdString()));
+//         }
+//       }
+//     }
+// }
 
 // Reading and saving
 

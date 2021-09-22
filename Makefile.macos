@@ -17,13 +17,20 @@ RFSMC_SRC_DIR=/Users/jserot/Dev/ml/rfsm/rfsmc
 
 .PHONY: build install installer
 
-all: build
+all: build-gui build-tools build-doc
 
 INSTALL_DIR=/tmp/rfsm-light
 
-build:
-	@echo "** Building"
+build-gui:
+	@echo "** Building GUI"
 	(cd src; $(QMAKE) -spec macx-clang -o Makefile main.pro CONFIG+=x86_64; make)
+
+build-tools:
+	@echo "** Building tools"
+	(cd tools/rfsmlint; make)
+
+build-doc:
+	@echo "** Building doc"
 	(cd doc; make)
 
 CHANGES.txt: CHANGES.md
@@ -37,6 +44,7 @@ install: CHANGES.txt README.txt
 	mkdir $(INSTALL_DIR)
 	cp -r src/rfsm-light.app $(INSTALL_DIR)/RfsmLight.app
 	cp $(RFSMC) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmc
+	cp tools/rfsmlint/_build/default/rfsmlint.exe $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmlint
 	cp $(RFSMMAKE) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmmake
 	cp ./dist/macos/rfsm-light.ini $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
 	cp ./etc/options_spec.txt $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS

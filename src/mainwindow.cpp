@@ -25,7 +25,7 @@
 #include <QVariant>
 
 QString MainWindow::title = "RFSM Light";
-QString MainWindow::version = "1.1.0";
+QString MainWindow::version = "1.2.0";  // Warning : must also be adjusted manually for the About panel
 int MainWindow::canvas_width = 1000;
 int MainWindow::canvas_height = 1000;
 
@@ -157,7 +157,7 @@ void MainWindow::about()
     QMessageBox::about(this,
       tr("About RFSM Light"),
       tr("<p>Finite State Diagram Editor, Simulator and Compiler</p>\
-          <p>version 1.1.0</p>\
+          <p>version 1.2.0</p>\
          <p><a href=\"github.com/jserot/rfsm-light\">github.com/jserot/rfsm-light</a></p>\
          <p>(C) J. Sérot (jocelyn.serot@uca.fr), 2019-2021"));
 }
@@ -193,13 +193,13 @@ void MainWindow::createActions()
     exitAction->setShortcuts(QKeySequence::Quit);
     connect(exitAction, SIGNAL(triggered()), this, SLOT(quit()));
 
-    checkModelAction = new QAction(tr("Check model"), this);
-    checkModelAction->setShortcut(tr("Ctrl+K"));
-    connect(checkModelAction, SIGNAL(triggered()), this, SLOT(checkModelOnly()));
+    checkSyntaxWithoutStimuliAction = new QAction(tr("Check model only "), this);
+    checkSyntaxWithoutStimuliAction->setShortcut(tr("Ctrl+K"));
+    connect(checkSyntaxWithoutStimuliAction, SIGNAL(triggered()), this, SLOT(checkSyntaxWithoutStimuli()));
 
-    checkTestbenchAction = new QAction(tr("Check testbench "), this);
-    checkTestbenchAction->setShortcut(tr("Ctrl+Shift+K"));
-    connect(checkTestbenchAction, SIGNAL(triggered()), this, SLOT(checkTestbench()));
+    checkSyntaxWithStimuliAction = new QAction(tr("Check model and stimuli"), this);
+    checkSyntaxWithStimuliAction->setShortcut(tr("Ctrl+Shift+K"));
+    connect(checkSyntaxWithStimuliAction, SIGNAL(triggered()), this, SLOT(checkSyntaxWithStimuli()));
 
     generateDotAction = new QAction(QIcon(":/images/compileDot.png"), tr("Generate DOT representation"), this);
     generateDotAction->setToolTip(tr("Generate DOT representation"));
@@ -342,8 +342,8 @@ void MainWindow::createMenus()
     fileMenu->addAction(exitAction);
 
     checkMenu = menuBar()->addMenu(tr("&Check"));
-    checkMenu->addAction(checkModelAction);
-    checkMenu->addAction(checkTestbenchAction);
+    checkMenu->addAction(checkSyntaxWithoutStimuliAction);
+    checkMenu->addAction(checkSyntaxWithStimuliAction);
 
     buildMenu = menuBar()->addMenu(tr("&Build"));
     buildMenu->addAction(generateDotAction);
@@ -450,22 +450,28 @@ void MainWindow::openFile()
     setUnsavedChanges(false);
 }
 
-// Model checking
+// Interface to the external syntax verifier
 
-void MainWindow::checkModelOnly() { checkModel(false); }
-void MainWindow::checkTestbench() { checkModel(true); }
-
-bool MainWindow::checkModel(bool withTestBench)
+bool MainWindow::checkSyntax(bool withStimuli)
 {
-  try {
-    fsm->check_model(withTestBench);
-    }
-  catch (const std::exception& e) {
-    QMessageBox::warning(this, "Checking failed", QString(e.what()));
-    return false;
-    }
-  return true;
+  save();
+  QFileInfo fi(currentFileName);
+  QString wDir = fi.absolutePath();
+  QString compiler = compilerPaths->getPath("SYNTAXCHECKER");
+  if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmlint"; // Last chance..
+  QString opts = withStimuli ? " " : " -no_stimuli ";
+  CommandLine cmd(compiler, opts + currentFileName);
+  qDebug() << "syntax checking command: " << cmd.toString();
+  compileErrors.clear();
+  bool ok = executeCmd(wDir, cmd.toString());
+  qDebug() << "syntax checking result is " << ok << " (" << compileErrors << ")";
+  if ( ! ok ) QMessageBox::warning(this, "", compileErrors);
+  return ok;
 }
+
+bool MainWindow::checkSyntaxWithStimuli() { return checkSyntax(true); }
+bool MainWindow::checkSyntaxWithoutStimuli() { return checkSyntax(false); }
+
 
 void MainWindow::newDiagram()
 {
@@ -534,9 +540,9 @@ void MainWindow::generateDot()
   openResultFile(rFname);
 }
 
-QString MainWindow::generateRfsm(bool withTestbench) // TODO : factorize
+QString MainWindow::generateRfsm(bool withTestbench ) // TODO : factorize
 {
-  if ( ! checkModel(withTestbench) ) return "";
+  if ( ! checkSyntax(withTestbench) ) return "";
   QString sFname = getCurrentFileName();
   if ( sFname.isEmpty() ) return "";
   QString rFname = changeSuffix(sFname, ".fsm");

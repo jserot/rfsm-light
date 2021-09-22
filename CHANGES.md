@@ -1,5 +1,9 @@
 # Changes
 
+# 1.2.0 (Sep 20, 2021)
+
+* Added external syntax verifier (`rfsmlint`) 
+
 # 1.1.0 (Mar 30, 2021)
 
 * Allow output valuations to be attached to states 

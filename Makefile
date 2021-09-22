@@ -3,7 +3,7 @@ include platform
 
 QMAKE=qmake
 
-.PHONY: build install clean
+.PHONY: build install clean doc
 
 all: build
 
@@ -21,7 +21,7 @@ endif
 
 doc: 
 ifeq ($(BUILD_DOC),yes)
-	(cd doc/um; make)
+	(cd doc; make)
 endif
 
 html:
@@ -64,6 +64,7 @@ macos-dist:
 	make clobber
 #	@echo "** Configuring for MacOS distribution"
 #	./configure -platform macos -dot "dot" -dotviewer "open -a Graphviz" -vcdviewer "open -a gtkwave" -txtviewer "open"
+	make doc
 	make -f Makefile.macos build
 	make -f Makefile.macos install
 	make -f Makefile.macos installer

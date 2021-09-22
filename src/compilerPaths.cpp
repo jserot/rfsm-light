@@ -34,6 +34,7 @@ void CompilerPaths::setDefaults()
 {
   paths.clear();
   paths.insert("COMPILER", "rfsmc"); // Default values ...
+  paths.insert("SYNTAXCHECKER", "rfsmlint"); // Default values ...
   paths.insert("DOTPROGRAM", "dot");
   paths.insert("DOTVIEWER", "graphviz");
   paths.insert("VCDVIEWER", "gtkwave");
