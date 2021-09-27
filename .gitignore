@@ -13,7 +13,7 @@ README.txt
 README.html
 doc/Using.txt
 doc/Using.html
-HOWTO
+HOWTO.md
 config
 config-stamp
 *.dvi

@@ -1,9 +1,9 @@
 [Setup]
 AppId={{5D1BF4DD-8593-48B4-96CA-0225513733D7}
 AppName=RfsmLight
-AppVersion=1.0.0
+AppVersion=1.2.0
 AppContact=jocelyn.serot@uca.fr
-AppCopyright=Copyright (C) 2019 J. Serot
+AppCopyright=Copyright (C) 2019-2021 J. Serot
 AppPublisher=J. Serot / Clermont-Auvergne University
 AppPublisherURL=https://github.com/jserot/rfsm-light
 LicenseFile=F:/Qt/rfsm-light/LICENSE
@@ -13,7 +13,7 @@ DefaultGroupName=RfsmLight
 Compression=none
 ;Compression=lzma2
 ;SolidCompression=yes
-OutputBaseFilename=RfsmLight-1.0.0_setup
+OutputBaseFilename=RfsmLight-1.2.0_setup
 OutputDir=.
 WizardImageFile=F:\Qt\rfsm-light\build\rfsm.bmp
 WizardSmallImageFile=F:\Qt\rfsm-light\build\rfsm_small.bmp
@@ -36,6 +36,7 @@ Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "COMPILER"; String: 
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "DOTPROGRAM"; String: "{code:GetFiles|0}"
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "DOTVIEWER"; String: "{code:GetFiles|1}"
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "VCDVIEWER"; String: "{code:GetFiles|2}"
+Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "SYNTAXCHECKER"; String: "{app}\rfsmlint"
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Key: "INITDIR"; String: "{code:GetDirs|0}\RfsmLightExamples"
 
 [UninstallDelete]
