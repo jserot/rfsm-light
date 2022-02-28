@@ -52,9 +52,9 @@ rule main = parse
   | '-' { MINUS }
   | '*' { TIMES }
   | '/' { DIV }
-  (* | '&' { LAND }
-   * | "||" { LOR }
-   * | '^' { LXOR } *)
+  | '&' { LAND }
+  | "||" { LOR }
+  | '^' { LXOR }
   | ">>" { SHR }
   | "<<" { SHL }
   | eof { EOF }

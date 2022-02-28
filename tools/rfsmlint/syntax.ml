@@ -24,8 +24,20 @@ type guard = expr list
 
 type action =
   | Emit of string
-  | Assign of string * expr
+  | Assign of lhs * expr
   [@@deriving show { with_path=false }]
+
+and lhs = 
+  | LhsVar of string                     (* v := ... *)
+  | LhsArrInd of string * expr           (* v[i] := ... when v is an array *)
+  | LhsArrRange of string * expr * expr  (* v[hi:lo] := ... when v is an int *)
+  (* TO BE EXTENDED if needed ... *)
+  [@@deriving show { with_path=false }]
+
+let lhs_name l = match l with
+| LhsVar v -> v
+| LhsArrInd (v,_) -> v
+| LhsArrRange (v,_,_) -> v
 
 type actions = action list
   [@@deriving show { with_path=false }]

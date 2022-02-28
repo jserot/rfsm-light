@@ -43,7 +43,7 @@ let check_stimuli io =
   else
     match parse_stimuli io.io_desc with
     | Syntax.Periodic (p,t1,t2) ->
-       if t1 < t2 then ()
+       if t2 > t1 then ()
        else raise (Invalid_stimuli (io.io_name, "periodic", "t1 >= t2"))
     | Syntax.Sporadic ts ->
        if Misc.is_ordered ts then ()
@@ -51,8 +51,9 @@ let check_stimuli io =
     | Syntax.ValueChanges vcs ->
        if Misc.is_ordered @@ List.map fst vcs then ()
        else raise (Invalid_stimuli (io.io_name, "value changes", "out of order event dates"))
-    | exception _ ->
-       raise (Illegal_stimuli (io.io_name, io.io_desc))
+    | exception e ->
+       raise e
+       (* raise (Illegal_stimuli (io.io_name, io.io_desc)) *)
 
 let check_type id ty = 
   try ignore (parse_type ty)
@@ -102,7 +103,8 @@ let check_action ios action =
           if kind <> "out" then raise (Illegal_event_ref (e, ctx))
        | None -> raise (Undefined_symbol (e,ctx))
      end
-  | Assign (v,e) ->
+  | Assign (lhs,e) ->
+     let v = lhs_name lhs in
      let ctx' = "the left-hand side of " ^ ctx in
      let ctx'' = "the right-hand side of " ^ ctx in
       begin 

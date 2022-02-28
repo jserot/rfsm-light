@@ -19,7 +19,7 @@
 %token GTE
 %token PLUS MINUS TIMES DIV
 %token SHL SHR
-(* %token LAND LOR LXOR *)
+%token LAND LOR LXOR
 (* %token BARBAR *)
 %token COLEQ
 %token TYEVENT
@@ -58,12 +58,12 @@ expr:
       { EBinop (">>", e1, e2) }
   | e1 = expr SHL e2 = expr
       { EBinop ("<<", e1, e2) }
-  (* | e1 = expr LAND e2 = expr
-   *     { EBinop ("&", e1, e2) }
-   * | e1 = expr LOR e2 = expr
-   *     { EBinop ("|", e1, e2) }
-   * | e1 = expr LXOR e2 = expr
-   *     { EBinop ("^", e1, e2) } *)
+  | e1 = expr LAND e2 = expr
+      { EBinop ("&", e1, e2) }
+  | e1 = expr LOR e2 = expr
+      { EBinop ("|", e1, e2) }
+  | e1 = expr LXOR e2 = expr
+      { EBinop ("^", e1, e2) }
   | e1 = expr PLUS e2 = expr
       { EBinop ("+", e1, e2) }
   | e1 = expr MINUS e2 = expr
@@ -120,7 +120,9 @@ guard:
 
 action:
   | e=LID EOF { Emit e }
-  | v=LID COLEQ e=expr EOF { Assign (v,e) }
+  | v=LID COLEQ e=expr EOF { Assign (LhsVar v,e) }
+  | v=LID LBRACKET i=expr RBRACKET COLEQ e=expr EOF { Assign(LhsArrInd(v,i),e) }
+  | v=LID LBRACKET hi=expr COLON lo=expr RBRACKET COLEQ e=expr EOF { Assign(LhsArrRange(v,hi,lo),e) }
 
 (* actions: 
  *   | acts=separated_list(COMMA, action) EOF { acts } *)
