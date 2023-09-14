@@ -1,11 +1,11 @@
 [*]
 [*] GTKWave Analyzer v3.3.54 (w)1999-2014 BSI
-[*] Wed Sep 13 16:25:16 2023
+[*] Wed Sep 13 16:31:56 2023
 [*]
 [dumpfile] "/Users/jserot/Dev/Qt/rfsm-light/examples/chrono/main.vcd"
-[dumpfile_mtime] "Wed Sep 13 16:24:41 2023"
+[dumpfile_mtime] "Wed Sep 13 16:25:28 2023"
 [dumpfile_size] 587
-[savefile] "/Users/jserot/Dev/Qt/rfsm-light/examples/chrono/chrono.gtkw"
+[savefile] "/Users/jserot/Dev/Qt/rfsm-light/examples/chrono/main.gtkw"
 [timestart] 0
 [size] 1000 600
 [pos] -1 -1
@@ -16,10 +16,11 @@
 [sst_vpaned_height] 168
 @28
 top.h
-top.startStop
 @29
-top.\chrono.state
+top.startStop
 @22
 top.\chrono.c[7:0]
+@28
+top.\chrono.state
 [pattern_trace] 1
 [pattern_trace] 0

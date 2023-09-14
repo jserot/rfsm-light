@@ -52,7 +52,7 @@ QString CompilerOption::getValue()
   }
 }
 
-QString const CompilerOption::toString()
-{
-  return name + "(" + category + "," + kind + "," + desc + ") = " + val.toString();
-}
+// QString const CompilerOption::toString()
+// {
+//   return name + "(" + category + "," + kind + "," + desc + ") = " + val.toString();
+// }

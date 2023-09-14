@@ -234,7 +234,7 @@ void CompilerOptions::saveToFile(QString fname)
     CompilerOption opt = i.value();
     QString v = opt.val.toString();
     if ( ! v.isEmpty() ) 
-      os << i.key() << "=" << v << endl;
+      os << i.key() << "=" << v << Qt::endl;
     }
   os.flush();
   f.close();

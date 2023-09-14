@@ -11,6 +11,7 @@
 /***********************************************************************/
 
 #include "transition.h"
+#include "misc.h"
 #include <math.h>
 #include <QPen>
 #include <QPainter>
@@ -172,18 +173,17 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
         // Iterating over the end box sides to find the intersection (there must be exactly one)
         p2 = endPolygon.at(side) + myDstState->pos();
         polyLine = QLineF(p1, p2);
-        QLineF::IntersectType intersectType = polyLine.intersect(centerLine, &intersectPoint);
+        QLineF::IntersectType intersectType = polyLine.intersects(centerLine, &intersectPoint);
         if (intersectType == QLineF::BoundedIntersection) break;
         p1 = p2;
       }
-
-      // When there are several transitions between the start and end boxes, we don't one to hide another.
+      // When there are several transitions between the start and end boxes, we don't want one to hide another.
       // To avoid this, we count them and assign a rank to each one, which will be used as an offset
       
       QList<Transition*> transitions = mySrcState->getTransitionsTo(myDstState) + myDstState->getTransitionsTo(mySrcState);
       // for ( auto a: transitions ) 
       //   qDebug() << "  " << a->srcState()->getId() << " -> " << a->dstState()->getId();
-      transitions = QSet<Transition*>::fromList(transitions).toList(); // Remove duplicates (probably inefficient but who cares here..)
+      transitions = remove_duplicates(transitions); 
       std::sort(transitions.begin(), transitions.end()); // Sorting ensures that the order does not depend on the start state
       int rank = -1;
       for ( int i=0; i<transitions.length() && rank<0; i++ )

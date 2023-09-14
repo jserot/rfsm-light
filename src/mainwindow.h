@@ -161,15 +161,16 @@ private:
     QToolBar *compileToolBar;
     QToolBar *editToolBar;
 
-    QStringList compile(QString type, QString srcFile, QString baseCmd);
-    QStringList getOutputFiles(QString type, QString wdir);
-    void generate(QString target, QString targetOption, bool withTestbench);
+    QStringList compile(QString target, QString wDir, QString srcFile, QStringList args);
+    QStringList getOutputFiles(QString target, QString wdir);
+    void generate(QString target, bool withTestbench);
+    void customView(QString toolName, QStringList args, QString wDir);
     void customView(QString toolName, QString fname, QString wDir);
     void exportDot();
     void exportRfsmModel();
     void exportRfsmTestbench();
-    void dotTransform(QFileInfo f, QString wDir);
-    bool executeCmd(QString wDir, QString cmd, bool sync=true);
+    bool dotTransform(QFileInfo f, QString wDir);
+    bool executeCmd(QString wDir, QString cmd, QStringList args, bool sync=true);
     void scaleImage(double factor);
 
     bool unsaved_changes;

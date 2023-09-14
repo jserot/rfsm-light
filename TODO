@@ -13,6 +13,9 @@
 - Change cursor shape according to currently selected tool
 - Draw state boxes with round corners
 
+TOOLS
+- rfsmlint : add xor, land, ... ops (cf .../cours/vhdl/td/2023/td3/src/rxd/rxd.fsd) 
+
 BUILD
 - use cmake ?
 

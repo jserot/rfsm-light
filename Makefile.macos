@@ -2,7 +2,7 @@
 
 include VERSION
 
-QMAKE=/Developer/Qt5.8/5.8/clang_64/bin/qmake
+QMAKE=/Users/jserot/Qt/6.3.1/macos/bin/qmake
 
 DOTPROGRAM="dot"
 DOTVIEWER="open -a Graphviz"
@@ -17,13 +17,13 @@ RFSMC_SRC_DIR=/Users/jserot/Dev/ml/rfsm/rfsmc
 
 .PHONY: build install installer
 
-all: build-gui build-tools build-doc
+all: build-gui # build-tools build-doc
 
 INSTALL_DIR=/tmp/rfsm-light
 
 build-gui:
 	@echo "** Building GUI"
-	(cd src; $(QMAKE) -spec macx-clang -o Makefile main.pro CONFIG+=x86_64; make)
+	(cd src; $(QMAKE) -spec macx-clang -o Makefile main.pro CONFIG+=arm64; make)
 
 build-tools:
 	@echo "** Building tools"

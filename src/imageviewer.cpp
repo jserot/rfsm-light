@@ -36,8 +36,9 @@ ImageViewer::ImageViewer(QWidget *parent) : QScrollArea(parent)
 void ImageViewer::scaleImage(double scaleFactor)
 {
   if ( scaleFactor > maxScaleFactor || scaleFactor < minScaleFactor) return;
-  Q_ASSERT(imageLabel->pixmap());
-  imageLabel->resize( scaleFactor * imageLabel->pixmap()->size());
+  Q_ASSERT(imageIsLoaded);
+  //Q_ASSERT(imageLabel->pixmap());
+  imageLabel->resize( scaleFactor * imageLabel->pixmap().size());
   adjustScrollBar(this->horizontalScrollBar(), scaleFactor);
   adjustScrollBar(this->verticalScrollBar(), scaleFactor);
   update();

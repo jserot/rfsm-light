@@ -377,7 +377,7 @@ void Fsm::readFromFile(QString fname)
 
     myName = QString::fromStdString(json.at("name"));
 
-    for ( const auto json_io : json.at("ios") ) {
+    for ( const auto & json_io : json.at("ios") ) {
       std::string name = json_io.at("name");
       std::string kind = json_io.at("kind");
       std::string type = json_io.at("type");
@@ -386,7 +386,7 @@ void Fsm::readFromFile(QString fname)
             QString::fromStdString(type), QString::fromStdString(desc));
       }
 
-    for ( const auto json_state : json.at("states") ) {
+    for ( const auto & json_state : json.at("states") ) {
       std::string id = json_state.at("id");
       std::string attr = json_state.at("attr");
       State* state;
@@ -401,7 +401,7 @@ void Fsm::readFromFile(QString fname)
       stateCounter++;
       }   
 
-    for ( const auto json_transition : json.at("transitions") ) {
+    for ( const auto & json_transition : json.at("transitions") ) {
       std::string src_state = json_transition.at("src_state");
       std::string dst_state = json_transition.at("dst_state");
       std::string event = json_transition.at("event");

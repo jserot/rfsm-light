@@ -14,7 +14,7 @@
 #include "state.h"
 #include "fsm.h"
 #include "mainwindow.h"
-#include "command.h"
+//#include "command.h"
 #include "imageviewer.h"
 #include "syntaxHighlighters.h"
 #include "compilerPaths.h"
@@ -25,7 +25,7 @@
 #include <QVariant>
 
 QString MainWindow::title = "RFSM Light";
-QString MainWindow::version = "1.2.0";  // Warning : must also be adjusted manually for the About panel
+QString MainWindow::version = "1.3.0";  // Warning : must also be adjusted manually for the About panel
 int MainWindow::canvas_width = 1000;
 int MainWindow::canvas_height = 1000;
 
@@ -157,9 +157,9 @@ void MainWindow::about()
     QMessageBox::about(this,
       tr("About RFSM Light"),
       tr("<p>Finite State Diagram Editor, Simulator and Compiler</p>\
-          <p>version 1.2.0</p>\
+          <p>version 1.3.0</p>\
          <p><a href=\"github.com/jserot/rfsm-light\">github.com/jserot/rfsm-light</a></p>\
-         <p>(C) J. Sérot (jocelyn.serot@uca.fr), 2019-2021"));
+         <p>(C) J. Sérot (jocelyn.serot@uca.fr), 2019-now"));
 }
 
 // Actions
@@ -230,7 +230,7 @@ void MainWindow::createActions()
     connect(generateVHDLTestbenchAction, SIGNAL(triggered()), this, SLOT(generateVHDLTestbench()));
 
     runSimulationAction = new QAction(QIcon(":/images/runSimulation.png"),tr("Run simulator"), this);
-    generateVHDLModelAction->setToolTip(tr("Simulate and open VCD viewer"));
+    runSimulationAction->setToolTip(tr("Simulate and open VCD viewer"));
     connect(runSimulationAction, SIGNAL(triggered()), this, SLOT(runSimulation()));
 
     zoomInAction = new QAction(tr("Zoom In"), this);
@@ -459,11 +459,10 @@ bool MainWindow::checkSyntax(bool withStimuli)
   QString wDir = fi.absolutePath();
   QString compiler = compilerPaths->getPath("SYNTAXCHECKER");
   if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmlint"; // Last chance..
-  QString opts = withStimuli ? " " : " -no_stimuli ";
-  CommandLine cmd(compiler, opts + currentFileName);
-  qDebug() << "syntax checking command: " << cmd.toString();
+  QStringList args = { currentFileName };
+  if ( withStimuli == false ) args.append("-no_stimuli"); 
   compileErrors.clear();
-  bool ok = executeCmd(wDir, cmd.toString());
+  bool ok = executeCmd(wDir, compiler, args, true);
   qDebug() << "syntax checking result is " << ok << " (" << compileErrors << ")";
   if ( ! ok ) QMessageBox::warning(this, "", compileErrors);
   return ok;
@@ -471,7 +470,6 @@ bool MainWindow::checkSyntax(bool withStimuli)
 
 bool MainWindow::checkSyntaxWithStimuli() { return checkSyntax(true); }
 bool MainWindow::checkSyntaxWithoutStimuli() { return checkSyntax(false); }
-
 
 void MainWindow::newDiagram()
 {
@@ -646,39 +644,36 @@ void MainWindow::openResultFile(QString fname)
   QString wDir = f.canonicalPath();
   qDebug() << "Displaying file : " << fname;
   QStringList genOpts = compilerOptions->getOptions("general");
+  QStringList args = { fname };
   if ( f.suffix() == "dot" ) {
     if ( genOpts.contains("-dot_external_viewer") )
-      customView("DOTVIEWER", fname, wDir);
+      customView("DOTVIEWER", args, wDir);
     else {
-      dotTransform(f, wDir);
-      openResultFile(changeSuffix(fname, ".gif"));
+      if ( dotTransform(f, wDir) )
+        openResultFile(changeSuffix(fname, ".gif"));
       }
     }
   else if ( f.suffix() == "vcd" ) {
-    QString vcdFileName = changeSuffix(fname, ".vcd");
-    customView("VCDVIEWER", vcdFileName, wDir);
+    QString gFile = changeSuffix(fname, ".gtkw");
+    QFile gf = QFile(gFile);
+    if ( gf.exists() ) args << gFile;
+    customView("VCDVIEWER", args, wDir);
     }
   else {
     addResultTab(fname);
     }
 }
 
-void MainWindow::customView(QString toolName, QString fname, QString wDir)
+void MainWindow::customView(QString toolName, QStringList args, QString wDir)
 {
-   QString toolPath = compilerPaths->getPath(toolName);
-   if ( toolPath.isNull() || toolPath.isEmpty() ) {
+   QString cmd = compilerPaths->getPath(toolName);
+   if ( cmd.isNull() || cmd.isEmpty() ) {
      QMessageBox::warning(this, "", "No path specified for " + toolName);
      return;
      }
-   QFileInfo f(fname);
-   QString sName = f.path () + "/" + f.baseName() + ".gtkw";
-   QFile sFile(sName);
-   QString args = sFile.exists() ? fname + " " + sName : fname;
-   CommandLine cmd(toolPath, args);
-   qDebug() << "customView cmd: " << cmd.toString() << endl;
-   if ( ! executeCmd(wDir, cmd.toString() ) ) {
-     QMessageBox::warning(this, "", "Could not start " + toolName + " : command " + cmd.toString() + " failed");
-     addResultTab(fname);
+   if ( ! executeCmd(wDir, cmd, args, false ) ) {
+     QMessageBox::warning(this, "", "Failed to launch external program " + toolName);
+     //addResultTab(fname);
      }
 }
 
@@ -690,82 +685,84 @@ void MainWindow::resultTabChanged(int index)
 
 // Interface to RFSMC compiler
 
-QStringList MainWindow::compile(QString type, QString sFname, QString baseCmd)
+QStringList MainWindow::compile(QString target, QString wDir, QString sFname, QStringList args)
 {
-  Q_UNUSED(type);
   if ( sFname.isEmpty() ) return QStringList();
-  QString rFname = changeSuffix(sFname, ".c");
-  QFileInfo fi(sFname);
-  QString wDir = fi.absolutePath();
-  // QDir dir(wDir);
-  //qDebug() << "compile: srcFile=" << sFname << " wDir=" << wDir;
+  qDebug() << "compile: srcFile=" << sFname << " wDir=" << wDir;
   QString compiler = compilerPaths->getPath("COMPILER");
   if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmc"; // Last chance..
   // if ( targetDir != "" ) dir.mkdir(targetDir);
   // Clean target directory
   // removeFiles(wDir + "/" + targetDir, eraseFirst);
-  CommandLine cmd(compiler, baseCmd + " " + sFname);
-  qDebug() << "compile command: " << cmd.toString();
   compileErrors.clear();
-  if ( executeCmd(wDir, cmd.toString()) )
-    return getOutputFiles(type, wDir);
+  if ( executeCmd(wDir, compiler, args << sFname, true) )
+    return getOutputFiles(target, wDir);
   else {
     QMessageBox::warning(this, "", "Compilation failed\n" + compileErrors);
     return QStringList();
     }
 }
 
-QStringList MainWindow::getOutputFiles(QString type, QString wDir)
+QStringList MainWindow::getOutputFiles(QString target, QString wDir)
 {
   QString rfile = wDir + "/rfsm.output";
   QFile ff(rfile);
   QStringList res;
+  qDebug() << "Output files: rfile=" << rfile;
   if ( ! ff.exists() ) {
       QMessageBox::warning(NULL, "", "Cannot open file " + rfile);
       return res;
     }
   ff.open(QIODevice::ReadOnly | QIODevice::Text);
-  QTextStream is(&ff);
-  while( ! is.atEnd() ) {
+  if ( target == "sim" )
+    res.append(wDir+"/"+"main.vcd");  // TO FIX : this is a hack while waiting rfsmc to correctly write rsfm.output
+  else {
+    QTextStream is(&ff);
+    while( ! is.atEnd() ) {
       QString of = is.readLine(); // One file per line
       QFileInfo f(of);
-      if (  (type == "systemc" && (f.suffix() == "cpp" || f.suffix() == "h"))
-         || (type == "vhdl" && f.suffix() == "vhd")
-         || (type == "ctask" && f.suffix() == "c")
-         || (type == "dot" && f.suffix() == "dot") 
-         || (type == "sim" && f.suffix() == "vcd") )
-      res.append(wDir+"/"+of);
+      if (  (target == "systemc" && (f.suffix() == "cpp" || f.suffix() == "h"))
+            || (target == "vhdl" && f.suffix() == "vhd")
+            || (target == "ctask" && f.suffix() == "c")
+            || (target == "dot" && f.suffix() == "dot") 
+            || (target == "sim" && f.suffix() == "vcd") )
+        res.append(wDir+"/"+of);
+      }
     }
   ff.close();
-  //qDebug() << "Output files: " << res;
+  qDebug() << "Output files: " << res;
   return res;
 }
 
-void MainWindow::generate(QString target, QString targetOption, bool withTestbench)
+void MainWindow::generate(QString target, bool withTestbench)
 {
   QString fname = generateRfsm(withTestbench);
+  QFileInfo fi(fname);
   if ( fname.isEmpty() ) return;
+  qDebug () << "generate.fname = " << fname;
+  QString wDir = QFileInfo(fname).absolutePath();
   QStringList genOpts = compilerOptions->getOptions("general");
-  QString targetDirOpt;
-  if ( genOpts.contains("-target_dirs") ) {
-    QString targetDir = "./" + target;
-    targetDirOpt += "-target_dir ./" + target + " ";
+  QString targetDir = ".";
+  if ( target != "sim" && genOpts.contains("-target_dirs") ) {
+    targetDir = target;
+    QString targetPath = wDir + "/" + target; // TO FIX : do not use raw, OS-dependent "/" in file path
     genOpts.removeOne("-target_dirs");
-    QDir dir(targetDir);
+    QDir dir(targetPath);
     if ( ! dir.exists() ) {
-      qDebug() << "Creating directory " << targetDir;
-      QDir().mkdir(targetDir);
+      qDebug() << "Creating directory " << targetPath;
+      QDir().mkdir(targetPath);
       }
-  }
-  else
-    targetDirOpt += "-target_dir . ";
-  if ( genOpts.contains("-dot_external_viewer") ) genOpts.removeOne("-dot_external_viewer");
-  QStringList opts = genOpts + compilerOptions->getOptions(target);
-  if ( target == "sim" ) {
-    QFileInfo fi(fname);
-    opts << " -main " + fi.baseName();
     }
-  QStringList resFiles = compile(target, fname, " " + targetOption + " " + targetDirOpt + opts.join(" "));
+  if ( genOpts.contains("-dot_external_viewer") ) genOpts.removeOne("-dot_external_viewer");
+  QStringList args =
+    QStringList()
+    << "-" + target
+    << "-target_dir" << targetDir
+    << genOpts
+    << compilerOptions->getOptions(target);
+  //if ( target == "sim" ) args << "-main" <<  fi.baseName();
+  if ( target == "ctask" || target == "systemc" ) args << "-show_models";
+  QStringList resFiles = compile(target, wDir, fi.fileName(), args);
   if ( ! resFiles.isEmpty() ) {
     logMessage("Generated file(s) : " + resFiles.join(", "));
     foreach ( QString rFile, resFiles) 
@@ -774,49 +771,56 @@ void MainWindow::generate(QString target, QString targetOption, bool withTestben
   updateActions();
 }
 
-void MainWindow::generateCTask() { generate("ctask", "-ctask", false); }
+void MainWindow::generateCTask() { generate("ctask", false); }
 
-void MainWindow::generateSystemCModel() { generate("systemc", "-systemc", false); }
-void MainWindow::generateSystemCTestbench() { generate("systemc", "-systemc", true); }
+void MainWindow::generateSystemCModel() { generate("systemc", false); }
+void MainWindow::generateSystemCTestbench() { generate("systemc", true); }
 
-void MainWindow::generateVHDLModel() { generate("vhdl", "-vhdl", false); }
-void MainWindow::generateVHDLTestbench() { generate("vhdl", "-vhdl", true); }
+void MainWindow::generateVHDLModel() { generate("vhdl", false); }
+void MainWindow::generateVHDLTestbench() { generate("vhdl", true); }
 
-void MainWindow::runSimulation() { generate("sim", "-sim", true); }
+void MainWindow::runSimulation() { generate("sim", true); }
 
-void MainWindow::dotTransform(QFileInfo f, QString wDir)
+bool MainWindow::dotTransform(QFileInfo f, QString wDir)
 {
   QString dotProgram = compilerPaths->getPath("DOTPROGRAM");
   if ( dotProgram.isNull() || dotProgram.isEmpty() ) dotProgram = "dot"; // Last chance..
   QString srcFile = f.filePath();
   QString dstFile = changeSuffix(srcFile, ".gif");
-  QString opts = ""; // getOption("-dot_options");
+  //QString opts = ""; // getOption("-dot_options");
   QString wdir = f.canonicalPath();
-  CommandLine cmd(dotProgram, opts + " -Tgif -o " + dstFile + " " + srcFile);
-  if ( ! executeCmd(wDir, cmd.toString()) )
-    QMessageBox::warning(this, "", "Cannot run DOT program : command " + cmd.toString() + " failed");
+  QStringList args = { "-Tgif",  "-o", dstFile, srcFile };
+  if ( executeCmd(wDir, dotProgram, args, true) )
+    return true;
+  else {
+    //QMessageBox::warning(this, "", "Cannot run DOT program : command " + cmd.toString() + " failed");
+    QMessageBox::warning(this, "", "Failed to run DOT program");
+    return false;
+    }
 }
 
 // External command execution
 
-bool MainWindow::executeCmd(QString wDir, QString cmd, bool sync)
+bool MainWindow::executeCmd(QString wDir, QString cmd, QStringList args, bool sync)
 {
-  bool r = false;
-  qDebug() << "Executing command \"" << cmd << "\" in " << wDir;
-  proc.setWorkingDirectory(wDir);
-  proc.start(cmd);
-  if ( proc.error() == QProcess::FailedToStart ) {
-    qDebug() << "Command failed to start" << endl;
+  QProcess *proc = new QProcess;
+  qDebug() << "executeCmd: wDir=" << wDir << " cmd=" << cmd << " args=" << args;
+  proc->setWorkingDirectory(wDir);
+  proc->start(cmd,args);
+  if ( proc->error() == QProcess::FailedToStart ) {
+    qDebug() << "Command failed to start" << Qt::endl;
     return false;
     }
   if ( sync ) {
-    qDebug() << "executeCmd: waiting for process to finish" << endl;
-    r = proc.waitForFinished(-1);  // No time out
-    if ( r == true ) r = proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 0;
-    proc.kill();
-    proc.close();
-    proc.terminate();
-    return r;
+    bool r = proc->waitForFinished(); 
+    QProcess::ExitStatus s = proc->exitStatus();
+    qDebug() << "executeCmd: finished=" << r;
+    qDebug() << "executeCmd: exit status=" << s;
+    qDebug() << "executeCmd: stderr=" << compileErrors;
+    proc->kill();
+    proc->close();
+    proc->terminate();
+    return r && s == QProcess::NormalExit;
     }
   else { // This does not work :(
     //qDebug() << "executeCmd: async process launched" << endl;

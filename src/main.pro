@@ -4,6 +4,7 @@ INCLUDEPATH += .
 
 QT       += core gui
 QT 		 += widgets
+QT 		 += core5compat
 
 CONFIG += c++11 console
 

@@ -30,7 +30,7 @@ class CompilerOption
   CompilerOption(QString category, QString name, bool val);
 
   QString getValue();
-  QString const toString();
+  //QString const toString();
   
  public:
   QString category;

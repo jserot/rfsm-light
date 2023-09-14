@@ -28,16 +28,10 @@
   "name": "dimp",
   "states": [
     {
-      "attr": "",
-      "id": "_init",
-      "x": 268.0,
-      "y": 66.0
-    },
-    {
-      "attr": "s=1",
-      "id": "E2",
-      "x": 145.0,
-      "y": 480.0
+      "attr": "s=0",
+      "id": "E0",
+      "x": 147.0,
+      "y": 129.0
     },
     {
       "attr": "s=0",
@@ -46,44 +40,26 @@
       "y": 272.0
     },
     {
-      "attr": "s=0",
-      "id": "E0",
-      "x": 147.0,
-      "y": 129.0
+      "attr": "s=1",
+      "id": "E2",
+      "x": 145.0,
+      "y": 480.0
+    },
+    {
+      "attr": "",
+      "id": "_init",
+      "x": 268.0,
+      "y": 66.0
     }
   ],
   "transitions": [
     {
-      "actions": "k:=k-1",
-      "dst_state": "E2",
-      "event": "h",
-      "guard": "k>0",
-      "location": 3,
-      "src_state": "E2"
-    },
-    {
-      "actions": "k:=k+1",
-      "dst_state": "E1",
-      "event": "h",
-      "guard": "e=1",
-      "location": 3,
-      "src_state": "E1"
-    },
-    {
       "actions": "",
       "dst_state": "E0",
-      "event": "h",
-      "guard": "k=0",
+      "event": "",
+      "guard": "",
       "location": 0,
-      "src_state": "E2"
-    },
-    {
-      "actions": "k:=2*k-1",
-      "dst_state": "E2",
-      "event": "h",
-      "guard": "e=0",
-      "location": 0,
-      "src_state": "E1"
+      "src_state": "_init"
     },
     {
       "actions": "k:=1",
@@ -95,11 +71,35 @@
     },
     {
       "actions": "",
-      "dst_state": "E0",
-      "event": "",
-      "guard": "",
+      "dst_state": "E2",
+      "event": "h",
+      "guard": "e=0",
       "location": 0,
-      "src_state": "_init"
+      "src_state": "E1"
+    },
+    {
+      "actions": "",
+      "dst_state": "E0",
+      "event": "h",
+      "guard": "k=0",
+      "location": 0,
+      "src_state": "E2"
+    },
+    {
+      "actions": "k:=k+2",
+      "dst_state": "E1",
+      "event": "h",
+      "guard": "e=1",
+      "location": 3,
+      "src_state": "E1"
+    },
+    {
+      "actions": "k:=k-1",
+      "dst_state": "E2",
+      "event": "h",
+      "guard": "k>0",
+      "location": 3,
+      "src_state": "E2"
     }
   ]
 }
