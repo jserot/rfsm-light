@@ -42,8 +42,10 @@ void CompilerOptions::readSpecFile(QString fname)
     QMessageBox::warning(parent, "","Cannot read specification file " + file.fileName());
     return;
   }
+  qDebug() << "Reading options from" << fname;
   while ( ! file.atEnd() ) {
     QString line = file.readLine();
+    if ( line[0] == '#' ) continue;
     QStringList items = line.split(";");
     // 0: IDE flag, 1: category, 2: name, 3: kind, 5: desc
     if ( items.length() < 6 || items[0] != "ide" ) continue;
