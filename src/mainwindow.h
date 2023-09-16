@@ -185,6 +185,7 @@ private:
     static int canvas_height;
 
     QProcess proc; 
+    QString compileMsgs;
     QString compileErrors;
 
     void logMessage(QString msg);

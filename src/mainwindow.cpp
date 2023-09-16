@@ -803,38 +803,41 @@ bool MainWindow::dotTransform(QFileInfo f, QString wDir)
 
 bool MainWindow::executeCmd(QString wDir, QString cmd, QStringList args, bool sync)
 {
-  QProcess *proc = new QProcess;
   qDebug() << "executeCmd: wDir=" << wDir << " cmd=" << cmd << " args=" << args;
-  proc->setWorkingDirectory(wDir);
-  proc->start(cmd,args);
-  if ( proc->error() == QProcess::FailedToStart ) {
+  proc.setWorkingDirectory(wDir);
+  proc.start(cmd,args);
+  if ( proc.error() == QProcess::FailedToStart ) {
     qDebug() << "Command failed to start" << Qt::endl;
     return false;
     }
   if ( sync ) {
-    bool r = proc->waitForFinished(); 
-    QProcess::ExitStatus s = proc->exitStatus();
-    qDebug() << "executeCmd: finished=" << r;
+    bool r = proc.waitForFinished(); 
+    QProcess::ExitStatus s = proc.exitStatus();
+    int o = proc.exitCode();
+    // qDebug() << "executeCmd: finished=" << r;
     qDebug() << "executeCmd: exit status=" << s;
+    qDebug() << "executeCmd: exit code=" << o;
+    //qDebug() << "executeCmd: stdout=" << compileMsgs;
     qDebug() << "executeCmd: stderr=" << compileErrors;
-    proc->kill();
-    proc->close();
-    proc->terminate();
-    return r && s == QProcess::NormalExit;
+    proc.kill();
+    proc.close();
+    proc.terminate();
+    return r && s == QProcess::NormalExit && o == 0;
     }
-  else { // This does not work :(
-    //qDebug() << "executeCmd: async process launched" << endl;
+  else { 
+    qDebug() << "executeCmd: async process launched";
     return true;
     }
 }
 
 void MainWindow::readProcStdout()
 {
-  // proc.setReadChannel(QProcess::StandardOutput);
-  // while (proc.canReadLine ()) {
-  //     QString r = QString(proc.readLine()).remove('\n').remove ('\r');
-  //     qDebug() << ">>> " + r;
-  //     }
+  proc.setReadChannel(QProcess::StandardOutput);
+  while (proc.canReadLine ()) {
+    compileMsgs += QString(proc.readLine());
+      // QString r = QString(proc.readLine()).remove('\n').remove ('\r');
+      // qDebug() << ">>> " + r;
+      }
 }
 
 void MainWindow::readProcStderr()

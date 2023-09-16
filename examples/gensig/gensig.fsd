@@ -1,13 +1,13 @@
 {
   "ios": [
     {
-      "desc": "",
+      "desc": "ValueChanges 0:0 25:1 35:0",
       "kind": "in",
       "name": "e",
       "type": "bool"
     },
     {
-      "desc": "",
+      "desc": "Periodic 10 10 100",
       "kind": "in",
       "name": "h",
       "type": "event"

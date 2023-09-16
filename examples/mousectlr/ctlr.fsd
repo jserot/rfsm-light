@@ -35,9 +35,9 @@
   "states": [
     {
       "attr": "",
-      "id": "_init",
-      "x": 164.0,
-      "y": 120.0
+      "id": "Idle",
+      "x": 220.0,
+      "y": 187.0
     },
     {
       "attr": "",
@@ -47,18 +47,34 @@
     },
     {
       "attr": "",
-      "id": "Idle",
-      "x": 220.0,
-      "y": 187.0
+      "id": "_init",
+      "x": 164.0,
+      "y": 120.0
     }
   ],
   "transitions": [
     {
-      "actions": "ctr:=ctr+1",
+      "actions": "",
+      "dst_state": "Idle",
+      "event": "",
+      "guard": "",
+      "location": 0,
+      "src_state": "_init"
+    },
+    {
+      "actions": "ctr:=0",
       "dst_state": "Wait",
-      "event": "clk",
-      "guard": "ctr<4",
-      "location": 3,
+      "event": "clic",
+      "guard": "",
+      "location": 0,
+      "src_state": "Idle"
+    },
+    {
+      "actions": "doubleClic",
+      "dst_state": "Idle",
+      "event": "clic",
+      "guard": "",
+      "location": 0,
       "src_state": "Wait"
     },
     {
@@ -70,28 +86,12 @@
       "src_state": "Wait"
     },
     {
-      "actions": "doubleClic",
-      "dst_state": "Idle",
-      "event": "clic",
-      "guard": "",
-      "location": 0,
-      "src_state": "Wait"
-    },
-    {
-      "actions": "ctr:=0",
+      "actions": "ctr:=ctr+1",
       "dst_state": "Wait",
-      "event": "clic",
-      "guard": "",
-      "location": 0,
-      "src_state": "Idle"
-    },
-    {
-      "actions": "",
-      "dst_state": "Idle",
-      "event": "",
-      "guard": "",
-      "location": 0,
-      "src_state": "_init"
+      "event": "clk",
+      "guard": "ctr<4",
+      "location": 3,
+      "src_state": "Wait"
     }
   ]
 }

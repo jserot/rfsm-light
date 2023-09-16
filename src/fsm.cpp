@@ -667,10 +667,16 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
     QList<FsmIo*> gios;
     for ( const auto s : myIos.values() ) {
       if ( s->kind() == "in" ) {
-        os << "input " << s->name() << " : " << s->type()
-           << " = " << stringOfStimulus(s->desc());
-        gios.append(s);
-        os << "\n";
+        QString ss = stringOfStimulus(s->desc());
+        if ( ss != "" )  {
+          os << "input " << s->name() << " : " << s->type() << " = " << ss;;
+          gios.append(s);
+          os << "\n";
+          }
+        else {
+          QMessageBox::warning(mainWindow, "","No stimulus for input " + s->name());
+          return;
+          }
         }
       else if ( s->kind() == "out" ) {
         os << "output " << s->name() << " : " << s->type();
