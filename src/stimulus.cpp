@@ -11,42 +11,43 @@
 /***********************************************************************/
 
 #include "stimulus.h"
-#include <QString>
-#include <QStringList>
 
-Stimulus::Stimulus(const QString& txt)
+Stimulus::Stimulus()
 {
-  QStringList ss = txt.split(" ");
-  QString hd = ss.first();
-  ss.removeFirst();
-  init(hd, ss.join(" "));
+  kind = None;
+  desc.periodic = Periodic_stim();
 }
 
-Stimulus::Stimulus(const QString& kind, const QString& params)
+Stimulus::Stimulus(Kind kind, QList<int> &params)
 {
-  init(kind, params);
-}
-
-Stimulus::Kind kindOfString(QString s)
-{
-  if ( s == "Periodic" ) return Stimulus::Periodic;
-  else if ( s == "Sporadic" ) return Stimulus::Sporadic;
-  else if ( s == "ValueChanges" ) return Stimulus::ValueChanges;
-  else return Stimulus::None;
-}
-
-void Stimulus::init(const QString& kind, const QString& params)
-{
-  myKind = kindOfString(kind);
-  myParams = myKind == Stimulus::None ? "" : params;
+  this->kind = kind;
+  switch ( kind ) {
+  case None:
+    break;
+  case Periodic:
+    desc.periodic = Periodic_stim(params.at(0), params.at(1), params.at(2));
+    break;
+  case Sporadic:
+    desc.sporadic = Sporadic_stim(params);
+    break;
+  case ValueChanges:
+    QList<QPair<int,int>> vcs;
+    while ( params.length() >= 2 ) {
+      int t = params.takeFirst();
+      int v = params.takeFirst();
+      vcs.append(QPair<int,int>(t,v));
+      }
+    desc.valueChanges = ValueChanges_stim(vcs);
+    break;
+  }
 }
 
 QString Stimulus::toString()
 {
-  switch ( myKind ) {
-  case Stimulus::Periodic: return "Periodic " + myParams;
-  case Stimulus::Sporadic: return "Sporadic " + myParams;
-  case Stimulus::ValueChanges: return "ValueChanges " + myParams;
-  case Stimulus::None: return "";
+  switch ( kind ) {
+  case None: return "None";
+  case Periodic: return "Periodic";
+  case Sporadic: return "Sporadic";
+  case ValueChanges: return "ValueChanges";
   }
 }

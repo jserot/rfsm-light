@@ -13,29 +13,48 @@
 #ifndef STIMULUS_H
 #define STIMULUS_H
 
-#include <QString>
+#include <QList>
+
+struct Periodic_stim
+{
+  Periodic_stim() : period(0), start_time(0), end_time(0) { };
+  Periodic_stim(int p, int t1, int t2) : period(p), start_time(t1), end_time(t2) { };
+  int period;
+  int start_time;
+  int end_time;
+};
+
+struct Sporadic_stim
+{
+  Sporadic_stim() : dates(QList<int>()) { };
+  Sporadic_stim(QList<int> &values) : dates(values) { };
+  QList<int> dates;
+};
+
+struct ValueChanges_stim
+{
+  ValueChanges_stim() : vcs(QList<QPair<int,int>>()) { };
+  ValueChanges_stim(QList<QPair<int,int>> &values) : vcs(values) { };
+  QList<QPair<int,int>> vcs;
+};
 
 class Stimulus
 {
-  public:
-    enum Kind { None, Periodic, Sporadic, ValueChanges };
-    
-    Stimulus(Kind kind, QString params) : myKind(kind), myParams(params) {};
-    Stimulus(const QString& kind, const QString& params);
-    Stimulus(const QString& txt);
+public:
+  enum Kind { None=0, Periodic, Sporadic, ValueChanges };
+  Kind kind;
+  struct Desc {  // TO FIX: this should really be a _union_ 
+      Periodic_stim periodic;
+      Sporadic_stim sporadic;  
+      ValueChanges_stim valueChanges;
+      };
+  Desc desc;
 
-    Kind kind() const { return myKind; };
-    QString params() const { return myParams; };
+  Stimulus();
+  Stimulus(Kind kind, QList<int> &params);
+  ~Stimulus() {};
 
-    void setKind(const Kind kind) { myKind = kind; };
-    void setParams(const QString& params) { myParams = params; };
-
-    QString toString();
-
-  protected:
-    void init(const QString& kind, const QString& params);
-    Kind myKind;
-    QString myParams;
+  QString toString();
 };
 
 #endif

@@ -1,4 +1,5 @@
 * GUI
+- Allow only predefined types for IOs (event, int, ...)
 - Allow resizing of the main canvas 
 - Fix toolbars alignment (left, center, right)
 - Dedicated input fields for stimuli instead of raw text field ?

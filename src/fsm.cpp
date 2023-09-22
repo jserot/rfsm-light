@@ -35,9 +35,9 @@ void Fsm::setMode(Mode mode)
     this->mode = mode;
 }
 
-FsmIo* Fsm::addIo(const QString name, const QString kind, const QString type, const QString desc)
+FsmIo* Fsm::addIo(const QString name, const QString kind, const QString type)
 {
-    FsmIo *v = new FsmIo(name, kind, type, desc);
+    FsmIo *v = new FsmIo(name, kind, type);
     myIos.insert(name, v);
     return v;
 }
@@ -383,7 +383,7 @@ void Fsm::readFromFile(QString fname)
       std::string type = json_io.at("type");
       std::string desc = json_io.at("desc");
       addIo(QString::fromStdString(name), QString::fromStdString(kind),
-            QString::fromStdString(type), QString::fromStdString(desc));
+            QString::fromStdString(type)); // QString::fromStdString(desc));
       }
 
     for ( const auto & json_state : json.at("states") ) {
@@ -444,10 +444,10 @@ void Fsm::saveToFile(QString fname)
     json_res["ios"] = nlohmann::json::array();
     for ( const FsmIo* io: myIos.values() ) {
       nlohmann::json json;
-      json["name"] = io->name().toStdString(); 
-      json["kind"] = io->kind().toStdString(); 
-      json["type"] = io->type().toStdString(); 
-      json["desc"] = io->desc().toString().toStdString(); 
+      json["name"] = io->name.toStdString(); 
+      json["kind"] = io->kind.toStdString(); 
+      json["type"] = io->type.toStdString(); 
+      //json["desc"] = io->desc().toString().toStdString(); 
       json_res["ios"].push_back(json);
       }
 
@@ -559,9 +559,9 @@ QString stringOfVarList(QList<FsmIo*> vs, QString sep=", ", bool withType=true)
   QStringList rs;
   for (const auto& v : vs) {
     if ( withType )
-      rs << v->name() + ": " + v->type();
+      rs << v->name + ": " + v->type;
     else
-      rs << v->name();
+      rs << v->name;
     }
   return rs.join(sep);
 }
@@ -587,16 +587,6 @@ QString stringOfState(State *s)
   return ss;
 }
 
-QString stringOfStimulus(Stimulus stim)
-{
-  QString params = stim.params().replace(" ", ","); // TO FIX
-  switch ( stim.kind() ) {
-  case Stimulus::Periodic: return "periodic(" + params + ")";
-  case Stimulus::Sporadic: return "sporadic(" + params + ")";
-  case Stimulus::ValueChanges: return "value_changes(" + params + ")";
-  case Stimulus::None: return "";
-  }
-}
 
 void Fsm::export_rfsm_model(QTextStream& os)
 {
@@ -605,7 +595,7 @@ void Fsm::export_rfsm_model(QTextStream& os)
     QList<FsmIo*> gios, lvars;
 
     for ( const auto v : myIos.values() ) {
-      if ( v->kind() == "var" ) lvars.append(v);
+      if ( v->kind == "var" ) lvars.append(v);
       else gios.append(v);
       }
 
@@ -617,7 +607,7 @@ void Fsm::export_rfsm_model(QTextStream& os)
       for(const auto io : gios) {
             if(!first) os << "," << "\n";
             os << indent;
-            os << io->kind() << " " << io->name() << ": " << io->type();
+            os << io->kind << " " << io->name << ": " << io->type;
             first = false;
         }
       os << "\n" << indent <<  ")" << "\n";
@@ -666,20 +656,20 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
 {
     QList<FsmIo*> gios;
     for ( const auto s : myIos.values() ) {
-      if ( s->kind() == "in" ) {
-        QString ss = stringOfStimulus(s->desc());
+      if ( s->kind == "in" ) {
+        QString ss = s->stim.toString();
         if ( ss != "" )  {
-          os << "input " << s->name() << " : " << s->type() << " = " << ss;;
+          os << "input " << s->name << " : " << s->type << " = " << ss;;
           gios.append(s);
           os << "\n";
           }
         else {
-          QMessageBox::warning(mainWindow, "","No stimulus for input " + s->name());
+          QMessageBox::warning(mainWindow, "","No stimulus for input " + s->name);
           return;
           }
         }
-      else if ( s->kind() == "out" ) {
-        os << "output " << s->name() << " : " << s->type();
+      else if ( s->kind == "out" ) {
+        os << "output " << s->name << " : " << s->type;
         gios.append(s);
         os << "\n";
         }
@@ -689,7 +679,7 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
     bool first = true;
     for(const auto io : gios) {
       if ( !first ) os << ", ";
-      os << io->name();
+      os << io->name;
       first = false;
       }
     os << ")";

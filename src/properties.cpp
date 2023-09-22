@@ -356,14 +356,20 @@ void PropertiesPanel::editIos()
     for(auto i = idxs.rbegin(); i != idxs.rend(); i++) {
       QString name = getStringPiece(string_list.at(*i), 3, 1);
       FsmIo* io = model->getIo(name);
-      if ( io->kind() == "in" ) ios.append(io);
+      if ( io->kind == "in" ) ios.append(io);
       }
-    if ( ! ios.empty() ) {
-      Stimuli* stimDialog = new Stimuli(ios);
-      stimDialog->exec();
-      fillIoList();
-      delete stimDialog;
+    if ( ios.empty() ) {
+      QMessageBox::warning(this, "Error", "No input selected");
+      return;
       }
+    if ( ios.length() > 1 ) {
+      QMessageBox::warning(this, "Error", "Cannot edit multiple selection. Please select a single one");
+      return;
+      }
+    Stimuli* stimDialog = new Stimuli(ios.first());
+    stimDialog->exec();
+    fillIoList();
+    delete stimDialog;
 }
 
 void PropertiesPanel::setStateName(const QString& name)

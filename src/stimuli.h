@@ -14,27 +14,50 @@
 #define STIMULI_DIALOG_H
 
 #include <QDialog>
-#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QComboBox>
-#include <QLineEdit>
-#include <QList>
+#include <QFrame>
+#include <QPushButton>
+#include <QSpacerItem>
+#include <QComboBox>
 #include "fsmIo.h"
-#include <tuple>
 
 class Stimuli: public QDialog {
     Q_OBJECT
 
 public:
-    explicit Stimuli(QList<FsmIo*> ios, QWidget *parent = 0);
-    ~Stimuli();
-
-private slots:
-  void acceptChanges();
+  explicit Stimuli(FsmIo* inp, QWidget *parent = Q_NULLPTR);
+  ~Stimuli();
 
 private:
-    QGridLayout* mainLayout;
-    void addRow(int row, FsmIo* io);
-    QList<std::tuple<FsmIo*,QComboBox*,QLineEdit*>> rows;
+  const int maxTime = 1000;
+
+  QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
+  QList<QHBoxLayout*> rows;
+  FsmIo *selectedInp;
+
+private:
+  QWidget *centralWidget;
+  QVBoxLayout* formLayout;
+  QComboBox *selector;
+  QFrame *form;
+  QVBoxLayout *verticalLayout;
+  QVBoxLayout *verticalLayout_2;
+  QSpacerItem *verticalSpacer;
+  QFrame *line;
+
+protected:
+  void addPeriodicRow(QString name, int val, int step, int lo, int hi);
+
+private slots:
+  void showForm(QVariant kind);
+  void clearForm();
+  void _addSporadicRow(int t);
+  void addSporadicRow();
+  void _addValueChangesRow(QPair<int,int> vc);
+  void addValueChangesRow();
+  void deleteDynamicRow();
+  void acceptChanges();
 };
 
 #endif

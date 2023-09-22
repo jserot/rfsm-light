@@ -49,7 +49,7 @@ public:
 
     void clear(void);
 
-    FsmIo* addIo(const QString name, QString kind, QString type, QString desc="");
+  FsmIo* addIo(const QString name, QString kind, QString type);
     FsmIo* getIo(QString name);
     void removeIo(QString name);
     QList<FsmIo*> ios() { return myIos.values(); };

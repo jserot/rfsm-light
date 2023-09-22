@@ -12,10 +12,10 @@
 
 #include "fsmIo.h"
 
-QString FsmIo::toString(bool withDesc)
+QString FsmIo::toString(bool withStim)
 {
   QString r;
-  r = myKind + " " + myName + " : " + myType;
-  if ( withDesc ) r += " = " + myDesc.toString(); 
+  r = kind + " " + name + " : " + type;
+  if ( withStim ) r += " = " + stim.toString(); 
   return r;
 }

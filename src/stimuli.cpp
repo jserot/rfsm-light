@@ -10,61 +10,210 @@
 /*                                                                     */
 /***********************************************************************/
 
-#include <QGridLayout>
 #include <QLabel>
 #include <QDialogButtonBox>
+#include <QSpinBox>
 
 #include "stimuli.h"
 
-Stimuli::Stimuli(QList<FsmIo*> ios, QWidget *parent)
+Stimuli::Stimuli(FsmIo* inp, QWidget *parent)
     : QDialog(parent)
 {
-    mainLayout = new QGridLayout();
-    int row = 0;
-    mainLayout->addWidget(new QLabel("Name"), row, 0, 1, 1);
-    mainLayout->addWidget(new QLabel("Kind"), row, 1, 1, 1);
-    mainLayout->addWidget(new QLabel("Parameters"), row, 2, 1, 4);
-    row++;
-    foreach ( FsmIo* io, ios) {
-      addRow(row, io);
-      row++;
-      }
-    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    mainLayout->addWidget(buttonBox, row, 0, 1, 5);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(acceptChanges()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    setLayout(mainLayout);
-    setWindowTitle(tr("Input stimuli"));
+  selectedInp = inp;
+  centralWidget = new QWidget(parent);
+  verticalLayout = new QVBoxLayout();
+  verticalLayout = new QVBoxLayout(centralWidget);
+  verticalLayout->setSpacing(6);
+  verticalLayout->setContentsMargins(11, 11, 11, 11);
+
+  selector = new QComboBox(centralWidget);
+  selector->setObjectName("selector");
+  selector->addItem("None", QVariant(Stimulus::None));
+  selector->addItem("Periodic", QVariant(Stimulus::Periodic));
+  selector->addItem("Sporadic", QVariant(Stimulus::Sporadic));
+  selector->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
+  verticalLayout->addWidget(selector);
+  connect(selector, &QComboBox::currentIndexChanged, this, &Stimuli::showForm);
+
+  form = new QFrame(centralWidget);
+  form->setObjectName("form");
+  form->setFrameShape(QFrame::StyledPanel);
+  form->setFrameShadow(QFrame::Raised);
+  verticalLayout_2 = new QVBoxLayout(form);
+  verticalLayout_2->setSpacing(6);
+  verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+  verticalLayout_2->setObjectName("verticalLayout_2");
+  verticalSpacer = new QSpacerItem(20, 264, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  verticalLayout_2->addItem(verticalSpacer);
+
+  verticalLayout->addWidget(form);
+
+  QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  verticalLayout->addWidget(buttonBox);
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(acceptChanges()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  setLayout(verticalLayout);
+  setWindowTitle(tr("Input stimuli for input %1").arg(inp->name));
+
+  formLayout = qobject_cast<QVBoxLayout*>(form->layout());
+  formLayout->setObjectName("formLayout");
+
+  selector->setCurrentIndex(selectedInp->stim.kind);
 }
 
-void Stimuli::addRow(int row, FsmIo *io)
+void Stimuli::showForm(QVariant kind)
 {
-    QLabel* stimulus_name = new QLabel(io->name());
-    QComboBox* stimulus_kind = new QComboBox();
-    stimulus_kind->addItem("None", Stimulus::None);
-    stimulus_kind->addItem("Periodic", Stimulus::Periodic);
-    stimulus_kind->addItem("Sporadic", Stimulus::Sporadic);
-    stimulus_kind->addItem("ValueChanges", Stimulus::ValueChanges);
-    QLineEdit* stimulus_params = new QLineEdit();
-    stimulus_kind->setCurrentIndex(io->desc().kind());
-    stimulus_params->setText(io->desc().params());
-    mainLayout->addWidget(stimulus_name, row, 0, 1, 1);
-    mainLayout->addWidget(stimulus_kind, row, 1, 1, 1);
-    mainLayout->addWidget(stimulus_params, row, 3, 1, 4);
-    rows.append(std::make_tuple(io,stimulus_kind,stimulus_params));
+    QHBoxLayout *rowLayout;
+    QPushButton* addButton;
+    QList<int> ts;
+    QList<QPair<int,int>> vcs;
+    clearForm();
+    rows.clear();
+    switch ( kind.toInt() ) {
+      case Stimulus::None: 
+        break;
+      case Stimulus::Periodic: 
+        addPeriodicRow("Period", selectedInp->stim.desc.periodic.period, 5, 0, maxTime);
+        addPeriodicRow("Start Time", selectedInp->stim.desc.periodic.start_time, 0, 0, maxTime);
+        addPeriodicRow("End Time", selectedInp->stim.desc.periodic.end_time, 0, 0, maxTime);
+        break;
+    case Stimulus::Sporadic:
+        rowLayout = new QHBoxLayout(form);
+        rowLayout->setObjectName("rowLayout");
+        addButton = new QPushButton("Add", form);
+        rowLayout->addWidget(addButton);
+        connect(addButton, &QPushButton::clicked, this, &Stimuli::addSporadicRow);
+        mButtonToLayoutMap.insert(addButton, rowLayout);
+        rows.append(rowLayout);
+        formLayout->addLayout(rowLayout);
+        ts = selectedInp->stim.desc.sporadic.dates; 
+        for (int i=0; i<ts.length(); i++ )
+          _addSporadicRow(ts[i]);
+        break;
+    case Stimulus::ValueChanges:
+        rowLayout = new QHBoxLayout(form);
+        rowLayout->setObjectName("rowLayout");
+        addButton = new QPushButton("Add", form);
+        rowLayout->addWidget(addButton);
+        connect(addButton, &QPushButton::clicked, this, &Stimuli::addValueChangesRow);
+        mButtonToLayoutMap.insert(addButton, rowLayout);
+        rows.append(rowLayout);
+        formLayout->addLayout(rowLayout);
+        vcs = selectedInp->stim.desc.valueChanges.vcs; 
+        for (int i=0; i<vcs.length(); i++ )
+          _addValueChangesRow(vcs[i]);
+        break;
+      }
 }
+
+void Stimuli::addPeriodicRow(QString name, int val, int step, int lo, int hi)
+{
+    QHBoxLayout *rowLayout;
+    rowLayout = new QHBoxLayout(form);
+    rowLayout->setObjectName("rowLayout");
+    QLabel *label = new QLabel(name);
+    rowLayout->addWidget(label);
+    QSpinBox *spinBox = new QSpinBox;
+    spinBox->setObjectName("data");
+    spinBox->setRange(lo,hi);
+    spinBox->setSingleStep(step);
+    spinBox->setValue(val);
+    rowLayout->addWidget(spinBox);
+    formLayout->insertLayout(1,rowLayout);
+    rows.append(rowLayout);
+}
+
+void Stimuli::_addSporadicRow(int t) {
+  QHBoxLayout* rowLayout = new QHBoxLayout(form);
+  rowLayout->setObjectName("rowLayout");
+  QLabel *label = new QLabel("Date");
+  rowLayout->addWidget(label);
+  QSpinBox *spinBox = new QSpinBox;
+  spinBox->setObjectName("spinBox");
+  spinBox->setRange(0,maxTime);
+  spinBox->setSingleStep(1);
+  spinBox->setValue(t);
+  rowLayout->addWidget(spinBox);
+  QPushButton *delButton = new QPushButton("Delete", form);
+  rowLayout->addWidget(delButton);
+  connect(delButton, &QPushButton::clicked, this, &Stimuli::deleteDynamicRow);
+  mButtonToLayoutMap.insert(delButton, rowLayout);
+  formLayout->addLayout(rowLayout);
+  rows.append(rowLayout);
+}
+
+void Stimuli::addSporadicRow() { _addSporadicRow(0); }
+
+void Stimuli::_addValueChangesRow(QPair<int,int> vc) {
+  QHBoxLayout* rowLayout = new QHBoxLayout(form);
+  rowLayout->setObjectName("rowLayout");
+  QLabel *label = new QLabel("Date");
+  rowLayout->addWidget(label);
+  QSpinBox *spinBox = new QSpinBox;
+  spinBox->setObjectName("spinBox");
+  spinBox->setRange(0,maxTime);
+  spinBox->setSingleStep(1);
+  spinBox->setValue(vc.first);
+  rowLayout->addWidget(spinBox);
+  QLabel *label2 = new QLabel("Value");
+  rowLayout->addWidget(label2);
+  QSpinBox *spinBox2 = new QSpinBox;
+  spinBox2->setObjectName("spinBox");
+  spinBox2->setSingleStep(1);
+  spinBox2->setValue(vc.second);
+  rowLayout->addWidget(spinBox2);
+  QPushButton *delButton = new QPushButton("Delete", form);
+  rowLayout->addWidget(delButton);
+  connect(delButton, &QPushButton::clicked, this, &Stimuli::deleteDynamicRow);
+  mButtonToLayoutMap.insert(delButton, rowLayout);
+  formLayout->addLayout(rowLayout);
+  rows.append(rowLayout);
+}
+
+void Stimuli::addValueChangesRow() { _addValueChangesRow(QPair<int,int>(0,0)); }
 
 void Stimuli::acceptChanges()
 {
-  for ( auto row: rows ) {
-    FsmIo* io = std::get<0>(row);
-    QString kind = std::get<1>(row)->currentText();
-    QString params = std::get<2>(row)->text();
-    // qDebug() << io->name() << ".desc <- " << kind << " " << params;
-    Stimulus stim(kind, params);
-    io->setDesc(stim);
+  QList<int> values;
+  for ( int i = 0; i < formLayout->count(); ++i ) {
+    QLayout* layout = formLayout->itemAt(i)->layout();
+    if ( layout && layout->objectName() == "rowLayout" )
+      for ( int j = 0; j < layout->count(); ++j ) {
+        QSpinBox *spinBox = qobject_cast<QSpinBox*>(layout->itemAt(j)->widget()); // Returns NULL if not a spinBox
+        if ( spinBox ) values.append(spinBox->value());
+        }
     }
+  //qDebug () << "** Results = " << values;
+  Stimulus stim((Stimulus::Kind)(selector->currentIndex()), values);
+  selectedInp->stim = stim;
+  selector->setCurrentIndex(Stimulus::None);
+  clearForm();
   QDialog::accept();
+}
+
+void delete_row(QLayout *layout)
+{
+  while (layout->count() != 0) {
+    QLayoutItem* item = layout->takeAt(0);
+    delete item->widget();
+    delete item;
+  }
+  delete layout;
+}
+
+void Stimuli::deleteDynamicRow()
+{
+  QPushButton* button = qobject_cast<QPushButton*>(sender());
+  QHBoxLayout* row_layout = mButtonToLayoutMap.take(button);
+  delete_row(row_layout);
+  rows.removeOne(row_layout);
+}
+
+void Stimuli::clearForm() {
+  while ( ! rows.isEmpty() ) {
+    QHBoxLayout* row = rows.takeFirst();
+    delete_row(row);
+    }
 }
 
 Stimuli::~Stimuli()

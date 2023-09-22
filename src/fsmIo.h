@@ -18,30 +18,20 @@
 
 class FsmIo
 {
-  protected:
-    QString myName;
-    QString myKind;
-    QString myType;
-    Stimulus myDesc; // For inputs
+  public:
+    QString name;
+    QString kind;
+    QString type;
+    Stimulus stim; // For inputs
 
   public:
-    FsmIo(const QString& name) : myName(name), myKind(""), myType(""), myDesc("") {};
+    FsmIo(const QString& name) : name(name), kind(""), type(""), stim() {};
     FsmIo(const QString& name,
              const QString& kind,
-             const QString& type, 
-             const QString& desc = "") : myName(name), myKind(kind), myType(type), myDesc(desc) {};
+             const QString& type) : name(name), kind(kind), type(type), stim() {};
+    ~FsmIo();
 
-    QString name() const { return myName; };
-    QString kind() const { return myKind; };
-    QString type() const { return myType; };
-    Stimulus desc() const { return myDesc; };
-
-    void setName(const QString& name) { myName = name; };
-    void setKind(const QString& kind) { myKind = kind; };
-    void setType(const QString& type) { myType = type; };
-    void setDesc(const Stimulus& desc) { myDesc = desc; };
-
-    QString toString(bool withDesc=true);
+    QString toString(bool withStim=true);
 };
 
 #endif
