@@ -21,7 +21,6 @@ Stimuli::Stimuli(FsmIo* inp, QWidget *parent)
 {
   selectedInp = inp;
   centralWidget = new QWidget(parent);
-  verticalLayout = new QVBoxLayout();
   verticalLayout = new QVBoxLayout(centralWidget);
   verticalLayout->setSpacing(6);
   verticalLayout->setContentsMargins(11, 11, 11, 11);

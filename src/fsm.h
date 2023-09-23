@@ -44,15 +44,15 @@ public:
 
     explicit Fsm(QWidget *parent = 0);
 
-    QString name() const { return myName; }
-    void setName(QString name) { myName = name; }
+    QString getName() const { return name; }
+    void setName(QString n) { name = n; }
 
     void clear(void);
 
-  FsmIo* addIo(const QString name, QString kind, QString type);
-    FsmIo* getIo(QString name);
-    void removeIo(QString name);
-    QList<FsmIo*> ios() { return myIos.values(); };
+    FsmIo* addIo(const QString name, QString kind, QString type, Stimulus stim);
+    // FsmIo* getIo(QString name);
+    void removeIo(FsmIo *io);
+    QList<FsmIo*> getIos() { return ios; };
 
     QList<State*> states();
     QList<Transition*> transitions();
@@ -105,8 +105,8 @@ private:
                               QString event, QString guard, QString actions,
                               State::Location location);
 
-    QString myName;
-    QMap<QString, FsmIo*> myIos; // I/Os and local variables - TODO: split this
+    QString name;
+    QList<FsmIo*> ios; // I/Os and local variables - TODO: split this
     
     Mode mode;
     QGraphicsLineItem *line;  // Line being drawn

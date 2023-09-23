@@ -21,10 +21,14 @@
 #include <QListView>
 #include <QString>
 #include <QStringListModel>
+#include <QVBoxLayout>
+#include <QPushButton>
 
 class MainWindow;
 class State;
 class Transition;
+class Fsm;
+class FsmIo;
 
 class PropertiesPanel : public QFrame
 {
@@ -60,6 +64,13 @@ class PropertiesPanel : public QFrame
     QComboBox* itransition_end_state_field;
     QLineEdit* itransition_actions_field;
 
+    QVBoxLayout* ioLayout;
+    QList<QHBoxLayout*> ioRows;
+    QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
+    QHash<QPushButton*, FsmIo*> mButtonToFsmIoMap; 
+    QHash<QComboBox*, FsmIo*> mComboBoxToFsmIoMap; // TODO : merge all maps
+    QHash<QLineEdit*, FsmIo*> mLineEditToFsmIoMap; // TODO : merge all maps
+
   public:
     explicit PropertiesPanel(MainWindow* parent);
     ~PropertiesPanel();
@@ -78,9 +89,13 @@ class PropertiesPanel : public QFrame
     void setStateName(const QString& name);
     void setStateAttr(const QString& name);
 
+    void _addIo(Fsm* model, FsmIo* io);
     void addIo();
-    void removeIos();
-    void editIos();
+    void removeIo();
+    void editIoName();
+    void editIoKind();
+    void editIoType();
+    void editIoStim();
 
     void setTransitionSrcState(int index);
     void setTransitionDstState(int index);
@@ -98,9 +113,8 @@ class PropertiesPanel : public QFrame
     void createTransitionPanel();
     void createInitTransitionPanel();
 
-    void fillIoList();
-    void fillStimuliList();
     void fillModelName();
+    void fillIos();
 };
 
 #endif

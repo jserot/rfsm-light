@@ -6,7 +6,7 @@ QT       += core gui
 QT 		 += widgets
 QT 		 += core5compat
 
-CONFIG += c++11 console
+CONFIG += c++11 console debug
 
 # Input
 HEADERS += include/nlohmann_json.h \

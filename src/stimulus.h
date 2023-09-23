@@ -50,11 +50,11 @@ public:
       };
   Desc desc;
 
-  Stimulus();
-  Stimulus(Kind kind, QList<int> &params);
+  Stimulus(Kind kind, QList<int> params=QList<int>());
+  Stimulus(QString s);
   ~Stimulus() {};
 
-  QString toString();
+  QString toString() const ;
 };
 
 #endif

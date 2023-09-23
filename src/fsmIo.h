@@ -20,15 +20,17 @@ class FsmIo
 {
   public:
     QString name;
-    QString kind;
-    QString type;
+    QString kind;  // TO FIX : use enum 
+    QString type;  // TO FIX : use enum 
     Stimulus stim; // For inputs
 
   public:
-    FsmIo(const QString& name) : name(name), kind(""), type(""), stim() {};
+    // FsmIo() { };
     FsmIo(const QString& name,
-             const QString& kind,
-             const QString& type) : name(name), kind(kind), type(type), stim() {};
+          const QString& kind,
+          const QString& type,
+          const Stimulus& stim):
+      name(name), kind(kind), type(type), stim(stim) {};
     ~FsmIo();
 
     QString toString(bool withStim=true);

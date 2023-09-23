@@ -48,6 +48,7 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setAlignment(Qt::AlignTop);
+    //layout->setMinimumWidth(200);
 
     layout->addWidget(model_panel);
     layout->addWidget(io_panel);
@@ -96,53 +97,170 @@ void PropertiesPanel::createModelPanel()
 
 void PropertiesPanel::createIoPanel()
 {
-    io_panel = new QGroupBox("I/Os and variables");
-    QGridLayout* grid = new QGridLayout();
-    io_panel->setMaximumHeight(200);
-    //io_panel->setMinimumWidth(200);
+  QHBoxLayout *rowLayout;
+  io_panel = new QGroupBox("I/Os and variables");
+  //io_panel->setMaximumHeight(200);
+  //io_panel->setMinimumWidth(200);
+  ioLayout = new QVBoxLayout();
+  ioLayout->setSpacing(4);
+  ioLayout->setContentsMargins(11, 11, 11, 11);
 
-    grid->addWidget(new QLabel("Name"), 0, 0, 1, 2);
-    grid->addWidget(new QLabel("Kind"), 0, 2, 1, 2);
-    grid->addWidget(new QLabel("Type"), 0, 4, 1, 2);
+  rowLayout = new QHBoxLayout();
+  QPushButton* add_button = new QPushButton("Add");
+  rowLayout->addWidget(add_button);
+  ioLayout->addLayout(rowLayout);
+  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addIo);
+    
+  rowLayout = new QHBoxLayout();
+  rowLayout->addWidget(new QLabel("Name"));
+  rowLayout->addWidget(new QLabel("Kind"));
+  rowLayout->addWidget(new QLabel("Type"));
+  rowLayout->addWidget(new QLabel("")); // For padding
+  rowLayout->addWidget(new QLabel(""));
+  ioLayout->addLayout(rowLayout);
 
-    io_name = new QLineEdit();
-    io_kind = new QComboBox();
-    io_kind->addItem("in", "in");
-    io_kind->addItem("out", "out");
-    io_kind->addItem("var", "var");
-    io_type = new QLineEdit();
-    grid->addWidget(io_name, 1, 0, 1, 2);
-    grid->addWidget(io_kind, 1, 2, 1, 2);
-    grid->addWidget(io_type, 1, 4, 1, 2);
+  io_panel->setLayout(ioLayout);
+}
 
-    QStringList ios;
-    for(auto io : main_window->getFsm()->ios()) {
-      //qDebug() << "Adding IO " << io->toString();
-      ios << io->toString();
+void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
+{
+  Q_ASSERT(model);
+  Q_ASSERT(io);
+  QHBoxLayout *rowLayout = new QHBoxLayout(io_panel);
+  rowLayout->setObjectName("ioRowLayout");
+
+  QLineEdit *io_name = new QLineEdit();
+  io_name->setMinimumSize(40,io_name->minimumHeight());
+  io_name->setFrame(true);
+  io_name->setText(io->name);
+  // TODO: use setInputMask to fordid syntax errors on IO names (check rsfm syntax)
+  rowLayout->addWidget(io_name);
+  mLineEditToFsmIoMap.insert(io_name, io);
+  connect(io_name, &QLineEdit::textChanged, this, &PropertiesPanel::editIoName);
+
+  QComboBox *io_kind = new QComboBox();
+  io_kind->addItem("in", "in");
+  io_kind->addItem("out", "out");
+  io_kind->addItem("var", "var");
+  io_kind->setCurrentText(io->kind);
+  rowLayout->addWidget(io_kind);
+  mComboBoxToFsmIoMap.insert(io_kind, io);
+  connect(io_kind, &QComboBox::currentTextChanged, this, &PropertiesPanel::editIoKind);
+
+  QComboBox *io_type = new QComboBox();
+  io_type->addItem("event", "event");
+  io_type->addItem("int", "int");
+  io_type->addItem("bool", "bool");
+  io_type->setCurrentText("int");
+  rowLayout->addWidget(io_type);
+  mComboBoxToFsmIoMap.insert(io_type, io);
+  connect(io_type, &QComboBox::currentTextChanged, this, &PropertiesPanel::editIoType);
+
+  QPushButton *io_stim = new QPushButton("Stim");
+  rowLayout->addWidget(io_stim);
+  connect(io_stim, &QPushButton::clicked, this, &PropertiesPanel::editIoStim);
+  mButtonToLayoutMap.insert(io_stim, rowLayout);
+  mButtonToFsmIoMap.insert(io_stim, io);
+
+  QPushButton *io_delete = new QPushButton("Delete");
+  rowLayout->addWidget(io_delete);
+  connect(io_delete, &QPushButton::clicked, this, &PropertiesPanel::removeIo);
+  mButtonToLayoutMap.insert(io_delete, rowLayout);
+  mButtonToFsmIoMap.insert(io_delete, io);
+  ioLayout->insertLayout(-1,rowLayout);
+  ioRows.append(rowLayout);
+}
+
+void PropertiesPanel::addIo()
+{
+  Fsm* model = main_window->getFsm();
+  Q_ASSERT(model != 0);
+  FsmIo* io = model->addIo("", "in", "int", Stimulus(Stimulus::None));
+  _addIo(model, io);
+}
+
+void delete_io_row(QLayout *layout)
+{
+  while (layout->count() != 0) {
+    QLayoutItem* item = layout->takeAt(0);
+    delete item->widget();
+    delete item;
+  }
+  delete layout;
+}
+
+void PropertiesPanel::removeIo()
+{
+  QPushButton* button = qobject_cast<QPushButton*>(sender());
+  QHBoxLayout* row_layout = mButtonToLayoutMap.take(button);
+  FsmIo* io = mButtonToFsmIoMap.take(button);
+  QLineEdit *io_name = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+  Q_ASSERT(io_name != 0);
+  QString name = io_name->text().trimmed();
+  qDebug() << "Deleting IO" << name;
+  delete_io_row(row_layout);
+  ioRows.removeOne(row_layout);
+  Fsm* model = main_window->getFsm();
+  Q_ASSERT(model != 0);
+  model->removeIo(io);
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::editIoName()
+{
+  QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
+  FsmIo* io = mLineEditToFsmIoMap.value(ledit);
+  Q_ASSERT(io);
+  QString name = ledit->text().trimmed();
+  // Fsm* model = main_window->getFsm();
+  // if ( model->getIo(name) != NULL ) {
+  //     QMessageBox::warning( this, "Error", "IO or variable " + name + " is already defined");
+  //     return;
+  //     }
+  qDebug () << "Setting IO name: " << name;
+  io->name = name;
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::editIoKind()
+{
+  QComboBox* box = qobject_cast<QComboBox*>(sender());
+  FsmIo* io = mComboBoxToFsmIoMap.value(box);
+  Q_ASSERT(io);
+  io->kind = box->currentText();
+  qDebug () << "Setting IO kind: " << io->kind;
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::editIoType()
+{
+  QComboBox* box = qobject_cast<QComboBox*>(sender());
+  FsmIo* io = mComboBoxToFsmIoMap.value(box);
+  Q_ASSERT(io);
+  io->type = box->currentText();
+  qDebug () << "Setting IO type: " << io->type;
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::editIoStim()
+{
+  QPushButton* button = qobject_cast<QPushButton*>(sender());
+  FsmIo* io = mButtonToFsmIoMap.value(button);
+  Q_ASSERT(io);
+  QString io_name = io->name;
+  if ( io_name == "" ) {
+    QMessageBox::warning( this, "Error", "Please give a name to this IO before editing it");
+    return;
     }
-    ios_model = new QStringListModel(ios);
-
-    ios_view = new QListView();
-    ios_view->setMaximumHeight(100);
-    ios_view->setModel(ios_model);
-    ios_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    //ios_view->setHeight(50);
-    grid->addWidget(ios_view, 2, 0, 1, 6);
-
-    QPushButton* add_button = new QPushButton("Add");
-    QPushButton* remove_button = new QPushButton("Remove");
-    QPushButton* edit_button = new QPushButton("Stimuli");
-
-    grid->addWidget(add_button, 5, 0, 1, 2);
-    grid->addWidget(remove_button, 5, 2, 1, 2);
-    grid->addWidget(edit_button, 5, 4, 1, 2);
-
-    io_panel->setLayout(grid);
-
-    connect(io_type, &QLineEdit::returnPressed, this, &PropertiesPanel::addIo);
-    connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addIo);
-    connect(edit_button, &QPushButton::clicked, this, &PropertiesPanel::editIos);
-    connect(remove_button, &QPushButton::clicked, this, &PropertiesPanel::removeIos);
+  if ( io->kind != "in" ) {
+    QMessageBox::warning( this, "Error", "Stimuli can only be attached to inputs");
+    return;
+    }
+  Stimuli* stimDialog = new Stimuli(io);
+  stimDialog->exec();
+  //fillIoList();
+  delete stimDialog;
+  main_window->setUnsavedChanges(true);
 }
 
 void PropertiesPanel::createStatePanel()
@@ -289,88 +407,6 @@ void PropertiesPanel::setModelName(const QString& name)
   main_window->setUnsavedChanges(true);
 }
 
-void PropertiesPanel::addIo()
-{
-    QString name = io_name->text().trimmed();
-    QString kind = io_kind->currentText().trimmed();
-    QString type = io_type->text().trimmed();
-
-    if ( name == "" ) return;
-    if ( kind == "" ) { QMessageBox::warning( this, "Error", "No kind specified for io " + name); return; }
-    if ( type == "" ) { QMessageBox::warning( this, "Error", "No type specified for io " + name); return; }
-
-    Fsm* model = main_window->getFsm();
-
-    if ( model->getIo(name) != NULL ) {
-        QMessageBox::warning( this, "Error", "IO or variable " + name + " is already defined");
-        return;
-        }
-
-    FsmIo* io = model->addIo(io_name->text(), io_kind->currentText(), io_type->text());
-
-    QStringList string_list = ios_model->stringList();
-    string_list << io->toString();
-    ios_model->setStringList(string_list);
-    main_window->setUnsavedChanges(true);
-}
-
-QString getStringPiece(QString s, int n, int i, QString sep=" ")
-{
-  QStringList l = s.split(sep);
-  if ( l.length() < n ) throw std::invalid_argument("PropertiesPanel::getStringPiece");
-  return l.at(i).trimmed();
-}
-
-void PropertiesPanel::removeIos()
-{
-    QList<QModelIndex> model_idxs = ios_view->selectionModel()->selectedIndexes();
-    QList<int> idxs;
-    for(auto& model_index : model_idxs)
-      idxs.append(model_index.row());
-
-    std::sort(idxs.begin(), idxs.end());
-
-    QStringList string_list = ios_model->stringList();
-    Fsm* model = main_window->getFsm();
-
-    for(auto i = idxs.rbegin(); i != idxs.rend(); i++) {
-       // TBR : the model should give a more straightforward access to the name of the item list
-        QString v = getStringPiece(string_list.at(*i), 3, 1);
-        model->removeIo(v);
-        string_list.removeAt(*i);
-    }
-
-    ios_model->setStringList(string_list);
-    main_window->setUnsavedChanges(true);
-}
-
-void PropertiesPanel::editIos()
-{
-    QList<QModelIndex> model_idxs = ios_view->selectionModel()->selectedIndexes();
-    QList<int> idxs;
-    for(auto& model_index : model_idxs) idxs.append(model_index.row());
-    std::sort(idxs.begin(), idxs.end());
-    Fsm* model = main_window->getFsm();
-    QList<FsmIo*> ios;
-    QStringList string_list = ios_model->stringList();
-    for(auto i = idxs.rbegin(); i != idxs.rend(); i++) {
-      QString name = getStringPiece(string_list.at(*i), 3, 1);
-      FsmIo* io = model->getIo(name);
-      if ( io->kind == "in" ) ios.append(io);
-      }
-    if ( ios.empty() ) {
-      QMessageBox::warning(this, "Error", "No input selected");
-      return;
-      }
-    if ( ios.length() > 1 ) {
-      QMessageBox::warning(this, "Error", "Cannot edit multiple selection. Please select a single one");
-      return;
-      }
-    Stimuli* stimDialog = new Stimuli(ios.first());
-    stimDialog->exec();
-    fillIoList();
-    delete stimDialog;
-}
 
 void PropertiesPanel::setStateName(const QString& name)
 {
@@ -469,7 +505,7 @@ void PropertiesPanel::clear()
     transition_panel->hide();
     itransition_panel->hide();
 
-    fillIoList();
+    fillIos();
     fillModelName();
 }
 
@@ -477,19 +513,14 @@ void PropertiesPanel::fillModelName()
 {
     Fsm* model = main_window->getFsm();
     if ( model == NULL ) return;
-    model_name_field->setText(model->name());
+    model_name_field->setText(model->getName());
 }
 
-void PropertiesPanel::fillIoList()
+void PropertiesPanel::fillIos()
 {
-    QStringList ios;
     Fsm* model = main_window->getFsm();
-
     if ( model == NULL ) return;
-
-    for(auto io: model->ios())
-      ios << io->toString();
-    delete ios_model;
-    ios_model = new QStringListModel(ios);
-    ios_view->setModel(ios_model);
+    QStringList ios;
+    for (auto io: model->getIos())
+      _addIo(model, io);
 }

@@ -11,14 +11,9 @@
 /***********************************************************************/
 
 #include "stimulus.h"
+#include <QtDebug>
 
-Stimulus::Stimulus()
-{
-  kind = None;
-  desc.periodic = Periodic_stim();
-}
-
-Stimulus::Stimulus(Kind kind, QList<int> &params)
+Stimulus::Stimulus(Kind kind, QList<int> params)
 {
   this->kind = kind;
   switch ( kind ) {
@@ -42,12 +37,62 @@ Stimulus::Stimulus(Kind kind, QList<int> &params)
   }
 }
 
-QString Stimulus::toString()
+Stimulus::Stimulus(QString txt)
 {
+  QStringList l = txt.split(" ");
+  qDebug () << l;
+  Q_ASSERT(l.length() >= 1 );
+  if ( l.at(0).trimmed() == "None" ) {
+    kind = None;
+    }
+  else if ( l.at(0).trimmed() == "Periodic" ) {
+    Q_ASSERT(l.length() == 4 );
+    kind = Periodic;
+    desc.periodic.period = l.at(1).trimmed().toInt();
+    desc.periodic.start_time = l.at(2).trimmed().toInt();
+    desc.periodic.end_time = l.at(3).trimmed().toInt();
+    }
+  else if ( l.at(0).trimmed() == "Sporadic" ) {
+    kind = Sporadic;
+    desc.sporadic.dates.clear();
+    for ( int i=1; i<l.length(); i++ )
+      desc.sporadic.dates.append(l.at(i).trimmed().toInt());
+    }
+  else if ( l.at(0).trimmed() == "ValueChanges" ) {
+    Q_ASSERT((l.length()-1) % 2 == 0 );
+    kind = ValueChanges;
+    desc.valueChanges.vcs.clear();
+    for ( int i=1; i<l.length(); i+=2 )
+      desc.valueChanges.vcs.append(QPair<int,int>(l.at(i).trimmed().toInt(),l.at(i+1).trimmed().toInt()));
+    }
+  else
+    Q_ASSERT(false);
+}
+
+QString Stimulus::toString() const
+{
+  QString r;
   switch ( kind ) {
   case None: return "None";
-  case Periodic: return "Periodic";
-  case Sporadic: return "Sporadic";
-  case ValueChanges: return "ValueChanges";
+  case Periodic:
+    r = "Periodic";
+    r += " " + QString::number(desc.periodic.period);
+    r += " " + QString::number(desc.periodic.start_time);
+    r += " " + QString::number(desc.periodic.end_time);
+    break;
+  case Sporadic:
+    r = "Sporadic";
+    for ( const auto t: desc.sporadic.dates ) 
+      r += " " + QString::number(t);
+    break;
+  case ValueChanges: 
+    r = "ValueChanges";
+    for ( const QPair<int,int> &vc: desc.valueChanges.vcs ) {
+      r += " " + QString::number(vc.first);
+      r += " " + QString::number(vc.second);
+      }
+    break;
   }
+  return r;
 }
+
