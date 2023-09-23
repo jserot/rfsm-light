@@ -49,8 +49,7 @@ public:
 
     void clear(void);
 
-    FsmIo* addIo(const QString name, QString kind, QString type, Stimulus stim);
-    // FsmIo* getIo(QString name);
+    FsmIo* addIo(const QString name, const FsmIo::IoKind kind, const FsmIo::IoType type, const Stimulus stim);
     void removeIo(FsmIo *io);
     QList<FsmIo*> getIos() { return ios; };
 
@@ -106,7 +105,7 @@ private:
                               State::Location location);
 
     QString name;
-    QList<FsmIo*> ios; // I/Os and local variables - TODO: split this
+    QList<FsmIo*> ios; // I/Os and local variables - TODO: split this ?
     
     Mode mode;
     QGraphicsLineItem *line;  // Line being drawn

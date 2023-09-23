@@ -118,7 +118,7 @@ void Stimuli::addPeriodicRow(QString name, int val, int step, int lo, int hi)
     spinBox->setSingleStep(step);
     spinBox->setValue(val);
     rowLayout->addWidget(spinBox);
-    formLayout->insertLayout(1,rowLayout);
+    formLayout->insertLayout(-1,rowLayout);
     rows.append(rowLayout);
 }
 

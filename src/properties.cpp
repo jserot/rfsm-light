@@ -124,6 +124,7 @@ void PropertiesPanel::createIoPanel()
 
 void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
 {
+  qDebug () << "Adding IO" << io->name;
   Q_ASSERT(model);
   Q_ASSERT(io);
   QHBoxLayout *rowLayout = new QHBoxLayout(io_panel);
@@ -142,7 +143,7 @@ void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
   io_kind->addItem("in", "in");
   io_kind->addItem("out", "out");
   io_kind->addItem("var", "var");
-  io_kind->setCurrentText(io->kind);
+  io_kind->setCurrentText(FsmIo::stringOfKind(io->kind));
   rowLayout->addWidget(io_kind);
   mComboBoxToFsmIoMap.insert(io_kind, io);
   connect(io_kind, &QComboBox::currentTextChanged, this, &PropertiesPanel::editIoKind);
@@ -168,14 +169,14 @@ void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
   mButtonToLayoutMap.insert(io_delete, rowLayout);
   mButtonToFsmIoMap.insert(io_delete, io);
   ioLayout->insertLayout(-1,rowLayout);
-  ioRows.append(rowLayout);
+  ioRows.insert(io,rowLayout);
 }
 
 void PropertiesPanel::addIo()
 {
   Fsm* model = main_window->getFsm();
   Q_ASSERT(model != 0);
-  FsmIo* io = model->addIo("", "in", "int", Stimulus(Stimulus::None));
+  FsmIo* io = model->addIo("", FsmIo::In, FsmIo::Int, Stimulus(Stimulus::None));
   _addIo(model, io);
 }
 
@@ -189,21 +190,27 @@ void delete_io_row(QLayout *layout)
   delete layout;
 }
 
+void PropertiesPanel::_removeIo(Fsm* model, FsmIo* io)
+{
+  Q_ASSERT(model);
+  Q_ASSERT(io);
+  QHBoxLayout* row_layout = ioRows.take(io);
+  Q_ASSERT(row_layout);
+  QLineEdit *io_name = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+  Q_ASSERT(io_name);
+  QString name = io_name->text().trimmed();
+  qDebug() << "Removing IO" << name;
+  delete_io_row(row_layout);
+  model->removeIo(io);
+  main_window->setUnsavedChanges(true);
+}
+
 void PropertiesPanel::removeIo()
 {
   QPushButton* button = qobject_cast<QPushButton*>(sender());
-  QHBoxLayout* row_layout = mButtonToLayoutMap.take(button);
   FsmIo* io = mButtonToFsmIoMap.take(button);
-  QLineEdit *io_name = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-  Q_ASSERT(io_name != 0);
-  QString name = io_name->text().trimmed();
-  qDebug() << "Deleting IO" << name;
-  delete_io_row(row_layout);
-  ioRows.removeOne(row_layout);
   Fsm* model = main_window->getFsm();
-  Q_ASSERT(model != 0);
-  model->removeIo(io);
-  main_window->setUnsavedChanges(true);
+  _removeIo(model, io);
 }
 
 void PropertiesPanel::editIoName()
@@ -227,7 +234,7 @@ void PropertiesPanel::editIoKind()
   QComboBox* box = qobject_cast<QComboBox*>(sender());
   FsmIo* io = mComboBoxToFsmIoMap.value(box);
   Q_ASSERT(io);
-  io->kind = box->currentText();
+  // io->kind = FsmIo::ioKindOfString(box->currentText().trimmed());
   qDebug () << "Setting IO kind: " << io->kind;
   main_window->setUnsavedChanges(true);
 }
@@ -237,7 +244,7 @@ void PropertiesPanel::editIoType()
   QComboBox* box = qobject_cast<QComboBox*>(sender());
   FsmIo* io = mComboBoxToFsmIoMap.value(box);
   Q_ASSERT(io);
-  io->type = box->currentText();
+  io->type = FsmIo::ioTypeOfString(box->currentText().trimmed());
   qDebug () << "Setting IO type: " << io->type;
   main_window->setUnsavedChanges(true);
 }
@@ -252,7 +259,7 @@ void PropertiesPanel::editIoStim()
     QMessageBox::warning( this, "Error", "Please give a name to this IO before editing it");
     return;
     }
-  if ( io->kind != "in" ) {
+  if ( io->kind != FsmIo::In ) {
     QMessageBox::warning( this, "Error", "Stimuli can only be attached to inputs");
     return;
     }
@@ -497,14 +504,8 @@ void PropertiesPanel::setTransitionActions(const QString& actions)
   main_window->setUnsavedChanges(true);
 }
 
-void PropertiesPanel::clear()
+void PropertiesPanel::update()
 {
-    selected_item = nullptr;
-
-    state_panel->hide();
-    transition_panel->hide();
-    itransition_panel->hide();
-
     fillIos();
     fillModelName();
 }
@@ -518,9 +519,42 @@ void PropertiesPanel::fillModelName()
 
 void PropertiesPanel::fillIos()
 {
+  qDebug() << "Filling IOs";
+  Fsm* model = main_window->getFsm();
+  Q_ASSERT(model);
+  if ( model == NULL ) return;
+  QStringList ios;
+  qDebug() << ios.length();
+  for (auto io: model->getIos())
+    _addIo(model, io);
+}
+
+void PropertiesPanel::clear()
+{
+  qDebug() << "Clearing properties panel";
+  selected_item = nullptr;
+
+  state_panel->hide();
+  transition_panel->hide();
+  itransition_panel->hide();
+
+  clearIos();
+  clearModelName();
+}
+
+void PropertiesPanel::clearModelName()
+{
+    Fsm* model = main_window->getFsm();
+    if ( model == NULL ) return;
+    model_name_field->setText("");
+}
+
+void PropertiesPanel::clearIos()
+{
     Fsm* model = main_window->getFsm();
     if ( model == NULL ) return;
     QStringList ios;
     for (auto io: model->getIos())
-      _addIo(model, io);
+      _removeIo(model, io);
 }
+

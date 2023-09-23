@@ -18,22 +18,27 @@
 
 class FsmIo
 {
-  public:
-    QString name;
-    QString kind;  // TO FIX : use enum 
-    QString type;  // TO FIX : use enum 
-    Stimulus stim; // For inputs
+public:
+  enum IoKind { In=0, Out, Var };
+  enum IoType { Int=0, Bool, Event};
+  QString name;
+  IoKind kind;
+  IoType type;
+  Stimulus stim; // For inputs
 
   public:
-    // FsmIo() { };
-    FsmIo(const QString& name,
-          const QString& kind,
-          const QString& type,
-          const Stimulus& stim):
-      name(name), kind(kind), type(type), stim(stim) {};
-    ~FsmIo();
+  FsmIo(const QString& name,
+        const IoKind& kind,
+        const IoType& type,
+        const Stimulus& stim):
+  name(name), kind(kind), type(type), stim(stim) {};
+  ~FsmIo();
 
-    QString toString(bool withStim=true);
-};
+  static IoKind ioKindOfString(QString s);
+  static IoType ioTypeOfString(QString s);
+  static QString stringOfKind(IoKind k);
+  static QString stringOfType(IoType t);
+  QString toString(bool withStim=true);
+  };
 
 #endif

@@ -35,18 +35,13 @@ void Fsm::setMode(Mode mode)
     this->mode = mode;
 }
 
-FsmIo* Fsm::addIo(const QString name, const QString kind, const QString type, const Stimulus stim)
+FsmIo* Fsm::addIo(const QString name, const FsmIo::IoKind kind, const FsmIo::IoType type, const Stimulus stim)
 {
-  FsmIo *v = new FsmIo(name, kind, type, stim);
-  ios.append(v);
-  return v;
+  FsmIo *io = new FsmIo(name, kind, type, stim);
+  qDebug () << "Fsm::addIo" << io;
+  ios.append(io);
+  return io;
 }
-
-
-// FsmIo* Fsm::getIo(QString name)
-// {
-//     return ios.contains(name) ? ios.value(name) : NULL;
-// }
 
 void Fsm::removeIo(FsmIo *io)
 {
@@ -359,7 +354,7 @@ bool Fsm::isItemChange(int type)
 void Fsm::readFromFile(QString fname)
 {
     QFile file(fname);
-    //qDebug() << "Opening file " << file.fileName();
+    qDebug() << "Reading model from file" << file.fileName();
     file.open(QIODevice::ReadOnly);
     if ( file.error() != QFile::NoError ) {
       QMessageBox::warning(mainWindow, "","Cannot open file " + file.fileName());
@@ -383,8 +378,8 @@ void Fsm::readFromFile(QString fname)
       std::string type = json_io.at("type");
       std::string stim = json_io.at("stim");
       addIo(QString::fromStdString(name),
-            QString::fromStdString(kind),
-            QString::fromStdString(type),
+            FsmIo::ioKindOfString(QString::fromStdString(kind)),
+            FsmIo::ioTypeOfString(QString::fromStdString(type)),
             Stimulus(QString::fromStdString(stim)));
       }
 
@@ -428,11 +423,13 @@ void Fsm::readFromFile(QString fname)
                                              location);
       transition->updatePosition();
       }
+    qDebug() << "Done";
 }
 
 void Fsm::saveToFile(QString fname)
 {
     QFile file(fname);
+    qDebug() << "Saving model to file" << file.fileName();
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     if ( file.error() != QFile::NoError ) {
       QMessageBox::warning(mainWindow, "","Cannot open file " + file.fileName());
@@ -452,8 +449,8 @@ void Fsm::saveToFile(QString fname)
         continue;
         }
       json["name"] = io->name.toStdString(); 
-      json["kind"] = io->kind.toStdString(); 
-      json["type"] = io->type.toStdString(); 
+      json["kind"] = FsmIo::stringOfKind(io->kind).toStdString(); 
+      json["type"] = FsmIo::stringOfType(io->type).toStdString(); 
       json["stim"] = io->stim.toString().toStdString(); 
       json_res["ios"].push_back(json);
       }
@@ -488,6 +485,7 @@ void Fsm::saveToFile(QString fname)
     QTextStream os(&file);
     os << QString::fromStdString(json_res.dump(2));
     file.close();
+    qDebug () << "Done";
 }
 
 // DOT export
@@ -566,7 +564,7 @@ QString stringOfVarList(QList<FsmIo*> vs, QString sep=", ", bool withType=true)
   QStringList rs;
   for (const auto& v : vs) {
     if ( withType )
-      rs << v->name + ": " + v->type;
+      rs << v->name + ": " + FsmIo::stringOfType(v->type);
     else
       rs << v->name;
     }
@@ -602,7 +600,7 @@ void Fsm::export_rfsm_model(QTextStream& os)
     QList<FsmIo*> gios, lvars;
 
     for ( const auto io : ios ) {
-      if ( io->kind == "var" ) lvars.append(io);
+      if ( io->kind == FsmIo::Var ) lvars.append(io);
       else gios.append(io);
       }
 
@@ -663,7 +661,7 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
 {
     QList<FsmIo*> gios;
     for ( const auto io : ios ) {
-      if ( io->kind == "in" ) {
+      if ( io->kind == FsmIo::In ) {
         QString ss = io->stim.toString();
         if ( ss != "" )  {
           os << "input " << io->name << " : " << io->type << " = " << ss;;
@@ -675,7 +673,7 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
           return;
           }
         }
-      else if ( io->kind == "out" ) {
+      else if ( io->kind == FsmIo::Out ) {
         os << "output " << io->name << " : " << io->type;
         gios.append(io);
         os << "\n";

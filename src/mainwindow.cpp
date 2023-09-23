@@ -436,6 +436,8 @@ void MainWindow::openFile()
 {
     checkUnsavedChanges();
     
+    properties_panel->clear(); // TOFIX : this should not be done before the new FSM is validated
+    
     QString fname = QFileDialog::getOpenFileName(this, "Open file", initDir, "FSD file (*.fsd)");
     if ( fname.isEmpty() ) return;
     try {
@@ -445,7 +447,8 @@ void MainWindow::openFile()
       QMessageBox::warning(this, "Error", "Unable to import : " + QString(e.what()));
       return;
       }
-    properties_panel->clear();
+    //qDebug () << fsm->getIos();
+    properties_panel->update();
     currentFileName = fname;
     setUnsavedChanges(false);
 }
@@ -474,8 +477,8 @@ bool MainWindow::checkSyntaxWithoutStimuli() { return checkSyntax(false); }
 void MainWindow::newDiagram()
 {
   checkUnsavedChanges();
-  fsm->clear();
   properties_panel->clear();
+  fsm->clear();
   currentFileName.clear();
   setUnsavedChanges(false);
 }

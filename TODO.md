@@ -1,6 +1,9 @@
 * GUI
-- Allow only predefined types for IOs (event, int, ...)
+- replace the `Stim` button in the IO rows by a comboBox showing the the current value; the
+  `Stimuli` dialog is only shown when the value changes
 - Restrict the kind of stimuli in the setstim dialog depending on the io kind
+- When reading a .fsd file, do _not_ clear the current model before the new one is  successfully
+  read (this will need two fsm objects : the current one and the new one; swap only if read succeeds)
 - Allow resizing of the main canvas 
 - Fix toolbars alignment (left, center, right)
 - Dedicated input fields for stimuli instead of raw text field ?

@@ -65,11 +65,11 @@ class PropertiesPanel : public QFrame
     QLineEdit* itransition_actions_field;
 
     QVBoxLayout* ioLayout;
-    QList<QHBoxLayout*> ioRows;
     QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
     QHash<QPushButton*, FsmIo*> mButtonToFsmIoMap; 
     QHash<QComboBox*, FsmIo*> mComboBoxToFsmIoMap; // TODO : merge all maps
     QHash<QLineEdit*, FsmIo*> mLineEditToFsmIoMap; // TODO : merge all maps
+    QHash<FsmIo*, QHBoxLayout*> ioRows;
 
   public:
     explicit PropertiesPanel(MainWindow* parent);
@@ -91,6 +91,7 @@ class PropertiesPanel : public QFrame
 
     void _addIo(Fsm* model, FsmIo* io);
     void addIo();
+    void _removeIo(Fsm* model, FsmIo* io);
     void removeIo();
     void editIoName();
     void editIoKind();
@@ -104,7 +105,10 @@ class PropertiesPanel : public QFrame
     void setTransitionActions(const QString& actions);
     void setITransitionDstState(int index);
 
-    void clear();
+  void update();
+  void clear();
+  void clearModelName();
+  void clearIos();
 
   private:
     void createModelPanel();
