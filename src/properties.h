@@ -66,6 +66,7 @@ class PropertiesPanel : public QFrame
 
     QVBoxLayout* ioLayout;
     QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
+    QHash<QComboBox*, QHBoxLayout*> mComboBoxToLayoutMap;
     QHash<QPushButton*, FsmIo*> mButtonToFsmIoMap; 
     QHash<QComboBox*, FsmIo*> mComboBoxToFsmIoMap; // TODO : merge all maps
     QHash<QLineEdit*, FsmIo*> mLineEditToFsmIoMap; // TODO : merge all maps

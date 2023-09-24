@@ -59,7 +59,7 @@ MainWindow::MainWindow()
     connect(fsm, SIGNAL(fsmModified()), this, SLOT(fsmModified()));
 
     properties_panel = new PropertiesPanel(this); // Warning: fsm must be created before 
-    properties_panel->setMinimumWidth(180);
+    properties_panel->setMinimumWidth(280);
     properties_panel->setMaximumWidth(360);
 
     splitter->addWidget(properties_panel);

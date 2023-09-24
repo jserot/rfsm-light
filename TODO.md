@@ -1,12 +1,12 @@
 * GUI
-- replace the `Stim` button in the IO rows by a comboBox showing the the current value; the
-  `Stimuli` dialog is only shown when the value changes
-- Restrict the kind of stimuli in the setstim dialog depending on the io kind
+- add a horizontal spacer to the properties panel
+- use `setInputMask` for IO names to fordid syntax errors on IO names (check rsfm syntax)
+- rename `fsm` to `model` (this is the _underlying_ model)
 - When reading a .fsd file, do _not_ clear the current model before the new one is  successfully
   read (this will need two fsm objects : the current one and the new one; swap only if read succeeds)
+- ... more generally rewrite the all thing using a proper MVC approach
 - Allow resizing of the main canvas 
 - Fix toolbars alignment (left, center, right)
-- Dedicated input fields for stimuli instead of raw text field ?
 - Allow attachement of priorities to transitions
 - Change cursor shape according to currently selected tool
 - Draw state boxes with round corners

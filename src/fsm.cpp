@@ -37,8 +37,8 @@ void Fsm::setMode(Mode mode)
 
 FsmIo* Fsm::addIo(const QString name, const FsmIo::IoKind kind, const FsmIo::IoType type, const Stimulus stim)
 {
+  qDebug () << "Fsm::addIo" << name << kind << type << stim.toString() ;
   FsmIo *io = new FsmIo(name, kind, type, stim);
-  qDebug () << "Fsm::addIo" << io;
   ios.append(io);
   return io;
 }
@@ -600,7 +600,7 @@ void Fsm::export_rfsm_model(QTextStream& os)
     QList<FsmIo*> gios, lvars;
 
     for ( const auto io : ios ) {
-      if ( io->kind == FsmIo::Var ) lvars.append(io);
+      if ( io->kind == FsmIo::IoVar ) lvars.append(io);
       else gios.append(io);
       }
 
@@ -661,7 +661,7 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
 {
     QList<FsmIo*> gios;
     for ( const auto io : ios ) {
-      if ( io->kind == FsmIo::In ) {
+      if ( io->kind == FsmIo::IoIn ) {
         QString ss = io->stim.toString();
         if ( ss != "" )  {
           os << "input " << io->name << " : " << io->type << " = " << ss;;
@@ -673,7 +673,7 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
           return;
           }
         }
-      else if ( io->kind == FsmIo::Out ) {
+      else if ( io->kind == FsmIo::IoOut ) {
         os << "output " << io->name << " : " << io->type;
         gios.append(io);
         os << "\n";

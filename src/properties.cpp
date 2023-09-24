@@ -115,16 +115,19 @@ void PropertiesPanel::createIoPanel()
   rowLayout->addWidget(new QLabel("Name"));
   rowLayout->addWidget(new QLabel("Kind"));
   rowLayout->addWidget(new QLabel("Type"));
+  rowLayout->addWidget(new QLabel("Stim"));
   rowLayout->addWidget(new QLabel("")); // For padding
-  rowLayout->addWidget(new QLabel(""));
   ioLayout->addLayout(rowLayout);
+
+  // QSpacerItem *verticalSpacer = new QSpacerItem(20, 64, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  // ioLayout->addItem(verticalSpacer);
 
   io_panel->setLayout(ioLayout);
 }
 
 void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
 {
-  qDebug () << "Adding IO" << io->name;
+  qDebug () << "Adding IO" << io->name << io->kind << io->type;
   Q_ASSERT(model);
   Q_ASSERT(io);
   QHBoxLayout *rowLayout = new QHBoxLayout(io_panel);
@@ -140,30 +143,36 @@ void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
   connect(io_name, &QLineEdit::textChanged, this, &PropertiesPanel::editIoName);
 
   QComboBox *io_kind = new QComboBox();
-  io_kind->addItem("in", "in");
-  io_kind->addItem("out", "out");
-  io_kind->addItem("var", "var");
-  io_kind->setCurrentText(FsmIo::stringOfKind(io->kind));
+  io_kind->addItem("in", QVariant(FsmIo::IoIn));
+  io_kind->addItem("out", QVariant(FsmIo::IoOut));
+  io_kind->addItem("var", QVariant(FsmIo::IoVar));
+  io_kind->setCurrentIndex(io->kind);
   rowLayout->addWidget(io_kind);
   mComboBoxToFsmIoMap.insert(io_kind, io);
-  connect(io_kind, &QComboBox::currentTextChanged, this, &PropertiesPanel::editIoKind);
+  connect(io_kind, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoKind);
 
   QComboBox *io_type = new QComboBox();
-  io_type->addItem("event", "event");
-  io_type->addItem("int", "int");
-  io_type->addItem("bool", "bool");
-  io_type->setCurrentText("int");
+  io_type->addItem("event", QVariant(FsmIo::TyEvent));
+  io_type->addItem("int", QVariant(FsmIo::TyInt));
+  io_type->addItem("bool", QVariant(FsmIo::TyBool));
+  io_type->setCurrentIndex(io->type);
   rowLayout->addWidget(io_type);
   mComboBoxToFsmIoMap.insert(io_type, io);
-  connect(io_type, &QComboBox::currentTextChanged, this, &PropertiesPanel::editIoType);
+  connect(io_type, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoType);
 
-  QPushButton *io_stim = new QPushButton("Stim");
+  QComboBox *io_stim = new QComboBox();
+  io_stim->addItem("None", QVariant(Stimulus::None));
+  io_stim->addItem("Periodic", QVariant(Stimulus::Periodic));
+  io_stim->addItem("Sporadic", QVariant(Stimulus::Sporadic));
+  io_stim->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
+  io_stim->setCurrentIndex(io->stim.kind);
   rowLayout->addWidget(io_stim);
-  connect(io_stim, &QPushButton::clicked, this, &PropertiesPanel::editIoStim);
-  mButtonToLayoutMap.insert(io_stim, rowLayout);
-  mButtonToFsmIoMap.insert(io_stim, io);
+  connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
+  mComboBoxToLayoutMap.insert(io_stim, rowLayout);
+  mComboBoxToFsmIoMap.insert(io_stim, io);
 
-  QPushButton *io_delete = new QPushButton("Delete");
+  QPushButton *io_delete = new QPushButton();
+  io_delete->setIcon(QIcon(":/images/delete.png"));
   rowLayout->addWidget(io_delete);
   connect(io_delete, &QPushButton::clicked, this, &PropertiesPanel::removeIo);
   mButtonToLayoutMap.insert(io_delete, rowLayout);
@@ -176,7 +185,7 @@ void PropertiesPanel::addIo()
 {
   Fsm* model = main_window->getFsm();
   Q_ASSERT(model != 0);
-  FsmIo* io = model->addIo("", FsmIo::In, FsmIo::Int, Stimulus(Stimulus::None));
+  FsmIo* io = model->addIo("", FsmIo::IoIn, FsmIo::TyInt, Stimulus(Stimulus::None));
   _addIo(model, io);
 }
 
@@ -234,7 +243,7 @@ void PropertiesPanel::editIoKind()
   QComboBox* box = qobject_cast<QComboBox*>(sender());
   FsmIo* io = mComboBoxToFsmIoMap.value(box);
   Q_ASSERT(io);
-  // io->kind = FsmIo::ioKindOfString(box->currentText().trimmed());
+  io->kind = (FsmIo::IoKind)(box->currentIndex());
   qDebug () << "Setting IO kind: " << io->kind;
   main_window->setUnsavedChanges(true);
 }
@@ -244,29 +253,40 @@ void PropertiesPanel::editIoType()
   QComboBox* box = qobject_cast<QComboBox*>(sender());
   FsmIo* io = mComboBoxToFsmIoMap.value(box);
   Q_ASSERT(io);
-  io->type = FsmIo::ioTypeOfString(box->currentText().trimmed());
+  io->type = (FsmIo::IoType)(box->currentIndex());
   qDebug () << "Setting IO type: " << io->type;
   main_window->setUnsavedChanges(true);
 }
 
 void PropertiesPanel::editIoStim()
 {
-  QPushButton* button = qobject_cast<QPushButton*>(sender());
-  FsmIo* io = mButtonToFsmIoMap.value(button);
+  QComboBox* selector = qobject_cast<QComboBox*>(sender());
+  FsmIo* io = mComboBoxToFsmIoMap.value(selector);
   Q_ASSERT(io);
   QString io_name = io->name;
   if ( io_name == "" ) {
     QMessageBox::warning( this, "Error", "Please give a name to this IO before editing it");
+    selector->setCurrentIndex(Stimulus::None);
     return;
     }
-  if ( io->kind != FsmIo::In ) {
+  if ( io->kind != FsmIo::IoIn ) {
     QMessageBox::warning( this, "Error", "Stimuli can only be attached to inputs");
+    selector->setCurrentIndex(Stimulus::None);
     return;
     }
-  Stimuli* stimDialog = new Stimuli(io);
-  stimDialog->exec();
-  //fillIoList();
-  delete stimDialog;
+  Stimulus::Kind kind = (Stimulus::Kind)(selector->currentIndex()); 
+  //if ( kind == io->stim.kind ) return; // No change
+  switch ( kind ) {
+  case Stimulus::None:
+    io->stim = Stimulus(Stimulus::None);
+    break;
+  default:
+    Stimuli* stimDialog = new Stimuli(kind,io);
+    stimDialog->exec();
+    //fillIoList();
+    delete stimDialog;
+    break;
+    }
   main_window->setUnsavedChanges(true);
 }
 

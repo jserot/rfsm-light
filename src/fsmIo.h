@@ -19,8 +19,8 @@
 class FsmIo
 {
 public:
-  enum IoKind { In=0, Out, Var };
-  enum IoType { Int=0, Bool, Event};
+  enum IoKind { IoIn=0, IoOut, IoVar };
+  enum IoType { TyEvent=0, TyInt, TyBool};
   QString name;
   IoKind kind;
   IoType type;

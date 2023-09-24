@@ -14,35 +14,35 @@
 
 FsmIo::IoKind FsmIo::ioKindOfString(QString s)
 {
-  if ( s == "in" ) return FsmIo::In;
-  else if ( s == "out" ) return FsmIo::Out;
-  else if ( s == "var" ) return FsmIo::Var;
+  if ( s == "in" ) return FsmIo::IoIn;
+  else if ( s == "out" ) return FsmIo::IoOut;
+  else if ( s == "var" ) return FsmIo::IoVar;
   else Q_ASSERT(false);
 }
 
 FsmIo::IoType FsmIo::ioTypeOfString(QString s)
 {
-  if ( s == "int" ) return FsmIo::Int;
-  else if ( s == "bool" ) return FsmIo::Bool;
-  else if ( s == "event" ) return FsmIo::Event;
+  if ( s == "event" ) return FsmIo::TyEvent;
+  else if ( s == "int" ) return FsmIo::TyInt;
+  else if ( s == "bool" ) return FsmIo::TyBool;
   else Q_ASSERT(false);
 }
 
 QString FsmIo::stringOfKind(IoKind k)
 {
   switch ( k ) {
-  case In: return QString("in");
-  case Out: return QString("out");
-  case Var: return QString("var");
+  case IoIn: return QString("in");
+  case IoOut: return QString("out");
+  case IoVar: return QString("var");
   }
 }
 
 QString FsmIo::stringOfType(IoType t)
 {
   switch ( t ) {
-  case Int: return QString("int");
-  case Bool: return QString("bool");
-  case Event: return QString("event");
+  case TyEvent: return QString("event");
+  case TyInt: return QString("int");
+  case TyBool: return QString("bool");
   }
 }
 
