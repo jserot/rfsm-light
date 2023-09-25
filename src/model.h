@@ -10,15 +10,15 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef FSM_H
-#define FSM_H
+#ifndef MODEL_H
+#define MODEL_H
 
 #include <QStringListModel>
 #include <QTextStream>
 #include <QGraphicsScene>
 
 #include "state.h"
-#include "fsmIo.h"
+#include "iov.h"
 
 QT_BEGIN_NAMESPACE
 class QGraphicsSceneMouseEvent;
@@ -28,7 +28,7 @@ class QFont;
 class QColor;
 QT_END_NAMESPACE
 
-class Fsm : public QGraphicsScene
+class Model : public QGraphicsScene
 {
     Q_OBJECT
 
@@ -42,16 +42,16 @@ public:
       DeleteItem
       };
 
-    explicit Fsm(QWidget *parent = 0);
+    explicit Model(QWidget *parent = 0);
 
     QString getName() const { return name; }
     void setName(QString n) { name = n; }
 
     void clear(void);
 
-    FsmIo* addIo(const QString name, const FsmIo::IoKind kind, const FsmIo::IoType type, const Stimulus stim);
-    void removeIo(FsmIo *io);
-    QList<FsmIo*> getIos() { return ios; };
+    Iov* addIo(const QString name, const Iov::IoKind kind, const Iov::IoType type, const Stimulus stim);
+    void removeIo(Iov *io);
+    QList<Iov*> getIos() { return ios; };
 
     QList<State*> states();
     QList<Transition*> transitions();
@@ -105,7 +105,7 @@ private:
                               State::Location location);
 
     QString name;
-    QList<FsmIo*> ios; // I/Os and local variables - TODO: split this ?
+    QList<Iov*> ios; // I/Os and local variables - TODO: split this ?
     
     Mode mode;
     QGraphicsLineItem *line;  // Line being drawn
@@ -117,4 +117,4 @@ private:
     static QColor boxColor;
 };
 
-#endif // FSM_H
+#endif // MODEL_H

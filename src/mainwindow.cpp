@@ -12,9 +12,8 @@
 
 #include "transition.h"
 #include "state.h"
-#include "fsm.h"
+#include "model.h"
 #include "mainwindow.h"
-//#include "command.h"
 #include "imageviewer.h"
 #include "syntaxHighlighters.h"
 #include "compilerPaths.h"
@@ -47,18 +46,18 @@ MainWindow::MainWindow()
 
     setCentralWidget(splitter);
 
-    fsm = new Fsm(this);
-    fsm->setSceneRect(QRectF(0, 0, canvas_width, canvas_height));
-    connect(fsm, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
-    connect(fsm, SIGNAL(stateDeleted(State*)), this, SLOT(stateDeleted(State*)));
-    connect(fsm, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
-    connect(fsm, SIGNAL(transitionDeleted(Transition*)), this, SLOT(transitionDeleted(Transition*)));
-    connect(fsm, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
-    connect(fsm, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
-    connect(fsm, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
-    connect(fsm, SIGNAL(fsmModified()), this, SLOT(fsmModified()));
+    model = new Model(this);
+    model->setSceneRect(QRectF(0, 0, canvas_width, canvas_height));
+    connect(model, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
+    connect(model, SIGNAL(stateDeleted(State*)), this, SLOT(stateDeleted(State*)));
+    connect(model, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
+    connect(model, SIGNAL(transitionDeleted(Transition*)), this, SLOT(transitionDeleted(Transition*)));
+    connect(model, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
+    connect(model, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
+    connect(model, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
+    connect(model, SIGNAL(modelModified()), this, SLOT(modelModified()));
 
-    properties_panel = new PropertiesPanel(this); // Warning: fsm must be created before 
+    properties_panel = new PropertiesPanel(this); // Warning: the model must be created before 
     properties_panel->setMinimumWidth(280);
     properties_panel->setMaximumWidth(360);
 
@@ -67,7 +66,7 @@ MainWindow::MainWindow()
     QWidget *editor = new QWidget;
     QVBoxLayout *editLayout = new QVBoxLayout;
 
-    view = new QGraphicsView(fsm);
+    view = new QGraphicsView(model);
     view->setMinimumWidth(300);
     view->setMaximumWidth(400);
     view->setMinimumHeight(400);
@@ -147,7 +146,7 @@ void MainWindow::nothingSelected()
   properties_panel->unselectItem();
 }
 
-void MainWindow::fsmModified()
+void MainWindow::modelModified()
 {
   setUnsavedChanges(true);
 }
@@ -270,12 +269,12 @@ void MainWindow::createActions()
     addSelfTransitionAction = new QAction(QIcon(":/images/loop.png")," Add self transition", diagramActions);
     deleteItemAction = new QAction(QIcon(":/images/delete.png")," Delete item", diagramActions);
 
-    selectItemAction->setData(QVariant::fromValue((int)Fsm::SelectItem));
-    addStateAction->setData(QVariant::fromValue((int)Fsm::InsertState));
-    addInitStateAction->setData(QVariant::fromValue((int)Fsm::InsertPseudoState));
-    addTransitionAction->setData(QVariant::fromValue((int)Fsm::InsertTransition));
-    addSelfTransitionAction->setData(QVariant::fromValue((int)Fsm::InsertLoopTransition));
-    deleteItemAction->setData(QVariant::fromValue((int)Fsm::DeleteItem));
+    selectItemAction->setData(QVariant::fromValue((int)Model::SelectItem));
+    addStateAction->setData(QVariant::fromValue((int)Model::InsertState));
+    addInitStateAction->setData(QVariant::fromValue((int)Model::InsertPseudoState));
+    addTransitionAction->setData(QVariant::fromValue((int)Model::InsertTransition));
+    addSelfTransitionAction->setData(QVariant::fromValue((int)Model::InsertLoopTransition));
+    deleteItemAction->setData(QVariant::fromValue((int)Model::DeleteItem));
 
     selectItemAction->setCheckable(true);
     addStateAction->setCheckable(true);
@@ -441,13 +440,13 @@ void MainWindow::openFile()
     QString fname = QFileDialog::getOpenFileName(this, "Open file", initDir, "FSD file (*.fsd)");
     if ( fname.isEmpty() ) return;
     try {
-      fsm->readFromFile(fname);
+      model->readFromFile(fname);
       }
     catch(const std::exception& e) {
       QMessageBox::warning(this, "Error", "Unable to import : " + QString(e.what()));
       return;
       }
-    //qDebug () << fsm->getIos();
+    //qDebug () << model->getIos();
     properties_panel->update();
     currentFileName = fname;
     setUnsavedChanges(false);
@@ -478,14 +477,14 @@ void MainWindow::newDiagram()
 {
   checkUnsavedChanges();
   properties_panel->clear();
-  fsm->clear();
+  model->clear();
   currentFileName.clear();
   setUnsavedChanges(false);
 }
 
 void MainWindow::saveToFile(QString fname)
 {
-  fsm->saveToFile(fname);
+  model->saveToFile(fname);
   logMessage("Saved file " + fname);
   setUnsavedChanges(false);
 }
@@ -508,9 +507,9 @@ void MainWindow::saveAs()
 
 void MainWindow::editDiagram(QAction *action)
 {
-  Fsm::Mode m = static_cast<Fsm::Mode>(action->data().value<int>());
+  Model::Mode m = static_cast<Model::Mode>(action->data().value<int>());
   //qDebug() << "Action " << m;
-  fsm->setMode(m);
+  model->setMode(m);
 }
 
 // Generating result files
@@ -536,7 +535,7 @@ void MainWindow::generateDot()
   if ( sFname.isEmpty() ) return;
   QString rFname = changeSuffix(sFname, ".dot");
   QStringList opts = compilerOptions->getOptions("dot");
-  fsm->exportDot(rFname, opts);
+  model->exportDot(rFname, opts);
   logMessage("Wrote file " + rFname);
   openResultFile(rFname);
 }
@@ -547,7 +546,7 @@ QString MainWindow::generateRfsm(bool withTestbench ) // TODO : factorize
   QString sFname = getCurrentFileName();
   if ( sFname.isEmpty() ) return "";
   QString rFname = changeSuffix(sFname, ".fsm");
-  fsm->exportRfsm(rFname, withTestbench);
+  model->exportRfsm(rFname, withTestbench);
   return rFname;
 }
 

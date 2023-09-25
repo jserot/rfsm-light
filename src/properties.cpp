@@ -14,7 +14,7 @@
 #include "mainwindow.h"
 #include "state.h"
 #include "transition.h"
-#include "fsm.h"
+#include "model.h"
 #include "stimuli.h"
 
 #include <QComboBox>
@@ -125,7 +125,7 @@ void PropertiesPanel::createIoPanel()
   io_panel->setLayout(ioLayout);
 }
 
-void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
+void PropertiesPanel::_addIo(Model* model, Iov* io)
 {
   qDebug () << "Adding IO" << io->name << io->kind << io->type;
   Q_ASSERT(model);
@@ -139,25 +139,25 @@ void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
   io_name->setText(io->name);
   // TODO: use setInputMask to fordid syntax errors on IO names (check rsfm syntax)
   rowLayout->addWidget(io_name);
-  mLineEditToFsmIoMap.insert(io_name, io);
+  mLineEditToIovMap.insert(io_name, io);
   connect(io_name, &QLineEdit::textChanged, this, &PropertiesPanel::editIoName);
 
   QComboBox *io_kind = new QComboBox();
-  io_kind->addItem("in", QVariant(FsmIo::IoIn));
-  io_kind->addItem("out", QVariant(FsmIo::IoOut));
-  io_kind->addItem("var", QVariant(FsmIo::IoVar));
+  io_kind->addItem("in", QVariant(Iov::IoIn));
+  io_kind->addItem("out", QVariant(Iov::IoOut));
+  io_kind->addItem("var", QVariant(Iov::IoVar));
   io_kind->setCurrentIndex(io->kind);
   rowLayout->addWidget(io_kind);
-  mComboBoxToFsmIoMap.insert(io_kind, io);
+  mComboBoxToIovMap.insert(io_kind, io);
   connect(io_kind, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoKind);
 
   QComboBox *io_type = new QComboBox();
-  io_type->addItem("event", QVariant(FsmIo::TyEvent));
-  io_type->addItem("int", QVariant(FsmIo::TyInt));
-  io_type->addItem("bool", QVariant(FsmIo::TyBool));
+  io_type->addItem("event", QVariant(Iov::TyEvent));
+  io_type->addItem("int", QVariant(Iov::TyInt));
+  io_type->addItem("bool", QVariant(Iov::TyBool));
   io_type->setCurrentIndex(io->type);
   rowLayout->addWidget(io_type);
-  mComboBoxToFsmIoMap.insert(io_type, io);
+  mComboBoxToIovMap.insert(io_type, io);
   connect(io_type, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoType);
 
   QComboBox *io_stim = new QComboBox();
@@ -169,23 +169,23 @@ void PropertiesPanel::_addIo(Fsm* model, FsmIo* io)
   rowLayout->addWidget(io_stim);
   connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
   mComboBoxToLayoutMap.insert(io_stim, rowLayout);
-  mComboBoxToFsmIoMap.insert(io_stim, io);
+  mComboBoxToIovMap.insert(io_stim, io);
 
   QPushButton *io_delete = new QPushButton();
   io_delete->setIcon(QIcon(":/images/delete.png"));
   rowLayout->addWidget(io_delete);
   connect(io_delete, &QPushButton::clicked, this, &PropertiesPanel::removeIo);
   mButtonToLayoutMap.insert(io_delete, rowLayout);
-  mButtonToFsmIoMap.insert(io_delete, io);
+  mButtonToIovMap.insert(io_delete, io);
   ioLayout->insertLayout(-1,rowLayout);
   ioRows.insert(io,rowLayout);
 }
 
 void PropertiesPanel::addIo()
 {
-  Fsm* model = main_window->getFsm();
+  Model* model = main_window->getModel();
   Q_ASSERT(model != 0);
-  FsmIo* io = model->addIo("", FsmIo::IoIn, FsmIo::TyInt, Stimulus(Stimulus::None));
+  Iov* io = model->addIo("", Iov::IoIn, Iov::TyInt, Stimulus(Stimulus::None));
   _addIo(model, io);
 }
 
@@ -199,7 +199,7 @@ void delete_io_row(QLayout *layout)
   delete layout;
 }
 
-void PropertiesPanel::_removeIo(Fsm* model, FsmIo* io)
+void PropertiesPanel::_removeIo(Model* model, Iov* io)
 {
   Q_ASSERT(model);
   Q_ASSERT(io);
@@ -217,18 +217,18 @@ void PropertiesPanel::_removeIo(Fsm* model, FsmIo* io)
 void PropertiesPanel::removeIo()
 {
   QPushButton* button = qobject_cast<QPushButton*>(sender());
-  FsmIo* io = mButtonToFsmIoMap.take(button);
-  Fsm* model = main_window->getFsm();
+  Iov* io = mButtonToIovMap.take(button);
+  Model* model = main_window->getModel();
   _removeIo(model, io);
 }
 
 void PropertiesPanel::editIoName()
 {
   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
-  FsmIo* io = mLineEditToFsmIoMap.value(ledit);
+  Iov* io = mLineEditToIovMap.value(ledit);
   Q_ASSERT(io);
   QString name = ledit->text().trimmed();
-  // Fsm* model = main_window->getFsm();
+  // Model* model = main_window->getModel();
   // if ( model->getIo(name) != NULL ) {
   //     QMessageBox::warning( this, "Error", "IO or variable " + name + " is already defined");
   //     return;
@@ -241,9 +241,9 @@ void PropertiesPanel::editIoName()
 void PropertiesPanel::editIoKind()
 {
   QComboBox* box = qobject_cast<QComboBox*>(sender());
-  FsmIo* io = mComboBoxToFsmIoMap.value(box);
+  Iov* io = mComboBoxToIovMap.value(box);
   Q_ASSERT(io);
-  io->kind = (FsmIo::IoKind)(box->currentIndex());
+  io->kind = (Iov::IoKind)(box->currentIndex());
   qDebug () << "Setting IO kind: " << io->kind;
   main_window->setUnsavedChanges(true);
 }
@@ -251,9 +251,9 @@ void PropertiesPanel::editIoKind()
 void PropertiesPanel::editIoType()
 {
   QComboBox* box = qobject_cast<QComboBox*>(sender());
-  FsmIo* io = mComboBoxToFsmIoMap.value(box);
+  Iov* io = mComboBoxToIovMap.value(box);
   Q_ASSERT(io);
-  io->type = (FsmIo::IoType)(box->currentIndex());
+  io->type = (Iov::IoType)(box->currentIndex());
   qDebug () << "Setting IO type: " << io->type;
   main_window->setUnsavedChanges(true);
 }
@@ -261,7 +261,7 @@ void PropertiesPanel::editIoType()
 void PropertiesPanel::editIoStim()
 {
   QComboBox* selector = qobject_cast<QComboBox*>(sender());
-  FsmIo* io = mComboBoxToFsmIoMap.value(selector);
+  Iov* io = mComboBoxToIovMap.value(selector);
   Q_ASSERT(io);
   QString io_name = io->name;
   if ( io_name == "" ) {
@@ -269,7 +269,7 @@ void PropertiesPanel::editIoStim()
     selector->setCurrentIndex(Stimulus::None);
     return;
     }
-  if ( io->kind != FsmIo::IoIn ) {
+  if ( io->kind != Iov::IoIn ) {
     QMessageBox::warning( this, "Error", "Stimuli can only be attached to inputs");
     selector->setCurrentIndex(Stimulus::None);
     return;
@@ -395,7 +395,7 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
       transition_panel->hide();
       itransition_panel->show();
       itransition_end_state_field->clear();
-      foreach ( State* state, main_window->getFsm()->states() ) {
+      foreach ( State* state, main_window->getModel()->states() ) {
         if ( ! state->isPseudo() ) {
           QString id = state->getId();
           itransition_end_state_field->addItem(id, QVariant(id));
@@ -410,7 +410,7 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
       transition_panel->show();
       transition_start_state_field->clear();
       transition_end_state_field->clear();
-      foreach ( State* state, main_window->getFsm()->states() ) {
+      foreach ( State* state, main_window->getModel()->states() ) {
         if ( ! state->isPseudo() ) {
           QString id = state->getId();
           transition_start_state_field->addItem(id, QVariant(id));
@@ -429,7 +429,7 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
 
 void PropertiesPanel::setModelName(const QString& name)
 {
-  Fsm* model = main_window->getFsm();
+  Model* model = main_window->getModel();
   model->setName(name.trimmed());
   main_window->setUnsavedChanges(true);
 }
@@ -440,7 +440,7 @@ void PropertiesPanel::setStateName(const QString& name)
     State* state = qgraphicsitem_cast<State*>(selected_item);
     if(state != nullptr) {
         state->setId(name);
-        main_window->getFsm()->update();
+        main_window->getModel()->update();
         main_window->setUnsavedChanges(true);
     }
 }
@@ -450,7 +450,7 @@ void PropertiesPanel::setStateAttr(const QString& attr)
     State* state = qgraphicsitem_cast<State*>(selected_item);
     if(state != nullptr) {
         state->setAttr(attr);
-        main_window->getFsm()->update();
+        main_window->getModel()->update();
         main_window->setUnsavedChanges(true);
     }
 }
@@ -461,11 +461,11 @@ void PropertiesPanel::setTransitionSrcState(int index)
   Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
   if ( transition == nullptr ) return;
   QString state_id = transition_start_state_field->itemText(index);
-  State* state = main_window->getFsm()->getState(state_id);
+  State* state = main_window->getModel()->getState(state_id);
   if ( state == nullptr )
     throw std::invalid_argument(std::string("No state found with id : ") + state_id.toStdString());
   transition->setSrcState(state);
-  main_window->getFsm()->update();
+  main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
 }
 
@@ -475,11 +475,11 @@ void PropertiesPanel::setTransitionDstState(int index)  // TODO: factorize with 
   Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
   if ( transition == nullptr ) return;
   QString state_id = transition_end_state_field->itemText(index);
-  State* state = main_window->getFsm()->getState(state_id);
+  State* state = main_window->getModel()->getState(state_id);
   if ( state == nullptr )
     throw std::invalid_argument(std::string("No state found with id : ") + state_id.toStdString());
   transition->setDstState(state);
-  main_window->getFsm()->update();
+  main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
 }
 
@@ -489,11 +489,11 @@ void PropertiesPanel::setITransitionDstState(int index)  // TODO: factorize with
   Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
   if ( transition == nullptr ) return;
   QString state_id = itransition_end_state_field->itemText(index);
-  State* state = main_window->getFsm()->getState(state_id);
+  State* state = main_window->getModel()->getState(state_id);
   if ( state == nullptr )
     throw std::invalid_argument(std::string("No state found with id : ") + state_id.toStdString());
   transition->setDstState(state);
-  main_window->getFsm()->update();
+  main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
 }
 
@@ -502,7 +502,7 @@ void PropertiesPanel::setTransitionEvent(const QString& event)
   Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
   if ( transition == nullptr ) return;
   transition->setEvent(event);
-  main_window->getFsm()->update();
+  main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
 }
 
@@ -511,7 +511,7 @@ void PropertiesPanel::setTransitionGuard(const QString& guard)
   Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
   if ( transition == nullptr ) return;
   transition->setGuard(guard);
-  main_window->getFsm()->update();
+  main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
 }
 
@@ -520,7 +520,7 @@ void PropertiesPanel::setTransitionActions(const QString& actions)
   Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
   if ( transition == nullptr ) return;
   transition->setActions(actions);
-  main_window->getFsm()->update();
+  main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
 }
 
@@ -532,7 +532,7 @@ void PropertiesPanel::update()
 
 void PropertiesPanel::fillModelName()
 {
-    Fsm* model = main_window->getFsm();
+    Model* model = main_window->getModel();
     if ( model == NULL ) return;
     model_name_field->setText(model->getName());
 }
@@ -540,7 +540,7 @@ void PropertiesPanel::fillModelName()
 void PropertiesPanel::fillIos()
 {
   qDebug() << "Filling IOs";
-  Fsm* model = main_window->getFsm();
+  Model* model = main_window->getModel();
   Q_ASSERT(model);
   if ( model == NULL ) return;
   QStringList ios;
@@ -564,14 +564,14 @@ void PropertiesPanel::clear()
 
 void PropertiesPanel::clearModelName()
 {
-    Fsm* model = main_window->getFsm();
+    Model* model = main_window->getModel();
     if ( model == NULL ) return;
     model_name_field->setText("");
 }
 
 void PropertiesPanel::clearIos()
 {
-    Fsm* model = main_window->getFsm();
+    Model* model = main_window->getModel();
     if ( model == NULL ) return;
     QStringList ios;
     for (auto io: model->getIos())

@@ -22,7 +22,7 @@
 #include <QFrame>
 #include <QStatusBar>
 
-class Fsm;
+class Model;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -59,7 +59,7 @@ private slots:
     void stateSelected(State *);
     void transitionSelected(Transition *);
     void nothingSelected();
-    void fsmModified();
+    void modelModified();
     void save();
     void saveAs();
     void openFile();
@@ -107,7 +107,7 @@ private:
     void addResultTab(QString fname);
     void openResultFile(QString fname);
     
-    Fsm *fsm;
+    Model *model;
     QFrame *toolbar;
     QButtonGroup *buttons;
     QGraphicsView *view;
@@ -191,7 +191,7 @@ private:
     void logMessage(QString msg);
 
 public:
-   Fsm* getFsm() const { return fsm; }
+   Model* getModel() const { return model; }
     void setUnsavedChanges(bool unsaved_changes = true);
 
 };

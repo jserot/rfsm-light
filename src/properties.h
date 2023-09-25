@@ -27,8 +27,8 @@
 class MainWindow;
 class State;
 class Transition;
-class Fsm;
-class FsmIo;
+class Model;
+class Iov;
 
 class PropertiesPanel : public QFrame
 {
@@ -67,10 +67,10 @@ class PropertiesPanel : public QFrame
     QVBoxLayout* ioLayout;
     QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
     QHash<QComboBox*, QHBoxLayout*> mComboBoxToLayoutMap;
-    QHash<QPushButton*, FsmIo*> mButtonToFsmIoMap; 
-    QHash<QComboBox*, FsmIo*> mComboBoxToFsmIoMap; // TODO : merge all maps
-    QHash<QLineEdit*, FsmIo*> mLineEditToFsmIoMap; // TODO : merge all maps
-    QHash<FsmIo*, QHBoxLayout*> ioRows;
+    QHash<QPushButton*, Iov*> mButtonToIovMap; 
+    QHash<QComboBox*, Iov*> mComboBoxToIovMap; // TODO : merge all maps
+    QHash<QLineEdit*, Iov*> mLineEditToIovMap; // TODO : merge all maps
+    QHash<Iov*, QHBoxLayout*> ioRows;
 
   public:
     explicit PropertiesPanel(MainWindow* parent);
@@ -90,9 +90,9 @@ class PropertiesPanel : public QFrame
     void setStateName(const QString& name);
     void setStateAttr(const QString& name);
 
-    void _addIo(Fsm* model, FsmIo* io);
+    void _addIo(Model* model, Iov* io);
     void addIo();
-    void _removeIo(Fsm* model, FsmIo* io);
+    void _removeIo(Model* model, Iov* io);
     void removeIo();
     void editIoName();
     void editIoKind();

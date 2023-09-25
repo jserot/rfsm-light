@@ -14,19 +14,21 @@
 #define STIMULI_DIALOG_H
 
 #include <QDialog>
-#include <QVBoxLayout>
-#include <QComboBox>
-#include <QFrame>
-#include <QPushButton>
-#include <QSpacerItem>
-#include <QComboBox>
-#include "fsmIo.h"
+ #include "iov.h"
+
+class QVBoxLayout;
+class QHBoxLayout;
+class QComboBox;
+class QFrame;
+class QPushButton;
+class QSpacerItem;
+class QComboBox;
 
 class Stimuli: public QDialog {
     Q_OBJECT
 
 public:
-  explicit Stimuli(Stimulus::Kind kind, FsmIo* inp, QWidget *parent = Q_NULLPTR);
+  explicit Stimuli(Stimulus::Kind kind, Iov* inp, QWidget *parent = Q_NULLPTR);
   ~Stimuli();
 
 private:
@@ -35,7 +37,7 @@ private:
   QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
   QList<QHBoxLayout*> rows;
   Stimulus::Kind selectedKind;
-  FsmIo *selectedInp;
+  Iov *selectedInp;
 
 private:
   QWidget *centralWidget;

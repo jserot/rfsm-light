@@ -12,8 +12,8 @@ CONFIG += c++11 console debug
 HEADERS += include/nlohmann_json.h \
            transition.h  \
            state.h  \
-           fsmIo.h  \
-           fsm.h  \
+           iov.h  \
+           model.h  \
            properties.h \
            stimulus.h \
            stimuli.h \
@@ -27,8 +27,8 @@ HEADERS += include/nlohmann_json.h \
            mainwindow.h
 SOURCES += transition.cpp \
            state.cpp \
-           fsmIo.cpp  \
-           fsm.cpp \
+           iov.cpp  \
+           model.cpp \
            properties.cpp \
            stimulus.cpp \
            stimuli.cpp \

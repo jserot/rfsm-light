@@ -10,7 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#include "fsm.h"
+#include "model.h"
 #include "transition.h"
 #include "include/nlohmann_json.h"
 #include <QMessageBox>
@@ -18,37 +18,37 @@
 #include <QFile>
 #include <QTextStream>
 
-QString Fsm::statePrefix = "S";
-int Fsm::stateCounter = 0;
-QColor Fsm::lineColor = Qt::lightGray;
-QColor Fsm::boxColor = Qt::black;
+QString Model::statePrefix = "S";
+int Model::stateCounter = 0;
+QColor Model::lineColor = Qt::lightGray;
+QColor Model::boxColor = Qt::black;
 
-Fsm::Fsm(QWidget *parent)
+Model::Model(QWidget *parent)
     : QGraphicsScene(parent)
 {
     mode = SelectItem;
     mainWindow = parent;
 }
 
-void Fsm::setMode(Mode mode)
+void Model::setMode(Mode mode)
 {
     this->mode = mode;
 }
 
-FsmIo* Fsm::addIo(const QString name, const FsmIo::IoKind kind, const FsmIo::IoType type, const Stimulus stim)
+Iov* Model::addIo(const QString name, const Iov::IoKind kind, const Iov::IoType type, const Stimulus stim)
 {
-  qDebug () << "Fsm::addIo" << name << kind << type << stim.toString() ;
-  FsmIo *io = new FsmIo(name, kind, type, stim);
+  qDebug () << "Model::addIo" << name << kind << type << stim.toString() ;
+  Iov *io = new Iov(name, kind, type, stim);
   ios.append(io);
   return io;
 }
 
-void Fsm::removeIo(FsmIo *io)
+void Model::removeIo(Iov *io)
 {
   ios.removeOne(io);
 }
 
-void Fsm::clear(void)
+void Model::clear(void)
 {
   name = "";
   ios.clear();
@@ -56,7 +56,7 @@ void Fsm::clear(void)
   QGraphicsScene::clear();
 }
 
-State* Fsm::addState(QPointF pos, QString id, QString attr)
+State* Model::addState(QPointF pos, QString id, QString attr)
 {
   State* state = new State(id, attr);
   state->setBrush(boxColor);
@@ -65,7 +65,7 @@ State* Fsm::addState(QPointF pos, QString id, QString attr)
   return state;
 }
 
-State* Fsm::addPseudoState(QPointF pos)
+State* Model::addPseudoState(QPointF pos)
 {
    State* state = new State();
    state->setBrush(boxColor);
@@ -74,7 +74,7 @@ State* Fsm::addPseudoState(QPointF pos)
    return state;
 }
 
-QList<State*> Fsm::states()
+QList<State*> Model::states()
 {
   QList<State*> states;
   for ( const auto item: items() )
@@ -83,7 +83,7 @@ QList<State*> Fsm::states()
   return states;
 }
 
-QList<Transition*> Fsm::transitions()
+QList<Transition*> Model::transitions()
 {
   QList<Transition*> transitions;
   for ( const auto item: items() )
@@ -92,7 +92,7 @@ QList<Transition*> Fsm::transitions()
   return transitions;
 }
 
-State* Fsm::initState()
+State* Model::initState()
 {
   QList<Transition*> transitions;
   for ( const auto item: items() )
@@ -103,7 +103,7 @@ State* Fsm::initState()
   return NULL;
 }
 
-Transition* Fsm::initTransition()
+Transition* Model::initTransition()
 {
   QList<Transition*> transitions;
   for ( const auto item: items() )
@@ -115,21 +115,21 @@ Transition* Fsm::initTransition()
 }
 
 
-State* Fsm::getState(QString id)
+State* Model::getState(QString id)
 {
   foreach ( State* s, states() )
     if ( s->getId() == id ) return s;
   return NULL;
 }
 
-bool Fsm::hasPseudoState()
+bool Model::hasPseudoState()
 {
   foreach ( State* s, states() )
     if ( s->isPseudo() ) return true;
   return false;
 }
 
-Transition* Fsm::addTransition(State* srcState,
+Transition* Model::addTransition(State* srcState,
                                State* dstState,
                                QString event,
                                QString guard,
@@ -144,7 +144,7 @@ Transition* Fsm::addTransition(State* srcState,
   return transition;
 }
 
-void Fsm::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() != Qt::LeftButton) return;
     State *state;
@@ -246,7 +246,7 @@ void Fsm::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
        }
 }
 
-void Fsm::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void Model::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
   if ( (mode == InsertTransition || mode == InsertPseudoState) && line != 0 ) {
     QLineF newLine(line->line().p1(), mouseEvent->scenePos());
@@ -257,7 +257,7 @@ void Fsm::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void Fsm::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void Model::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
   if ( line != 0 && (mode == InsertTransition || mode == InsertPseudoState) ) {
     QList<QGraphicsItem *> srcStates = items(line->line().p1());
@@ -289,7 +289,7 @@ void Fsm::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
   QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
-bool Fsm::isItemChange(int type)
+bool Model::isItemChange(int type)
 {
     foreach (QGraphicsItem *item, selectedItems()) {
         if (item->type() == type)
@@ -301,13 +301,13 @@ bool Fsm::isItemChange(int type)
 // Checking
 // Now carried out externally with the [rfsmlint] tool
 
-// void Fsm::check_state(State *s)
+// void Model::check_state(State *s)
 // {
 //   if ( ! states().contains(s) ) 
-//     throw std::invalid_argument(std::string("Fsm::check_state: invalid state"));
+//     throw std::invalid_argument(std::string("Model::check_state: invalid state"));
 // }
 
-// void Fsm::check_transition(Transition *t)
+// void Model::check_transition(Transition *t)
 // {
 //   check_state(t->srcState());
 //   check_state(t->dstState());
@@ -315,7 +315,7 @@ bool Fsm::isItemChange(int type)
 //     throw std::invalid_argument(std::string( "No trigerring event for transition " + t->toString().toStdString()));
 // }
 
-// void Fsm::check_model(bool withStimuli)
+// void Model::check_model(bool withStimuli)
 // {
 //   if ( name().isEmpty() ) 
 //     throw std::invalid_argument(std::string("No name specified for model"));
@@ -340,7 +340,7 @@ bool Fsm::isItemChange(int type)
 //     }
 
 //   if ( withStimuli ) {
-//     for( FsmIo* io : ios.values()) {
+//     for( Iov* io : ios.values()) {
 //       if ( io->kind() == "in" ) {
 //         if ( io->desc().kind() == Stimulus::None ) 
 //           throw std::invalid_argument(std::string("No stimulus for input " + io->name().toStdString()));
@@ -351,7 +351,7 @@ bool Fsm::isItemChange(int type)
 
 // Reading and saving
 
-void Fsm::readFromFile(QString fname)
+void Model::readFromFile(QString fname)
 {
     QFile file(fname);
     qDebug() << "Reading model from file" << file.fileName();
@@ -378,8 +378,8 @@ void Fsm::readFromFile(QString fname)
       std::string type = json_io.at("type");
       std::string stim = json_io.at("stim");
       addIo(QString::fromStdString(name),
-            FsmIo::ioKindOfString(QString::fromStdString(kind)),
-            FsmIo::ioTypeOfString(QString::fromStdString(type)),
+            Iov::ioKindOfString(QString::fromStdString(kind)),
+            Iov::ioTypeOfString(QString::fromStdString(type)),
             Stimulus(QString::fromStdString(stim)));
       }
 
@@ -413,7 +413,7 @@ void Fsm::readFromFile(QString fname)
         default: location = State::None; break;
         }
       if ( ! states.contains(src_state) || ! states.contains(dst_state) )
-        throw std::invalid_argument("Fsm::fromString: invalid state id");
+        throw std::invalid_argument("Model::fromString: invalid state id");
       State *srcState = states.value(src_state);
       State *dstState = states.value(dst_state);
       Transition *transition = addTransition(srcState, dstState,
@@ -426,7 +426,7 @@ void Fsm::readFromFile(QString fname)
     qDebug() << "Done";
 }
 
-void Fsm::saveToFile(QString fname)
+void Model::saveToFile(QString fname)
 {
     QFile file(fname);
     qDebug() << "Saving model to file" << file.fileName();
@@ -442,15 +442,15 @@ void Fsm::saveToFile(QString fname)
 
     json_res["ios"] = nlohmann::json::array();
     int cnt = 1;
-    for ( const FsmIo* io: ios ) {
+    for ( const Iov* io: ios ) {
       nlohmann::json json;
       if ( io->name == "" ) {
         QMessageBox::warning(mainWindow, "Warning", tr("IO #%1").arg(cnt) + "has no name. Ignoring it");
         continue;
         }
       json["name"] = io->name.toStdString(); 
-      json["kind"] = FsmIo::stringOfKind(io->kind).toStdString(); 
-      json["type"] = FsmIo::stringOfType(io->type).toStdString(); 
+      json["kind"] = Iov::stringOfKind(io->kind).toStdString(); 
+      json["type"] = Iov::stringOfType(io->type).toStdString(); 
       json["stim"] = io->stim.toString().toStdString(); 
       json_res["ios"].push_back(json);
       }
@@ -498,15 +498,15 @@ QString dotTransitionLabel(QString label)
   return l.at(0) + "\\n" + QString(n, '_') + "\\n" + l.at(1);
 }
 
-QString stringOfIos(QList<FsmIo*> ios)
+QString stringOfIos(QList<Iov*> ios)
 {
   QString r;
-  foreach ( FsmIo* io, ios)
+  foreach ( Iov* io, ios)
     r += io->toString() + "\\l";
   return r;
 }
 
-void Fsm::exportDot(QString fname, QStringList options)
+void Model::exportDot(QString fname, QStringList options)
 {
   QFile file(fname);
   file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -559,12 +559,12 @@ void Fsm::exportDot(QString fname, QStringList options)
 
 // RFSM export
 
-QString stringOfVarList(QList<FsmIo*> vs, QString sep=", ", bool withType=true) 
+QString stringOfVarList(QList<Iov*> vs, QString sep=", ", bool withType=true) 
 {
   QStringList rs;
   for (const auto& v : vs) {
     if ( withType )
-      rs << v->name + ": " + FsmIo::stringOfType(v->type);
+      rs << v->name + ": " + Iov::stringOfType(v->type);
     else
       rs << v->name;
     }
@@ -593,14 +593,14 @@ QString stringOfState(State *s)
 }
 
 
-void Fsm::export_rfsm_model(QTextStream& os)
+void Model::export_rfsm_model(QTextStream& os)
 {
     QString indent = QString(2, ' ');
 
-    QList<FsmIo*> gios, lvars;
+    QList<Iov*> gios, lvars;
 
     for ( const auto io : ios ) {
-      if ( io->kind == FsmIo::IoVar ) lvars.append(io);
+      if ( io->kind == Iov::IoVar ) lvars.append(io);
       else gios.append(io);
       }
 
@@ -657,11 +657,11 @@ void Fsm::export_rfsm_model(QTextStream& os)
     os << "}";
 }
 
-void Fsm::export_rfsm_testbench(QTextStream& os)
+void Model::export_rfsm_testbench(QTextStream& os)
 {
-    QList<FsmIo*> gios;
+    QList<Iov*> gios;
     for ( const auto io : ios ) {
-      if ( io->kind == FsmIo::IoIn ) {
+      if ( io->kind == Iov::IoIn ) {
         QString ss = io->stim.toString();
         if ( ss != "" )  {
           os << "input " << io->name << " : " << io->type << " = " << ss;;
@@ -673,7 +673,7 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
           return;
           }
         }
-      else if ( io->kind == FsmIo::IoOut ) {
+      else if ( io->kind == Iov::IoOut ) {
         os << "output " << io->name << " : " << io->type;
         gios.append(io);
         os << "\n";
@@ -690,7 +690,7 @@ void Fsm::export_rfsm_testbench(QTextStream& os)
     os << ")";
 }
 
-void Fsm::exportRfsm(QString fname, bool withTestbench)
+void Model::exportRfsm(QString fname, bool withTestbench)
 {
   QFile file(fname);
   file.open(QIODevice::WriteOnly | QIODevice::Text);

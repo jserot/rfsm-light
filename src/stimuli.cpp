@@ -13,10 +13,12 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 #include <QSpinBox>
+#include <QVBoxLayout>
+#include <QPushButton>
 
 #include "stimuli.h"
 
-Stimuli::Stimuli(Stimulus::Kind kind, FsmIo* inp, QWidget *parent)
+Stimuli::Stimuli(Stimulus::Kind kind, Iov* inp, QWidget *parent)
     : QDialog(parent)
 {
   selectedInp = inp;

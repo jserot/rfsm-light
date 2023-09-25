@@ -10,25 +10,25 @@
 /*                                                                     */
 /***********************************************************************/
 
-#include "fsmIo.h"
+#include "iov.h"
 
-FsmIo::IoKind FsmIo::ioKindOfString(QString s)
+Iov::IoKind Iov::ioKindOfString(QString s)
 {
-  if ( s == "in" ) return FsmIo::IoIn;
-  else if ( s == "out" ) return FsmIo::IoOut;
-  else if ( s == "var" ) return FsmIo::IoVar;
+  if ( s == "in" ) return Iov::IoIn;
+  else if ( s == "out" ) return Iov::IoOut;
+  else if ( s == "var" ) return Iov::IoVar;
   else Q_ASSERT(false);
 }
 
-FsmIo::IoType FsmIo::ioTypeOfString(QString s)
+Iov::IoType Iov::ioTypeOfString(QString s)
 {
-  if ( s == "event" ) return FsmIo::TyEvent;
-  else if ( s == "int" ) return FsmIo::TyInt;
-  else if ( s == "bool" ) return FsmIo::TyBool;
+  if ( s == "event" ) return Iov::TyEvent;
+  else if ( s == "int" ) return Iov::TyInt;
+  else if ( s == "bool" ) return Iov::TyBool;
   else Q_ASSERT(false);
 }
 
-QString FsmIo::stringOfKind(IoKind k)
+QString Iov::stringOfKind(IoKind k)
 {
   switch ( k ) {
   case IoIn: return QString("in");
@@ -37,7 +37,7 @@ QString FsmIo::stringOfKind(IoKind k)
   }
 }
 
-QString FsmIo::stringOfType(IoType t)
+QString Iov::stringOfType(IoType t)
 {
   switch ( t ) {
   case TyEvent: return QString("event");
@@ -46,7 +46,7 @@ QString FsmIo::stringOfType(IoType t)
   }
 }
 
-QString FsmIo::toString(bool withStim)
+QString Iov::toString(bool withStim)
 {
   QString r;
   r = stringOfKind(kind) + " " + name + " : " + stringOfType(type);

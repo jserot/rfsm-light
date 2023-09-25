@@ -10,13 +10,13 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef FSM_IO
-#define FSM_IO
+#ifndef IOV
+#define IOV
 
 #include <QString>
 #include "stimulus.h"
 
-class FsmIo
+class Iov
 {
 public:
   enum IoKind { IoIn=0, IoOut, IoVar };
@@ -27,12 +27,12 @@ public:
   Stimulus stim; // For inputs
 
   public:
-  FsmIo(const QString& name,
+  Iov(const QString& name,
         const IoKind& kind,
         const IoType& type,
         const Stimulus& stim):
   name(name), kind(kind), type(type), stim(stim) {};
-  ~FsmIo();
+  ~Iov();
 
   static IoKind ioKindOfString(QString s);
   static IoType ioTypeOfString(QString s);

@@ -54,8 +54,8 @@ OBJECTS_DIR   = ./
 
 SOURCES       = transition.cpp \
 		state.cpp \
-		fsmIo.cpp \
-		fsm.cpp \
+		iov.cpp \
+		model.cpp \
 		properties.cpp \
 		stimulus.cpp \
 		stimuli.cpp \
@@ -68,7 +68,7 @@ SOURCES       = transition.cpp \
 		debug.cpp \
 		main.cpp \
 		mainwindow.cpp qrc_resources.cpp \
-		moc_fsm.cpp \
+		moc_model.cpp \
 		moc_properties.cpp \
 		moc_stimuli.cpp \
 		moc_imageviewer.cpp \
@@ -78,8 +78,8 @@ SOURCES       = transition.cpp \
 		moc_mainwindow.cpp
 OBJECTS       = transition.o \
 		state.o \
-		fsmIo.o \
-		fsm.o \
+		iov.o \
+		model.o \
 		properties.o \
 		stimulus.o \
 		stimuli.o \
@@ -93,7 +93,7 @@ OBJECTS       = transition.o \
 		main.o \
 		mainwindow.o \
 		qrc_resources.o \
-		moc_fsm.o \
+		moc_model.o \
 		moc_properties.o \
 		moc_stimuli.o \
 		moc_imageviewer.o \
@@ -348,8 +348,8 @@ DIST          = ../../../../Qt/6.3.1/macos/mkspecs/features/spec_pre.prf \
 		main.pro include/nlohmann_json.h \
 		transition.h \
 		state.h \
-		fsmIo.h \
-		fsm.h \
+		iov.h \
+		model.h \
 		properties.h \
 		stimulus.h \
 		stimuli.h \
@@ -362,8 +362,8 @@ DIST          = ../../../../Qt/6.3.1/macos/mkspecs/features/spec_pre.prf \
 		debug.h \
 		mainwindow.h transition.cpp \
 		state.cpp \
-		fsmIo.cpp \
-		fsm.cpp \
+		iov.cpp \
+		model.cpp \
 		properties.cpp \
 		stimulus.cpp \
 		stimuli.cpp \
@@ -931,8 +931,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents resources.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents include/nlohmann_json.h transition.h state.h fsmIo.h fsm.h properties.h stimulus.h stimuli.h command.h imageviewer.h syntaxHighlighters.h compilerPaths.h compilerOption.h compilerOptions.h debug.h mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents transition.cpp state.cpp fsmIo.cpp fsm.cpp properties.cpp stimulus.cpp stimuli.cpp command.cpp syntaxHighlighters.cpp compilerPaths.cpp compilerOption.cpp compilerOptions.cpp imageviewer.cpp debug.cpp main.cpp mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents include/nlohmann_json.h transition.h state.h iov.h model.h properties.h stimulus.h stimuli.h command.h imageviewer.h syntaxHighlighters.h compilerPaths.h compilerOption.h compilerOptions.h debug.h mainwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents transition.cpp state.cpp iov.cpp model.cpp properties.cpp stimulus.cpp stimuli.cpp command.cpp syntaxHighlighters.cpp compilerPaths.cpp compilerOption.cpp compilerOptions.cpp imageviewer.cpp debug.cpp main.cpp mainwindow.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -980,10 +980,10 @@ qrc_resources.cpp: resources.qrc \
 		images/compileCTask.png
 	/Users/jserot/Qt/6.3.1/macos/libexec/rcc -name resources resources.qrc -o qrc_resources.cpp
 
-compiler_moc_header_make_all: moc_fsm.cpp moc_properties.cpp moc_stimuli.cpp moc_imageviewer.cpp moc_syntaxHighlighters.cpp moc_compilerPaths.cpp moc_compilerOptions.cpp moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_model.cpp moc_properties.cpp moc_stimuli.cpp moc_imageviewer.cpp moc_syntaxHighlighters.cpp moc_compilerPaths.cpp moc_compilerOptions.cpp moc_mainwindow.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_fsm.cpp moc_properties.cpp moc_stimuli.cpp moc_imageviewer.cpp moc_syntaxHighlighters.cpp moc_compilerPaths.cpp moc_compilerOptions.cpp moc_mainwindow.cpp
-moc_fsm.cpp: fsm.h \
+	-$(DEL_FILE) moc_model.cpp moc_properties.cpp moc_stimuli.cpp moc_imageviewer.cpp moc_syntaxHighlighters.cpp moc_compilerPaths.cpp moc_compilerOptions.cpp moc_mainwindow.cpp
+moc_model.cpp: model.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QStringListModel \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstringlistmodel.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
@@ -995,12 +995,12 @@ moc_fsm.cpp: fsm.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h \
-		fsmIo.h \
+		iov.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
 		stimulus.h \
 		../../../../Qt/6.3.1/macos/libexec/moc
-	/Users/jserot/Qt/6.3.1/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=13 -D__clang_minor__=1 -D__clang_patchlevel__=6 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jserot/Qt/6.3.1/macos/mkspecs/macx-clang -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Qt/6.3.1/macos/lib/QtWidgets.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtGui.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtCore5Compat.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/13.1.6/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jserot/Qt/6.3.1/macos/lib fsm.h -o moc_fsm.cpp
+	/Users/jserot/Qt/6.3.1/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=13 -D__clang_minor__=1 -D__clang_patchlevel__=6 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jserot/Qt/6.3.1/macos/mkspecs/macx-clang -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Qt/6.3.1/macos/lib/QtWidgets.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtGui.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtCore5Compat.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/13.1.6/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jserot/Qt/6.3.1/macos/lib model.h -o moc_model.cpp
 
 moc_properties.cpp: properties.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QComboBox \
@@ -1039,12 +1039,6 @@ moc_stimuli.cpp: stimuli.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qpushbutton.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QSpacerItem \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlayoutitem.h \
-		fsmIo.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		stimulus.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h \
 		../../../../Qt/6.3.1/macos/libexec/moc
 	/Users/jserot/Qt/6.3.1/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=13 -D__clang_minor__=1 -D__clang_patchlevel__=6 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jserot/Qt/6.3.1/macos/mkspecs/macx-clang -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Qt/6.3.1/macos/lib/QtWidgets.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtGui.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtCore5Compat.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/13.1.6/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jserot/Qt/6.3.1/macos/lib stimuli.h -o moc_stimuli.cpp
 
@@ -1183,41 +1177,27 @@ state.o: state.cpp state.h \
 		../../../../Qt/6.3.1/macos/lib/QtGui.framework/Headers/qpainter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o state.o state.cpp
 
-fsmIo.o: fsmIo.cpp fsmIo.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		stimulus.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fsmIo.o fsmIo.cpp
+iov.o: iov.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o iov.o iov.cpp
 
-fsm.o: fsm.cpp fsm.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QStringListModel \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstringlistmodel.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qtextstream.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
+model.o: model.cpp transition.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPolygonItem \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsSimpleTextItem \
 		state.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h \
-		fsmIo.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		stimulus.h \
-		transition.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPolygonItem \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsSimpleTextItem \
 		include/nlohmann_json.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QMessageBox \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsSceneMouseEvent \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicssceneevent.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QFile \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qfile.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fsm.o fsm.cpp
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qfile.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qtextstream.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o model.o model.cpp
 
 properties.o: properties.cpp properties.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QComboBox \
@@ -1256,13 +1236,6 @@ properties.o: properties.cpp properties.h \
 		transition.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPolygonItem \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsSimpleTextItem \
-		fsm.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qtextstream.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
-		fsmIo.h \
-		stimulus.h \
 		stimuli.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QDialog \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qdialog.h \
@@ -1281,7 +1254,9 @@ properties.o: properties.cpp properties.h \
 
 stimulus.o: stimulus.cpp stimulus.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QtDebug \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qdebug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o stimulus.o stimulus.cpp
 
 stimuli.o: stimuli.cpp ../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QLabel \
@@ -1302,13 +1277,7 @@ stimuli.o: stimuli.cpp ../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Header
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QPushButton \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qpushbutton.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QSpacerItem \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlayoutitem.h \
-		fsmIo.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		stimulus.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlayoutitem.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o stimuli.o stimuli.cpp
 
 command.o: command.cpp command.h \
@@ -1906,17 +1875,6 @@ mainwindow.o: mainwindow.cpp transition.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h \
-		fsm.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QStringListModel \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstringlistmodel.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qtextstream.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
-		fsmIo.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		stimulus.h \
 		mainwindow.h \
 		properties.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QComboBox \
@@ -1930,6 +1888,10 @@ mainwindow.o: mainwindow.cpp transition.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlineedit.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QListView \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlistview.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QStringListModel \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstringlistmodel.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QVBoxLayout \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qboxlayout.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QPushButton \
@@ -2014,6 +1976,7 @@ mainwindow.o: mainwindow.cpp transition.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicslayoutitem.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicslinearlayout.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsproxywidget.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicssceneevent.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicstransform.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsview.h \
@@ -2082,8 +2045,8 @@ mainwindow.o: mainwindow.cpp transition.h \
 qrc_resources.o: qrc_resources.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_resources.o qrc_resources.cpp
 
-moc_fsm.o: moc_fsm.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_fsm.o moc_fsm.cpp
+moc_model.o: moc_model.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_model.o moc_model.cpp
 
 moc_properties.o: moc_properties.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_properties.o moc_properties.cpp
