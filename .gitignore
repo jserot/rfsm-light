@@ -30,6 +30,8 @@ TAGS
 examples/*/*.fsm
 examples/*/*.c
 examples/*/*.h
+examples/*/*.cpp
+examples/*/*.vhd
 examples/*/rfsm.output
 examples/*/dot/
 examples/*/sim/
