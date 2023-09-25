@@ -1,19 +1,19 @@
 {
   "ios": [
     {
-      "desc": "",
+      "stim": "None",
       "kind": "var",
       "name": "c",
       "type": "int"
     },
     {
-      "desc": "Periodic 10 10 110",
+      "stim": "Periodic 10 10 110",
       "kind": "in",
       "name": "h",
       "type": "event"
     },
     {
-      "desc": "Sporadic 25 75",
+      "stim": "Sporadic 25 75",
       "kind": "in",
       "name": "startStop",
       "type": "event"

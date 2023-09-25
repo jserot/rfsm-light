@@ -1,25 +1,25 @@
 {
   "ios": [
     {
-      "desc": "ValueChanges 0:0 25:1 35:0 75:1 95:0 145:1 175:0",
+      "stim": "ValueChanges 0 0 25 1 35 0 75 1 95 0 145 1 175 0",
       "kind": "in",
       "name": "e",
       "type": "bool"
     },
     {
-      "desc": "Periodic 10 10 250",
+      "stim": "Periodic 10 10 250",
       "kind": "in",
       "name": "h",
       "type": "event"
     },
     {
-      "desc": "",
+      "stim": "None",
       "kind": "var",
       "name": "k",
       "type": "int"
     },
     {
-      "desc": "",
+      "stim": "None",
       "kind": "out",
       "name": "s",
       "type": "bool"
