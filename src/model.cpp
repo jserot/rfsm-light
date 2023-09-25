@@ -612,7 +612,7 @@ void Model::export_rfsm_model(QTextStream& os)
       for(const auto io : gios) {
             if(!first) os << "," << "\n";
             os << indent;
-            os << io->kind << " " << io->name << ": " << io->type;
+            os << Iov::stringOfKind(io->kind) << " " << io->name << ": " << Iov::stringOfType(io->type);
             first = false;
         }
       os << "\n" << indent <<  ")" << "\n";
@@ -657,14 +657,47 @@ void Model::export_rfsm_model(QTextStream& os)
     os << "}";
 }
 
+QString export_rfsm_stim(Stimulus &st) 
+// We cannot use Stimulus::toString() since the syntax is different :(
+{
+  QString r;
+  switch ( st.kind ) {
+  case Stimulus::None: return "";
+  case Stimulus::Periodic:
+    r = "periodic(";
+    r +=      QString::number(st.desc.periodic.period);
+    r += "," + QString::number(st.desc.periodic.start_time);
+    r += "," + QString::number(st.desc.periodic.end_time) + ")";
+    break;
+  case Stimulus::Sporadic:
+    r = "sporadic(";
+    for ( const auto t: st.desc.sporadic.dates ) {
+      r += " " + QString::number(t);
+      r += ",";
+      }
+    if ( r.last(1) == "," ) r.chop(1);
+    r += ")";
+    break;
+  case Stimulus::ValueChanges: 
+    r = "value_changes(";
+    for ( const QPair<int,int> &vc: st.desc.valueChanges.vcs ) {
+      r += QString::number(vc.first) + ":" + QString::number(vc.second);
+      r += ",";
+      }
+    if ( r.last(1) == "," ) r.chop(1);
+    r += ")";
+    break;
+  }
+  return r;
+}
 void Model::export_rfsm_testbench(QTextStream& os)
 {
     QList<Iov*> gios;
     for ( const auto io : ios ) {
       if ( io->kind == Iov::IoIn ) {
-        QString ss = io->stim.toString();
+        QString ss = export_rfsm_stim(io->stim);
         if ( ss != "" )  {
-          os << "input " << io->name << " : " << io->type << " = " << ss;;
+          os << "input " << io->name << " : " << Iov::stringOfType(io->type) << " = " << ss;;
           gios.append(io);
           os << "\n";
           }
@@ -674,7 +707,7 @@ void Model::export_rfsm_testbench(QTextStream& os)
           }
         }
       else if ( io->kind == Iov::IoOut ) {
-        os << "output " << io->name << " : " << io->type;
+        os << "output " << io->name << " : " << Iov::stringOfType(io->type);
         gios.append(io);
         os << "\n";
         }

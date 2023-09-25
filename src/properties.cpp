@@ -245,6 +245,18 @@ void PropertiesPanel::editIoKind()
   Q_ASSERT(io);
   io->kind = (Iov::IoKind)(box->currentIndex());
   qDebug () << "Setting IO kind: " << io->kind;
+  switch ( io->kind ) {
+  case Iov::IoIn: 
+    for ( int i=0; i<box->count(); i++ )
+      // stim_box->setItemData(i, false, i); // Need to retrieve stim_box from the current kind_box
+      qDebug () << "Validating item" << i;
+    break;
+  default:
+    for ( int i=1; i<box->count(); i++ ) 
+      // stim_box->setItemData(i, false, Qt::UserRole-1); // Devalidate stimuli setting for non-inputs
+      qDebug () << "Devalidating item" << i;
+    break;
+  }
   main_window->setUnsavedChanges(true);
 }
 

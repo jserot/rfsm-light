@@ -1,33 +1,33 @@
 {
   "ios": [
     {
-      "stim": "Sporadic 25 75 95",
       "kind": "in",
       "name": "clic",
+      "stim": "Sporadic 25 75 95",
       "type": "event"
     },
     {
-      "stim": "Periodic 10 10 120",
       "kind": "in",
       "name": "clk",
+      "stim": "Periodic 10 10 120",
       "type": "event"
     },
     {
-      "stim": "None",
       "kind": "var",
       "name": "ctr",
+      "stim": "None",
       "type": "int"
     },
     {
-      "stim": "None",
       "kind": "out",
       "name": "doubleClic",
+      "stim": "None",
       "type": "event"
     },
     {
-      "stim": "None",
       "kind": "out",
       "name": "simpleClic",
+      "stim": "None",
       "type": "event"
     }
   ],
