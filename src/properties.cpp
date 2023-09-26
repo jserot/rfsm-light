@@ -193,10 +193,13 @@ void PropertiesPanel::addIo()
   _addIo(model, io);
 }
 
-void delete_io_row(QLayout *layout)
+void PropertiesPanel::delete_io_row(QLayout *layout)
 {
   while (layout->count() != 0) {
     QLayoutItem* item = layout->takeAt(0);
+    QWidget* widget = item->widget();
+    widgetToLayout.remove(widget);
+    widgetToIo.remove(widget);
     delete item->widget();
     delete item;
   }

@@ -65,16 +65,9 @@ class PropertiesPanel : public QFrame
     QLineEdit* itransition_actions_field;
 
     QVBoxLayout* ioLayout;
-    QHash<QWidget*, QHBoxLayout*> widgetToLayout; // ex mXXXToLayoutMap
-    QHash<QWidget*, Iov*> widgetToIo; // ex xxxToIovMap
-    QHash<QHBoxLayout*, Iov*> layoutToIo;
-    QHash<Iov*, QHBoxLayout*> ioToLayout; // ex ioRows
-
-    // QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
-    // QHash<QComboBox*, QHBoxLayout*> mComboBoxToLayoutMap;
-    // QHash<QPushButton*, Iov*> mButtonToIovMap; 
-    // QHash<QComboBox*, Iov*> mComboBoxToIovMap; // TODO : merge all maps
-    // QHash<QLineEdit*, Iov*> mLineEditToIovMap; // TODO : merge all maps
+    QHash<QWidget*, QHBoxLayout*> widgetToLayout; 
+    QHash<QWidget*, Iov*> widgetToIo; 
+    QHash<Iov*, QHBoxLayout*> ioToLayout; 
 
   public:
     explicit PropertiesPanel(MainWindow* parent);
@@ -96,6 +89,7 @@ class PropertiesPanel : public QFrame
 
     void _addIo(Model* model, Iov* io);
     void addIo();
+    void delete_io_row(QLayout *layout);
     void _removeIo(Model* model, Iov* io);
     void removeIo();
     void editIoName();
