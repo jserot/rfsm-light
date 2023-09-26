@@ -15,5 +15,4 @@
 - Allow resizing of state boxes
 
 TOOLS
-- rfsmlint : remove
 
