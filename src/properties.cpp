@@ -64,7 +64,7 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     connect(state_attr_field, &QLineEdit::textEdited, this, &PropertiesPanel::setStateAttr);
     connect(transition_start_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionSrcState);
     connect(transition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionDstState);
-    connect(transition_event_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionEvent);
+    connect(transition_event_field, &QComboBox::activated, this, &PropertiesPanel::setTransitionEvent);
     connect(transition_guard_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionGuard);
     connect(transition_actions_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionActions);
     connect(itransition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setITransitionDstState);
@@ -362,8 +362,7 @@ void PropertiesPanel::createTransitionPanel()
     transitionLayout->addWidget(transition_end_state_field, 1, 3, 1, 3);
 
     QLabel* eventLabel = new QLabel("Event");
-    transition_event_field = new QLineEdit();
-    //transition_event_field->setMinimumWidth(50);
+    transition_event_field = new QComboBox();
     transitionLayout->addWidget(eventLabel, 2, 0, 1, 2);
     transitionLayout->addWidget(transition_event_field, 2, 2, 1, 4);
 
@@ -456,7 +455,27 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
             transition_end_state_field->setCurrentIndex(transition_end_state_field->count()-1);
           }
         }
-      transition_event_field->setText(transition->getEvent());
+
+      Model* model = main_window->getModel();
+      Q_ASSERT(model);
+      QStringList inpEvents = model->getInpEvents();
+      if ( inpEvents.isEmpty() )
+        QMessageBox::warning( this, "Error", "No input event available to trigger this transition");
+      for ( int i=0; i<transition_event_field->count(); i++ )
+        transition_event_field->removeItem(i);
+      for ( auto ev: inpEvents ) 
+        transition_event_field->addItem(ev, QVariant(ev));
+      QString event = transition->getEvent();
+      qDebug() << event << inpEvents;
+      if ( event == "" ) 
+        transition_event_field->setCurrentIndex(0);
+      else {
+        if ( inpEvents.contains(event) ) 
+          transition_event_field->setCurrentText(event);
+        else
+          QMessageBox::warning( this, "Error", "The triggering event for this transition is no longer listed in the model inputs");
+      }
+
       transition_guard_field->setText(transition->getGuard());
       transition_actions_field->setText(transition->getActions());
     }
@@ -532,10 +551,14 @@ void PropertiesPanel::setITransitionDstState(int index)  // TODO: factorize with
   main_window->setUnsavedChanges(true);
 }
 
-void PropertiesPanel::setTransitionEvent(const QString& event)
+void PropertiesPanel::setTransitionEvent()
 {
+  QComboBox* selector = qobject_cast<QComboBox*>(sender());
   Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
-  if ( transition == nullptr ) return;
+  Q_ASSERT(selector);
+  Q_ASSERT(transition);
+  QString event = selector->currentText();
+  qDebug() << "setTransitionEvent:" << event;
   transition->setEvent(event);
   main_window->getModel()->update();
   main_window->setUnsavedChanges(true);

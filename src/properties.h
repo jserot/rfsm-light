@@ -56,7 +56,7 @@ class PropertiesPanel : public QFrame
     QGroupBox* transition_panel;
     QComboBox* transition_start_state_field;
     QComboBox* transition_end_state_field;
-    QLineEdit* transition_event_field;
+    QComboBox* transition_event_field;
     QLineEdit* transition_guard_field;
     QLineEdit* transition_actions_field;
 
@@ -99,7 +99,7 @@ class PropertiesPanel : public QFrame
 
     void setTransitionSrcState(int index);
     void setTransitionDstState(int index);
-    void setTransitionEvent(const QString& event);
+    void setTransitionEvent();
     void setTransitionGuard(const QString& guard);
     void setTransitionActions(const QString& actions);
     void setITransitionDstState(int index);

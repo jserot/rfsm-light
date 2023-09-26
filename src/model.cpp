@@ -122,6 +122,14 @@ State* Model::getState(QString id)
   return NULL;
 }
 
+QStringList Model::getInpEvents()
+{
+  QStringList r;
+  for ( const auto io : ios )
+    if ( io->kind == Iov::IoIn && io->type == Iov::TyEvent ) r.append(io->name);
+  return r;
+}
+
 bool Model::hasPseudoState()
 {
   foreach ( State* s, states() )
