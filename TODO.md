@@ -1,6 +1,5 @@
 * GUI
 - add a horizontal spacer to the properties panel
-- use `setInputMask` for IO names to fordid syntax errors on IO names (check rsfm syntax)
 - When reading a .fsd file, do _not_ clear the current model before the new one is  successfully
   read (this will need two fsm objects : the current one and the new one; swap only if read succeeds)
 - add sized ints
