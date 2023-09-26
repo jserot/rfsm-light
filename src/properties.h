@@ -65,12 +65,16 @@ class PropertiesPanel : public QFrame
     QLineEdit* itransition_actions_field;
 
     QVBoxLayout* ioLayout;
-    QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
-    QHash<QComboBox*, QHBoxLayout*> mComboBoxToLayoutMap;
-    QHash<QPushButton*, Iov*> mButtonToIovMap; 
-    QHash<QComboBox*, Iov*> mComboBoxToIovMap; // TODO : merge all maps
-    QHash<QLineEdit*, Iov*> mLineEditToIovMap; // TODO : merge all maps
-    QHash<Iov*, QHBoxLayout*> ioRows;
+    QHash<QWidget*, QHBoxLayout*> widgetToLayout; // ex mXXXToLayoutMap
+    QHash<QWidget*, Iov*> widgetToIo; // ex xxxToIovMap
+    QHash<QHBoxLayout*, Iov*> layoutToIo;
+    QHash<Iov*, QHBoxLayout*> ioToLayout; // ex ioRows
+
+    // QHash<QPushButton*, QHBoxLayout*> mButtonToLayoutMap;
+    // QHash<QComboBox*, QHBoxLayout*> mComboBoxToLayoutMap;
+    // QHash<QPushButton*, Iov*> mButtonToIovMap; 
+    // QHash<QComboBox*, Iov*> mComboBoxToIovMap; // TODO : merge all maps
+    // QHash<QLineEdit*, Iov*> mLineEditToIovMap; // TODO : merge all maps
 
   public:
     explicit PropertiesPanel(MainWindow* parent);

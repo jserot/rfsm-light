@@ -33,6 +33,7 @@
 #include <QVBoxLayout>
 #include <stdexcept>
 #include <QMessageBox>
+#include <QStandardItemModel>
 //#include <qDebug>
 
 PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
@@ -139,7 +140,8 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   io_name->setText(io->name);
   // TODO: use setInputMask to fordid syntax errors on IO names (check rsfm syntax)
   rowLayout->addWidget(io_name);
-  mLineEditToIovMap.insert(io_name, io);
+  widgetToIo.insert((QWidget*)io_name, io);
+  widgetToLayout.insert((QWidget*)io_name, rowLayout);
   connect(io_name, &QLineEdit::textChanged, this, &PropertiesPanel::editIoName);
 
   QComboBox *io_kind = new QComboBox();
@@ -148,7 +150,8 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   io_kind->addItem("var", QVariant(Iov::IoVar));
   io_kind->setCurrentIndex(io->kind);
   rowLayout->addWidget(io_kind);
-  mComboBoxToIovMap.insert(io_kind, io);
+  widgetToIo.insert((QWidget*)io_kind, io);
+  widgetToLayout.insert((QWidget*)io_kind, rowLayout);
   connect(io_kind, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoKind);
 
   QComboBox *io_type = new QComboBox();
@@ -157,7 +160,8 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   io_type->addItem("bool", QVariant(Iov::TyBool));
   io_type->setCurrentIndex(io->type);
   rowLayout->addWidget(io_type);
-  mComboBoxToIovMap.insert(io_type, io);
+  widgetToIo.insert((QWidget*)io_type, io);
+  widgetToLayout.insert((QWidget*)io_type, rowLayout);
   connect(io_type, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoType);
 
   QComboBox *io_stim = new QComboBox();
@@ -168,17 +172,17 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   io_stim->setCurrentIndex(io->stim.kind);
   rowLayout->addWidget(io_stim);
   connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
-  mComboBoxToLayoutMap.insert(io_stim, rowLayout);
-  mComboBoxToIovMap.insert(io_stim, io);
+  widgetToLayout.insert((QWidget*)io_stim, rowLayout);
+  widgetToIo.insert((QWidget*)io_stim, io);
 
   QPushButton *io_delete = new QPushButton();
   io_delete->setIcon(QIcon(":/images/delete.png"));
   rowLayout->addWidget(io_delete);
   connect(io_delete, &QPushButton::clicked, this, &PropertiesPanel::removeIo);
-  mButtonToLayoutMap.insert(io_delete, rowLayout);
-  mButtonToIovMap.insert(io_delete, io);
+  widgetToLayout.insert((QWidget*)io_delete, rowLayout);
+  widgetToIo.insert((QWidget*)io_delete, io);
   ioLayout->insertLayout(-1,rowLayout);
-  ioRows.insert(io,rowLayout);
+  ioToLayout.insert(io,rowLayout);
 }
 
 void PropertiesPanel::addIo()
@@ -203,7 +207,7 @@ void PropertiesPanel::_removeIo(Model* model, Iov* io)
 {
   Q_ASSERT(model);
   Q_ASSERT(io);
-  QHBoxLayout* row_layout = ioRows.take(io);
+  QHBoxLayout* row_layout = ioToLayout.take(io);
   Q_ASSERT(row_layout);
   QLineEdit *io_name = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
   Q_ASSERT(io_name);
@@ -217,7 +221,7 @@ void PropertiesPanel::_removeIo(Model* model, Iov* io)
 void PropertiesPanel::removeIo()
 {
   QPushButton* button = qobject_cast<QPushButton*>(sender());
-  Iov* io = mButtonToIovMap.take(button);
+  Iov* io = widgetToIo.take(button);
   Model* model = main_window->getModel();
   _removeIo(model, io);
 }
@@ -225,7 +229,7 @@ void PropertiesPanel::removeIo()
 void PropertiesPanel::editIoName()
 {
   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
-  Iov* io = mLineEditToIovMap.value(ledit);
+  Iov* io = widgetToIo.value(ledit);
   Q_ASSERT(io);
   QString name = ledit->text().trimmed();
   // Model* model = main_window->getModel();
@@ -238,23 +242,38 @@ void PropertiesPanel::editIoName()
   main_window->setUnsavedChanges(true);
 }
 
+void setComboBoxItemEnabled(QComboBox* comboBox, int index, bool enabled)
+// From : https://stackoverflow.com/questions/38915001/disable-specific-items-in-qcombobox
+{
+    auto * model = qobject_cast<QStandardItemModel*>(comboBox->model());
+    Q_ASSERT(model);
+    if(!model) return;
+
+    auto * item = model->item(index);
+    Q_ASSERT(item);
+    if(!item) return;
+    item->setEnabled(enabled);
+}
+
 void PropertiesPanel::editIoKind()
 {
   QComboBox* box = qobject_cast<QComboBox*>(sender());
-  Iov* io = mComboBoxToIovMap.value(box);
+  Iov* io = widgetToIo.value(box);
+  QHBoxLayout* row_layout = widgetToLayout.value(box);
+  Q_ASSERT(row_layout);
   Q_ASSERT(io);
   io->kind = (Iov::IoKind)(box->currentIndex());
   qDebug () << "Setting IO kind: " << io->kind;
+  QComboBox *stim_box = qobject_cast<QComboBox*>(row_layout->itemAt(3)->widget());
+  Q_ASSERT(stim_box);
   switch ( io->kind ) {
   case Iov::IoIn: 
-    for ( int i=0; i<box->count(); i++ )
-      // stim_box->setItemData(i, false, i); // Need to retrieve stim_box from the current kind_box
-      qDebug () << "Validating item" << i;
+    for ( int i=0; i<stim_box->count(); i++ ) 
+      setComboBoxItemEnabled(stim_box, i, true);
     break;
   default:
-    for ( int i=1; i<box->count(); i++ ) 
-      // stim_box->setItemData(i, false, Qt::UserRole-1); // Devalidate stimuli setting for non-inputs
-      qDebug () << "Devalidating item" << i;
+    for ( int i=0; i<stim_box->count(); i++ ) 
+      setComboBoxItemEnabled(stim_box, i, false);
     break;
   }
   main_window->setUnsavedChanges(true);
@@ -263,7 +282,7 @@ void PropertiesPanel::editIoKind()
 void PropertiesPanel::editIoType()
 {
   QComboBox* box = qobject_cast<QComboBox*>(sender());
-  Iov* io = mComboBoxToIovMap.value(box);
+  Iov* io = widgetToIo.value(box);
   Q_ASSERT(io);
   io->type = (Iov::IoType)(box->currentIndex());
   qDebug () << "Setting IO type: " << io->type;
@@ -273,7 +292,7 @@ void PropertiesPanel::editIoType()
 void PropertiesPanel::editIoStim()
 {
   QComboBox* selector = qobject_cast<QComboBox*>(sender());
-  Iov* io = mComboBoxToIovMap.value(selector);
+  Iov* io = widgetToIo.value(selector);
   Q_ASSERT(io);
   QString io_name = io->name;
   if ( io_name == "" ) {
@@ -281,11 +300,12 @@ void PropertiesPanel::editIoStim()
     selector->setCurrentIndex(Stimulus::None);
     return;
     }
-  if ( io->kind != Iov::IoIn ) {
-    QMessageBox::warning( this, "Error", "Stimuli can only be attached to inputs");
-    selector->setCurrentIndex(Stimulus::None);
-    return;
-    }
+  // NO LONGER REQUIRED : the stimuli combobox will be automatically devalidated for non inputs
+  // if ( io->kind != Iov::IoIn ) {
+  //   QMessageBox::warning( this, "Error", "Stimuli can only be attached to inputs");
+  //   selector->setCurrentIndex(Stimulus::None);
+  //   return;
+  //   }
   Stimulus::Kind kind = (Stimulus::Kind)(selector->currentIndex()); 
   //if ( kind == io->stim.kind ) return; // No change
   switch ( kind ) {
