@@ -710,10 +710,10 @@ QStringList MainWindow::compile(QString target, QString wDir, QString sFname, QS
   // Clean target directory
   // removeFiles(wDir + "/" + targetDir, eraseFirst);
   compileErrors.clear();
-  if ( executeCmd(wDir, compiler, args << sFname, true) )
+  if ( executeCmd(wDir, compiler, args << "-gui" << sFname, true) )
     return getOutputFiles(target, wDir);
   else {
-    QMessageBox::warning(this, "", "Compilation failed\n" + compileErrors);
+    QMessageBox::warning(this, "", "Error when compiling model\n" + compileErrors);
     return QStringList();
     }
 }
