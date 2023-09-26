@@ -65,7 +65,7 @@ public:
     void readFromFile(QString fname);
     void saveToFile(QString fname);
 
-    // void check_model(bool withStimuli);
+    bool check_model(bool withStimuli);
 
     void exportDot(QString fname, QStringList options);
     void exportRfsm(QString fname, bool withTestbench = false);
@@ -88,8 +88,9 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
-    // void check_state(State* s);
-    // void check_transition(Transition *t);
+    void check_state(State* s);
+    void check_transition(Transition *t);
+    void report_error(QString msg);
 
     void export_rfsm_model(QTextStream& os);
     void export_rfsm_testbench(QTextStream& os);

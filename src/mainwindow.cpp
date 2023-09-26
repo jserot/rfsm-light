@@ -453,25 +453,38 @@ void MainWindow::openFile()
 }
 
 // Interface to the external syntax verifier
+// DEPRECATED in v 1.3.0
+
+// bool MainWindow::checkSyntax(bool withStimuli)
+// {
+//   save();
+//   QFileInfo fi(currentFileName);
+//   QString wDir = fi.absolutePath();
+//   QString compiler = compilerPaths->getPath("SYNTAXCHECKER");
+//   if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmlint"; // Last chance..
+//   QStringList args = { currentFileName };
+//   if ( withStimuli == false ) args.append("-no_stimuli"); 
+//   compileErrors.clear();
+//   bool ok = executeCmd(wDir, compiler, args, true);
+//   qDebug() << "syntax checking result is " << ok << " (" << compileErrors << ")";
+//   if ( ! ok ) QMessageBox::warning(this, "", compileErrors);
+//   return ok;
+// }
 
 bool MainWindow::checkSyntax(bool withStimuli)
 {
-  save();
-  QFileInfo fi(currentFileName);
-  QString wDir = fi.absolutePath();
-  QString compiler = compilerPaths->getPath("SYNTAXCHECKER");
-  if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmlint"; // Last chance..
-  QStringList args = { currentFileName };
-  if ( withStimuli == false ) args.append("-no_stimuli"); 
-  compileErrors.clear();
-  bool ok = executeCmd(wDir, compiler, args, true);
-  qDebug() << "syntax checking result is " << ok << " (" << compileErrors << ")";
-  if ( ! ok ) QMessageBox::warning(this, "", compileErrors);
-  return ok;
+  return model ? model->check_model(withStimuli) : true;
 }
 
-bool MainWindow::checkSyntaxWithStimuli() { return checkSyntax(true); }
-bool MainWindow::checkSyntaxWithoutStimuli() { return checkSyntax(false); }
+bool MainWindow::checkSyntaxWithStimuli()
+{ 
+  return model ? model->check_model(false) : true;
+  }
+
+bool MainWindow::checkSyntaxWithoutStimuli()
+{ 
+  return model ? model->check_model(true) : true;
+}
 
 void MainWindow::newDiagram()
 {

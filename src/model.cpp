@@ -306,56 +306,53 @@ bool Model::isItemChange(int type)
     return false;
 }
 
-// Checking
-// Now carried out externally with the [rfsmlint] tool
+// Basic model checking
 
-// void Model::check_state(State *s)
-// {
-//   if ( ! states().contains(s) ) 
-//     throw std::invalid_argument(std::string("Model::check_state: invalid state"));
-// }
+void Model::report_error(QString msg)
+{
+  QMessageBox::warning(mainWindow, "", msg);
+}
 
-// void Model::check_transition(Transition *t)
-// {
-//   check_state(t->srcState());
-//   check_state(t->dstState());
-//   if ( ! t->isInitial() && t->getEvent() == "" )
-//     throw std::invalid_argument(std::string( "No trigerring event for transition " + t->toString().toStdString()));
-// }
+void Model::check_state(State *s)
+{
+  Q_ASSERT(states().contains(s)); 
+}
 
-// void Model::check_model(bool withStimuli)
-// {
-//   if ( name().isEmpty() ) 
-//     throw std::invalid_argument(std::string("No name specified for model"));
-//   if ( ! hasPseudoState() )
-//     throw std::invalid_argument(std::string("No initial state specified"));
+void Model::check_transition(Transition *t)
+{
+  check_state(t->srcState());
+  check_state(t->dstState());
+  if ( ! t->isInitial() && t->getEvent() == "" )
+    report_error("No trigerring event for transition " + t->toString());
+}
 
-//   QStringList inpEvents;
-//   for(const auto io : this->ios.values()) {
-//     if ( ! io->name().at(0).isLower() )
-//       throw std::invalid_argument(std::string("Identifier \"" + io->name().toStdString() + "\" does not start with a lowercase letter"));
-//     if ( io->kind() == "in" && io->type() == "event" )
-//       inpEvents.append(io->name());
-//     }
-//   if ( inpEvents.length() == 0 )
-//     throw std::invalid_argument(std::string("No input event"));
+bool Model::check_model(bool withStimuli)
+{
+  if ( name.isEmpty() ) {
+    report_error("No name specified for model");
+    return false;
+    }
+  if ( ! hasPseudoState() ) {
+    report_error("No initial state specified");
+    return false;
+    }
 
-//   for ( Transition* t : transitions() ) {
-//       check_transition(t);
-//       if (  ! t->isInitial() && ! inpEvents.contains(t->getEvent()) )
-//         throw std::invalid_argument(std::string(
-//           "Trigerring event for transition " + t->toString().toStdString() + " is not listed as input"));
-//     }
+  QStringList inpEvents = getInpEvents();
+  if ( inpEvents.length() == 0 ) {
+    report_error("There should be at least one input with type event");
+    return false;
+    }
 
-//   if ( withStimuli ) {
-//     for( Iov* io : ios.values()) {
-//       if ( io->kind() == "in" ) {
-//         if ( io->desc().kind() == Stimulus::None ) 
-//           throw std::invalid_argument(std::string("No stimulus for input " + io->name().toStdString()));
-//         }
-//       }
-//     }
-// }
+  if ( withStimuli ) {
+    for( Iov* io : ios ) {
+      if ( io->kind == Iov::IoIn &&  io->stim.kind == Stimulus::None )  {
+        report_error("No stimulus for input " + io->name);
+        return false;
+        }  
+      }
+    }
+  return true;
+}
 
 // Reading and saving
 
