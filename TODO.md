@@ -11,5 +11,9 @@
 - Export to SCXML ?
 - Allow resizing of state boxes
 
-TOOLS
+* TOOLS
+
+* DOC
+- update video tutorial
+- document restrictions compared to the full RFSM language
 
