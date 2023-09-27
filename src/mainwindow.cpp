@@ -451,6 +451,8 @@ void MainWindow::openFile()
       }
     //qDebug () << model->getIos();
     properties_panel->update();
+    QRectF bb = view->scene()->itemsBoundingRect();
+    view->centerOn(bb.center());
     currentFileName = fname;
     setUnsavedChanges(false);
 }
