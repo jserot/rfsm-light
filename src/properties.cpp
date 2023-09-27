@@ -317,7 +317,7 @@ void PropertiesPanel::editIoStim()
     io->stim = Stimulus(Stimulus::None);
     break;
   default:
-    Stimuli* stimDialog = new Stimuli(kind,io);
+    Stimuli* stimDialog = new Stimuli(kind,io,main_window);
     stimDialog->exec();
     //fillIoList();
     delete stimDialog;

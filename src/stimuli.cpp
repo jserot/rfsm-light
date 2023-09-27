@@ -23,6 +23,8 @@ Stimuli::Stimuli(Stimulus::Kind kind, Iov* inp, QWidget *parent)
 {
   selectedInp = inp;
   selectedKind = kind;
+  QRect r = parent->geometry();
+  this->setGeometry(QRect(r.x()+r.width()/2,r.y()+r.height()/2,250,40));
   centralWidget = new QWidget(parent);
   verticalLayout = new QVBoxLayout(centralWidget);
   verticalLayout->setSpacing(6);
@@ -36,7 +38,7 @@ Stimuli::Stimuli(Stimulus::Kind kind, Iov* inp, QWidget *parent)
   verticalLayout_2->setSpacing(6);
   verticalLayout_2->setContentsMargins(11, 11, 11, 11);
   verticalLayout_2->setObjectName("verticalLayout_2");
-  verticalSpacer = new QSpacerItem(20, 264, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  verticalSpacer = new QSpacerItem(20, 30, QSizePolicy::Minimum, QSizePolicy::Expanding);
   verticalLayout_2->addItem(verticalSpacer);
 
   verticalLayout->addWidget(form);
