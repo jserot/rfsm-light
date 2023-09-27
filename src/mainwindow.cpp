@@ -108,6 +108,9 @@ MainWindow::MainWindow()
     
     unsaved_changes = false;
     updateActions();
+
+    splitter->setSizes(QList<int>()<<250<<250<<200);
+    qDebug() << splitter->sizes();
 }
 
 

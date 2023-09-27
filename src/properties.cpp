@@ -138,6 +138,7 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   io_name->setMinimumSize(40,io_name->minimumHeight());
   io_name->setFrame(true);
   io_name->setText(io->name);
+  io_name->setCursorPosition(0);
   // TODO: use setInputMask to fordid syntax errors on IO names (check rsfm syntax)
   rowLayout->addWidget(io_name);
   widgetToIo.insert((QWidget*)io_name, io);
