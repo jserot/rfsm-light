@@ -8,17 +8,17 @@ QMAKE=qmake
 all: build
 
 build:
-cat lib/etc/builtin_options_spec.txt $(RFSMC_SRCDIR)/src/host/lib/options_spec.txt > lib/etc/options_spec.txt
-ifeq ($(PLATFORM), windows)
-	make -f Makefile.windows build
-endif
-ifeq ($(PLATFORM), macos)
-	make -f Makefile.macos
-endif
-ifeq ($(PLATFORM), linux)
-	(cd src; $(QMAKE) main.pro; make)
-	(cd tools/rfsmlint; make)
-endif
+	cat lib/etc/builtin_options_spec.txt $(RFSMC_SRCDIR)/src/host/lib/options_spec.txt > lib/etc/options_spec.txt
+	ifeq ($(PLATFORM), windows)
+		make -f Makefile.windows build
+	endif
+	ifeq ($(PLATFORM), macos)
+		make -f Makefile.macos
+	endif
+	ifeq ($(PLATFORM), linux)
+		(cd src; $(QMAKE) main.pro; make)
+		(cd tools/rfsmlint; make)
+	endif
 
 doc: 
 ifeq ($(BUILD_DOC),yes)
@@ -68,7 +68,7 @@ macos-dist:
 	make clobber
 #	@echo "** Configuring for MacOS distribution"
 #	./configure -platform macos -dot "dot" -dotviewer "open -a Graphviz" -vcdviewer "open -a gtkwave" -txtviewer "open"
-	make doc
+#	make doc
 	make -f Makefile.macos build
 	make -f Makefile.macos install
 	make -f Makefile.macos installer

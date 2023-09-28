@@ -1029,16 +1029,12 @@ moc_properties.cpp: properties.h \
 moc_stimuli.cpp: stimuli.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QDialog \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qdialog.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QVBoxLayout \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qboxlayout.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QComboBox \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qcombobox.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QFrame \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qframe.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QPushButton \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qpushbutton.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QSpacerItem \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlayoutitem.h \
+		iov.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
+		stimulus.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h \
 		../../../../Qt/6.3.1/macos/libexec/moc
 	/Users/jserot/Qt/6.3.1/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=13 -D__clang_minor__=1 -D__clang_patchlevel__=6 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jserot/Qt/6.3.1/macos/mkspecs/macx-clang -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Dev/Qt/rfsm-light/src -I/Users/jserot/Qt/6.3.1/macos/lib/QtWidgets.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtGui.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtCore5Compat.framework/Headers -I/Users/jserot/Qt/6.3.1/macos/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/13.1.6/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jserot/Qt/6.3.1/macos/lib stimuli.h -o moc_stimuli.cpp
 
@@ -1177,26 +1173,40 @@ state.o: state.cpp state.h \
 		../../../../Qt/6.3.1/macos/lib/QtGui.framework/Headers/qpainter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o state.o state.cpp
 
-iov.o: iov.cpp 
+iov.o: iov.cpp iov.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
+		stimulus.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o iov.o iov.cpp
 
-model.o: model.cpp transition.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPolygonItem \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsSimpleTextItem \
+model.o: model.cpp model.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QStringListModel \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstringlistmodel.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qtextstream.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
 		state.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h \
+		iov.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
+		stimulus.h \
+		transition.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPolygonItem \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsSimpleTextItem \
 		include/nlohmann_json.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QMessageBox \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsSceneMouseEvent \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicssceneevent.h \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QFile \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qfile.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qtextstream.h
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o model.o model.cpp
 
 properties.o: properties.cpp properties.h \
@@ -1236,11 +1246,16 @@ properties.o: properties.cpp properties.h \
 		transition.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPolygonItem \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsSimpleTextItem \
+		model.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qtextstream.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
+		iov.h \
+		stimulus.h \
 		stimuli.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QDialog \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qdialog.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QSpacerItem \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlayoutitem.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QHBoxLayout \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QLabel \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlabel.h \
@@ -1249,7 +1264,9 @@ properties.o: properties.cpp properties.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QTextEdit \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qtextedit.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QMessageBox \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qmessagebox.h
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
+		../../../../Qt/6.3.1/macos/lib/QtGui.framework/Headers/QStandardItemModel \
+		../../../../Qt/6.3.1/macos/lib/QtGui.framework/Headers/qstandarditemmodel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o properties.o properties.cpp
 
 stimulus.o: stimulus.cpp stimulus.h \
@@ -1265,19 +1282,19 @@ stimuli.o: stimuli.cpp ../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Header
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qdialogbuttonbox.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QSpinBox \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qspinbox.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QVBoxLayout \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qboxlayout.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QPushButton \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qpushbutton.h \
 		stimuli.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QDialog \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qdialog.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QVBoxLayout \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qboxlayout.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QComboBox \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qcombobox.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QFrame \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qframe.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QPushButton \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qpushbutton.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QSpacerItem \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlayoutitem.h
+		iov.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
+		stimulus.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o stimuli.o stimuli.cpp
 
 command.o: command.cpp command.h \
@@ -1875,6 +1892,17 @@ mainwindow.o: mainwindow.cpp transition.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QList \
 		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qlist.h \
+		model.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QStringListModel \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstringlistmodel.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QTextStream \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qtextstream.h \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
+		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
+		iov.h \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
+		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
+		stimulus.h \
 		mainwindow.h \
 		properties.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QComboBox \
@@ -1888,10 +1916,6 @@ mainwindow.o: mainwindow.cpp transition.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlineedit.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QListView \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qlistview.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QString \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/QStringListModel \
-		../../../../Qt/6.3.1/macos/lib/QtCore.framework/Headers/qstringlistmodel.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QVBoxLayout \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qboxlayout.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/QPushButton \
@@ -1976,7 +2000,6 @@ mainwindow.o: mainwindow.cpp transition.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicslayoutitem.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicslinearlayout.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsproxywidget.h \
-		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicssceneevent.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicstransform.h \
 		../../../../Qt/6.3.1/macos/lib/QtWidgets.framework/Headers/qgraphicsview.h \

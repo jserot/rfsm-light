@@ -1,6 +1,6 @@
 # Changes
 
-# 1.3.0 (Sep XX, 2023)
+# 1.3.0 (Sep 28, 2023)
 
 * Builds and run on Mac M1 platforms withMac OS >= 12.6
 * Now uses `rfsm` compiler v2.0

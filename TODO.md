@@ -14,6 +14,7 @@
 * TOOLS
 
 * DOC
+- update `Doc/using.md`
 - update video tutorial
 - document restrictions compared to the full RFSM language
 

@@ -11,13 +11,7 @@ Known bugs and limitations
 
 * A portable way of building on Linux distros is still missing
 
-* The font selection dialog does not work on MacOS 10.9 (this seems to be a bug in Qt < 5.12)
-
-* Due to the syntax of the RFSM language
-  - the name of FSM inputs, outputs and local variables must start with a lowercase letter,
-  - the name of states must start with an uppercase letter
-
-* One added an input, output or variable description (name and type) cannot be edited.  The
-workaround is to delete (button `remove`) the item and re-enter it with the new specification.
-Stimuli attached to inputs can be edited, though, by selecting the corresponding item and clicking
-the `Stimuli` button.
+* When running on a Mac M1 under Mac OS 12 - but this may also occur on other versions - when the Rfsm-Light, 
+  app is launched by double-clicking, it seems unable to launch the gtkwave application. This does _not_ happen 
+  when the app is launched from the terminal (by invoking "/Applications/Rfsm-light.app/Contents/MacOS/rfsm-light"
+  from a terminal for example, or event "open /Applications/Rfsm-light.app").  

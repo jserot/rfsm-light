@@ -9,15 +9,19 @@ DOTVIEWER="open -a Graphviz"
 VCDVIEWER="open -a gtkwave"
 TXTVIEWER="open"
 
-OPAM_PREFIX=`opam var prefix`
-RFSMC=$(OPAM_PREFIX)/bin/rfsmc
-RFSMMAKE=$(OPAM_PREFIX)/bin/rfsmmake
-RFSMLIB=$(OPAM_PREFIX)/share/rfsm
-RFSMC_SRC_DIR=/Users/jserot/Dev/ml/rfsm/rfsmc
+# OPAM_PREFIX=`opam var prefix`
+# RFSMC=$(OPAM_PREFIX)/bin/rfsmc
+# RFSMMAKE=$(OPAM_PREFIX)/bin/rfsmmake
+# RFSMLIB=$(OPAM_PREFIX)/share/rfsm
+
+RFSM=/Users/jserot/Dev/ml/rfsm
+RFSMC=$(RFSM)/_build/default/src/guests/full/bin/rfsmc.exe
+RFSMMAKE=$(RFSM)/etc/bin/rfsmmake
+RFSMLIB=$(RFSM)/etc/lib
 
 .PHONY: build install installer
 
-all: build-gui # build-tools build-doc
+build: build-gui build-doc # build-tools 
 
 INSTALL_DIR=/tmp/rfsm-light
 
@@ -27,7 +31,8 @@ build-gui:
 
 build-tools:
 	@echo "** Building tools"
-	(cd tools/rfsmlint; make)
+	@echo "** Nothing to do"
+#	(cd tools/rfsmlint; make)
 
 build-doc:
 	@echo "** Building doc"
@@ -44,10 +49,12 @@ install: CHANGES.txt README.txt
 	mkdir $(INSTALL_DIR)
 	cp -r src/rfsm-light.app $(INSTALL_DIR)/RfsmLight.app
 	cp $(RFSMC) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmc
-	cp tools/rfsmlint/_build/default/rfsmlint.exe $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmlint
+#	cp tools/rfsmlint/_build/default/rfsmlint.exe $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmlint
+#   ^ No longer used
 	cp $(RFSMMAKE) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmmake
 	cp ./dist/macos/rfsm-light.ini $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
-	cp ./etc/options_spec.txt $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
+#	cp ./etc/options_spec.txt $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
+#   ^ Already present in .app/Contents/MacOS dir
 	cp ./dist/macos/INSTALL $(INSTALL_DIR)/INSTALL
 	mkdir $(INSTALL_DIR)/doc
 	cp  doc/Using.{pdf,html} $(INSTALL_DIR)/doc
