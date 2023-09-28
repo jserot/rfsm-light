@@ -449,8 +449,8 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
       QStringList inpEvents = model->getInpEvents();
       if ( inpEvents.isEmpty() )
         QMessageBox::warning( this, "Error", "No input event available to trigger this transition");
-      for ( int i=0; i<transition_event_field->count(); i++ )
-        transition_event_field->removeItem(i);
+      transition_event_field->clear();
+      qDebug() << "Adding input events to transition selector:" << inpEvents;
       for ( auto ev: inpEvents ) 
         transition_event_field->addItem(ev, QVariant(ev));
       QString event = transition->getEvent();
