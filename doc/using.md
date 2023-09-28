@@ -8,6 +8,14 @@
 
 ### Editing 
 
+* To **add an input, output or local variable**, click the `Add` button in the `I/Os and variables`
+  panel. This will add a row in which you'll be able to specify
+  - its name
+  - its kind (`input`, `output` or `variable`)
+  - its type 
+  and, for inputs, the stimuli attached to it (selecting an item in the `stim` selector will bring
+  out a dedicated dialog)
+  
 * To **add a state**, select the ![](./imgs/state.png) button in the toolbar and click on the
   canvas
 
