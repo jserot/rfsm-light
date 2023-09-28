@@ -4,7 +4,7 @@
 
 * Builds and run on Mac M1 platforms withMac OS >= 12.6
 * Now uses `rfsm` compiler v2.0
-* Removed external syntax verifier (thx to new error reporting mechanism in rfsmc-2.0)
+* Removed `rfsmlint` external syntax verifier (thx to new error reporting mechanism in rfsmc-2.0)
 * Custom (and hopefully more user friendly) dialog for speciying input stimuli
 
 # 1.2.0 (Sep 20, 2021)

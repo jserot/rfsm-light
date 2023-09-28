@@ -110,7 +110,6 @@ MainWindow::MainWindow()
     updateActions();
 
     splitter->setSizes(QList<int>()<<250<<250<<200);
-    qDebug() << splitter->sizes();
 }
 
 
@@ -311,9 +310,7 @@ void MainWindow::updateViewActions()
   closeResultsAction->setEnabled(true);
   widget = results->widget(results->currentIndex());  
   if ( widget == NULL ) goto unselect;
-  // qDebug() << widget->whatsThis();
   if ( widget->whatsThis() == "ImageViewer" ) {
-    //qDebug() << "ImageViewer currently selected";
     ImageViewer* viewer = static_cast<ImageViewer*>(widget);
     bool b = viewer->isFittedToWindow();
     fitToWindowAction->setEnabled(true);
@@ -324,7 +321,6 @@ void MainWindow::updateViewActions()
     return;
     }
  unselect:
-    //qDebug() << "No imageViewer currently selected";
     fitToWindowAction->setEnabled(false);
     zoomInAction->setEnabled(false);
     zoomOutAction->setEnabled(false);
@@ -526,7 +522,6 @@ void MainWindow::saveAs()
 void MainWindow::editDiagram(QAction *action)
 {
   Model::Mode m = static_cast<Model::Mode>(action->data().value<int>());
-  //qDebug() << "Action " << m;
   model->setMode(m);
 }
 
@@ -613,8 +608,6 @@ void MainWindow::addResultTab(QString fname)
     viewer->setWhatsThis("ImageViewer");
     viewer->setPixmap(pixmap);
     results->addTab(viewer, tabName);
-    //AppFile* openedFile = new AppFile(fname, true, viewer, NULL);
-    //openedFiles.insert(edit, openedFile);
     viewer->scaleImage(1);
     viewer->setProperty("attachedSyntaxHighlighter", QVariant::fromValue(static_cast<void*>(0)));
     // QSize sz1 = pixmap.size();
@@ -640,7 +633,6 @@ void MainWindow::addResultTab(QString fname)
 
 void MainWindow::closeResultTab(int index)
 {
-  //qDebug() << "Closing tab " << index;
   QWidget *edit = results->widget(index);
   if ( edit == NULL ) return; 
   QVariant v = edit->property("attachedSyntaxHighlighter");
@@ -658,8 +650,6 @@ void MainWindow::closeResults()
 
 void MainWindow::openResultFile(QString fname)
 {
-  // QFileInfo f(wDir + "/" + fname);
-  // QString fullName = f.canonicalFilePath();
   QFileInfo f(fname);
   QString wDir = f.canonicalPath();
   qDebug() << "Displaying file : " << fname;
@@ -834,10 +824,8 @@ bool MainWindow::executeCmd(QString wDir, QString cmd, QStringList args, bool sy
     bool r = proc.waitForFinished(); 
     QProcess::ExitStatus s = proc.exitStatus();
     int o = proc.exitCode();
-    // qDebug() << "executeCmd: finished=" << r;
     qDebug() << "executeCmd: exit status=" << s;
     qDebug() << "executeCmd: exit code=" << o;
-    //qDebug() << "executeCmd: stdout=" << compileMsgs;
     qDebug() << "executeCmd: stderr=" << compileErrors;
     proc.kill();
     proc.close();
@@ -856,7 +844,6 @@ void MainWindow::readProcStdout()
   while (proc.canReadLine ()) {
     compileMsgs += QString(proc.readLine());
       // QString r = QString(proc.readLine()).remove('\n').remove ('\r');
-      // qDebug() << ">>> " + r;
       }
 }
 

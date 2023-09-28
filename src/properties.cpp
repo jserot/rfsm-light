@@ -34,7 +34,6 @@
 #include <stdexcept>
 #include <QMessageBox>
 #include <QStandardItemModel>
-//#include <qDebug>
 
 PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 {
@@ -45,7 +44,6 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     createStatePanel();
     createTransitionPanel();
     createInitTransitionPanel();
-    // createStimuliPanel();
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setAlignment(Qt::AlignTop);
@@ -100,6 +98,7 @@ void PropertiesPanel::createIoPanel()
 {
   QHBoxLayout *rowLayout;
   io_panel = new QGroupBox("I/Os and variables");
+  io_panel->setObjectName("io_panel");
   //io_panel->setMaximumHeight(200);
   //io_panel->setMinimumWidth(200);
   ioLayout = new QVBoxLayout();
@@ -120,9 +119,6 @@ void PropertiesPanel::createIoPanel()
   rowLayout->addWidget(new QLabel("")); // For padding
   ioLayout->addLayout(rowLayout);
 
-  // QSpacerItem *verticalSpacer = new QSpacerItem(20, 64, QSizePolicy::Minimum, QSizePolicy::Expanding);
-  // ioLayout->addItem(verticalSpacer);
-
   io_panel->setLayout(ioLayout);
 }
 
@@ -139,7 +135,6 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   io_name->setFrame(true);
   io_name->setText(io->name);
   io_name->setCursorPosition(0);
-  // TODO: use setInputMask to fordid syntax errors on IO names (check rsfm syntax)
   rowLayout->addWidget(io_name);
   widgetToIo.insert((QWidget*)io_name, io);
   widgetToLayout.insert((QWidget*)io_name, rowLayout);
@@ -247,7 +242,6 @@ void PropertiesPanel::editIoName()
 }
 
 void setComboBoxItemEnabled(QComboBox* comboBox, int index, bool enabled)
-// From : https://stackoverflow.com/questions/38915001/disable-specific-items-in-qcombobox
 {
     auto * model = qobject_cast<QStandardItemModel*>(comboBox->model());
     Q_ASSERT(model);
@@ -304,14 +298,7 @@ void PropertiesPanel::editIoStim()
     selector->setCurrentIndex(Stimulus::None);
     return;
     }
-  // NO LONGER REQUIRED : the stimuli combobox will be automatically devalidated for non inputs
-  // if ( io->kind != Iov::IoIn ) {
-  //   QMessageBox::warning( this, "Error", "Stimuli can only be attached to inputs");
-  //   selector->setCurrentIndex(Stimulus::None);
-  //   return;
-  //   }
   Stimulus::Kind kind = (Stimulus::Kind)(selector->currentIndex()); 
-  //if ( kind == io->stim.kind ) return; // No change
   switch ( kind ) {
   case Stimulus::None:
     io->stim = Stimulus(Stimulus::None);

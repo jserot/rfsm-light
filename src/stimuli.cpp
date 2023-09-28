@@ -184,7 +184,6 @@ void Stimuli::acceptChanges()
         if ( spinBox ) values.append(spinBox->value());
         }
     }
-  //qDebug () << "** Results = " << values;
   Stimulus stim(selectedKind, values);
   selectedInp->stim = stim;
   clearForm();
@@ -193,7 +192,6 @@ void Stimuli::acceptChanges()
 
 void Stimuli::cancelChanges()
 {
-  //qDebug() << "Reject";
   QDialog::reject();
 }
 
