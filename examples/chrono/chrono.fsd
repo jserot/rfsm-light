@@ -15,17 +15,17 @@
     {
       "kind": "in",
       "name": "startStop",
-      "stim": "Sporadic 25 75",
-      "type": "event"
+      "stim": "ValueChanges 0 0 25 1 35 0 75 1 85 0",
+      "type": "bool"
     }
   ],
   "name": "chrono",
   "states": [
     {
       "attr": "",
-      "id": "Stopped",
-      "x": 228.0,
-      "y": 158.0
+      "id": "_init",
+      "x": 130.0,
+      "y": 102.0
     },
     {
       "attr": "",
@@ -35,36 +35,12 @@
     },
     {
       "attr": "",
-      "id": "_init",
-      "x": 130.0,
-      "y": 102.0
+      "id": "Stopped",
+      "x": 228.0,
+      "y": 158.0
     }
   ],
   "transitions": [
-    {
-      "actions": "",
-      "dst_state": "Stopped",
-      "event": "",
-      "guard": "",
-      "location": 0,
-      "src_state": "_init"
-    },
-    {
-      "actions": "c:=0",
-      "dst_state": "Running",
-      "event": "startStop",
-      "guard": "",
-      "location": 0,
-      "src_state": "Stopped"
-    },
-    {
-      "actions": "",
-      "dst_state": "Stopped",
-      "event": "startStop",
-      "guard": "",
-      "location": 0,
-      "src_state": "Running"
-    },
     {
       "actions": "c:=c+1",
       "dst_state": "Running",
@@ -72,6 +48,30 @@
       "guard": "",
       "location": 3,
       "src_state": "Running"
+    },
+    {
+      "actions": "",
+      "dst_state": "Stopped",
+      "event": "h",
+      "guard": "startStop=1",
+      "location": 0,
+      "src_state": "Running"
+    },
+    {
+      "actions": "c:=0",
+      "dst_state": "Running",
+      "event": "h",
+      "guard": "startStop=1",
+      "location": 0,
+      "src_state": "Stopped"
+    },
+    {
+      "actions": "",
+      "dst_state": "Stopped",
+      "event": "",
+      "guard": "",
+      "location": 0,
+      "src_state": "_init"
     }
   ]
 }
