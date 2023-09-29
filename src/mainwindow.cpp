@@ -681,7 +681,9 @@ void MainWindow::customView(QString toolName, QStringList args, QString wDir)
      QMessageBox::warning(this, "", "No path specified for " + toolName);
      return;
      }
-   if ( ! executeCmd(wDir, cmd, args, false ) ) {
+  QStringList genOpts = compilerOptions->getOptions("general");
+  bool sync = genOpts.contains("-sync_externals");
+   if ( ! executeCmd(wDir, cmd, args, sync ) ) {
      QMessageBox::warning(this, "", "Failed to launch external program " + toolName);
      //addResultTab(fname);
      }
@@ -764,6 +766,7 @@ void MainWindow::generate(QString target, bool withTestbench)
       }
     }
   if ( genOpts.contains("-dot_external_viewer") ) genOpts.removeOne("-dot_external_viewer");
+  if ( genOpts.contains("-sync_externals") ) genOpts.removeOne("-sync_externals");
   QStringList args =
     QStringList()
     << "-" + target
@@ -821,6 +824,7 @@ bool MainWindow::executeCmd(QString wDir, QString cmd, QStringList args, bool sy
     return false;
     }
   if ( sync ) {
+    qDebug() << "executeCmd: sync process launched. Waiting for termination";
     bool r = proc.waitForFinished(); 
     QProcess::ExitStatus s = proc.exitStatus();
     int o = proc.exitCode();
