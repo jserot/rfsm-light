@@ -160,6 +160,7 @@ void Stimuli::_addValueChangesRow(QPair<int,int> vc) {
   rowLayout->addWidget(label2);
   QSpinBox *spinBox2 = new QSpinBox;
   spinBox2->setObjectName("spinBox");
+  if ( selectedInp->type == Iov::TyBool ) spinBox2->setRange(0,1);
   spinBox2->setSingleStep(1);
   spinBox2->setValue(vc.second);
   rowLayout->addWidget(spinBox2);
