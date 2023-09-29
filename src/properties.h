@@ -118,6 +118,7 @@ class PropertiesPanel : public QFrame
 
     void fillModelName();
     void fillIos();
+    void setStimChoices(QComboBox* box, Iov *io);
 };
 
 #endif

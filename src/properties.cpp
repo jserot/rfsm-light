@@ -122,6 +122,15 @@ void PropertiesPanel::createIoPanel()
   io_panel->setLayout(ioLayout);
 }
 
+void enableComboBoxItem(QComboBox* box, int i, bool enabled)
+{
+  QStandardItemModel *model = qobject_cast<QStandardItemModel*>(box->model());
+  Q_ASSERT(model);
+  QStandardItem *item = model->item(i);
+  Q_ASSERT(item);
+  item->setEnabled(enabled);
+}
+
 void PropertiesPanel::_addIo(Model* model, Iov* io)
 {
   qDebug () << "Adding IO" << io->name << io->kind << io->type;
@@ -166,6 +175,7 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   io_stim->addItem("Sporadic", QVariant(Stimulus::Sporadic));
   io_stim->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
   io_stim->setCurrentIndex(io->stim.kind);
+  setStimChoices(io_stim, io);
   rowLayout->addWidget(io_stim);
   connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
   widgetToLayout.insert((QWidget*)io_stim, rowLayout);
@@ -187,6 +197,26 @@ void PropertiesPanel::addIo()
   Q_ASSERT(model != 0);
   Iov* io = model->addIo("", Iov::IoIn, Iov::TyInt, Stimulus(Stimulus::None));
   _addIo(model, io);
+}
+
+void PropertiesPanel::setStimChoices(QComboBox* box, Iov *io)
+{
+  qDebug() << "setStimChoices:" << io->name << io->type;
+  switch ( io->type ) {
+  case Iov::TyEvent:
+    enableComboBoxItem(box, 0, true); // TO FIX: we should not use hardcoded index here 
+    enableComboBoxItem(box, 1, true);
+    enableComboBoxItem(box, 2, true);
+    enableComboBoxItem(box, 3, false);
+    break;
+  case Iov::TyInt:
+  case Iov::TyBool:
+    enableComboBoxItem(box, 0, true); // TO FIX: we should not use hardcoded index here 
+    enableComboBoxItem(box, 1, false);
+    enableComboBoxItem(box, 2, false);
+    enableComboBoxItem(box, 3, true);
+    break;
+    }
 }
 
 void PropertiesPanel::delete_io_row(QLayout *layout)
@@ -284,6 +314,11 @@ void PropertiesPanel::editIoType()
   Q_ASSERT(io);
   io->type = (Iov::IoType)(box->currentIndex());
   qDebug () << "Setting IO type: " << io->type;
+  QHBoxLayout* row_layout = widgetToLayout.value(box);
+  Q_ASSERT(row_layout);
+  QComboBox *stim_box = qobject_cast<QComboBox*>(row_layout->itemAt(3)->widget());
+  Q_ASSERT(stim_box);
+  setStimChoices(stim_box, io);
   main_window->setUnsavedChanges(true);
 }
 
@@ -450,7 +485,7 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
       if ( inpEvents.isEmpty() )
         QMessageBox::warning( this, "Error", "No input event available to trigger this transition");
       transition_event_field->clear();
-      qDebug() << "Adding input events to transition selector:" << inpEvents;
+      // qDebug() << "Adding input events to transition selector:" << inpEvents;
       for ( auto ev: inpEvents ) 
         transition_event_field->addItem(ev, QVariant(ev));
       QString event = transition->getEvent();
