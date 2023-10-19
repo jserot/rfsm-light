@@ -9,40 +9,28 @@ all: build
 
 build:
 	cat lib/etc/builtin_options_spec.txt $(RFSMC_SRCDIR)/src/host/lib/options_spec.txt > lib/etc/options_spec.txt
-	ifeq ($(PLATFORM), windows)
-		make -f Makefile.windows build
-	endif
-	ifeq ($(PLATFORM), macos)
-		make -f Makefile.macos
-	endif
-	ifeq ($(PLATFORM), linux)
-		(cd src; $(QMAKE) main.pro; make)
-		(cd tools/rfsmlint; make)
-	endif
+ifeq ($(PLATFORM),windows)
+	make -f Makefile.windows
+endif
+ifeq ($(PLATFORM),macos)
+	make -f Makefile.macos
+endif
+ifeq ($(PLATFORM),linux)
+	(cd src; $(QMAKE) main.pro; make)
+	(cd tools/rfsmlint; make)
+endif
 
 doc: 
-ifeq ($(BUILD_DOC),yes)
 	(cd doc; make)
-endif
-
-html:
-	pandoc -o CHANGES.html CHANGES.md
-	pandoc -o README.html README.md
-
-CHANGES.html: CHANGES.md
-	pandoc -o CHANGES.html CHANGES.md
-README.html: README.md
-	pandoc -o README.html README.md
-
 
 install:
-ifeq ($(PLATFORM), macos)
+ifeq ($(PLATFORM),macos)
 	make -f Makefile.macos install
 endif
-ifeq ($(PLATFORM), windows)
+ifeq ($(PLATFORM),windows)
 	make -f Makefile.windows install
 endif
-ifeq ($(PLATFORM), linux)
+ifeq ($(PLATFORM),linux)
 	mkdir -p $(INSTALL_LIBDIR)
 	cp ./platform $(INSTALL_LIBDIR)
 	mkdir -p $(INSTALL_BINDIR)
@@ -65,10 +53,9 @@ endif
 
 macos-dist:
 	@echo "** Cleaning"
-	make clobber
-#	@echo "** Configuring for MacOS distribution"
-#	./configure -platform macos -dot "dot" -dotviewer "open -a Graphviz" -vcdviewer "open -a gtkwave" -txtviewer "open"
-#	make doc
+#	make clobber
+	@echo "Building documentation"
+#	(cd doc; make)
 	make -f Makefile.macos build
 	make -f Makefile.macos install
 	make -f Makefile.macos installer

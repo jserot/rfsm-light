@@ -1,6 +1,7 @@
 # Makefile to build the MacOS distribution
 
-include VERSION
+include config
+include platform
 
 QMAKE=/Users/jserot/Qt/6.3.1/macos/bin/qmake
 
@@ -9,19 +10,13 @@ DOTVIEWER="open -a Graphviz"
 VCDVIEWER="open -a gtkwave"
 TXTVIEWER="open"
 
-# OPAM_PREFIX=`opam var prefix`
-# RFSMC=$(OPAM_PREFIX)/bin/rfsmc
-# RFSMMAKE=$(OPAM_PREFIX)/bin/rfsmmake
-# RFSMLIB=$(OPAM_PREFIX)/share/rfsm
-
-RFSM=/Users/jserot/Dev/ml/rfsm
-RFSMC=$(RFSM)/_build/default/src/guests/full/bin/rfsmc.exe
-RFSMMAKE=$(RFSM)/etc/bin/rfsmmake
-RFSMLIB=$(RFSM)/etc/lib
+RFSMC=$(RFSMC_SRCDIR)/_build/default/src/guests/full/bin/rfsmc.exe
+RFSMMAKE=$(RFSMC_SRCDIR)/etc/bin/rfsmmake
+RFSMLIB=$(RFSMC_SRCDIR)/etc/lib
 
 .PHONY: build install installer
 
-build: build-gui build-doc # build-tools 
+build: build-gui
 
 INSTALL_DIR=/tmp/rfsm-light
 
@@ -29,21 +24,7 @@ build-gui:
 	@echo "** Building GUI"
 	(cd src; $(QMAKE) -spec macx-clang -o Makefile main.pro CONFIG+=arm64; make)
 
-build-tools:
-	@echo "** Building tools"
-	@echo "** Nothing to do"
-#	(cd tools/rfsmlint; make)
-
-build-doc:
-	@echo "** Building doc"
-	(cd doc; make)
-
-CHANGES.txt: CHANGES.md
-	pandoc -o CHANGES.txt CHANGES.md
-README.txt: README.md
-	pandoc -o README.txt README.md
-
-install: CHANGES.txt README.txt
+install:
 	@echo "** Installing in $(INSTALL_DIR)"
 	rm -rf $(INSTALL_DIR)
 	mkdir $(INSTALL_DIR)
@@ -61,7 +42,7 @@ install: CHANGES.txt README.txt
 	cp -r doc/imgs $(INSTALL_DIR)/doc
 	mkdir $(INSTALL_DIR)/examples
 	cp -r examples/* $(INSTALL_DIR)/examples
-	cp {CHANGES.txt,KNOWN-BUGS,LICENSE,README.txt} $(INSTALL_DIR)
+	cp {CHANGES.md,KNOWN-BUGS.md,LICENSE,README.md} $(INSTALL_DIR)
 
 RFSM_VOLUME=RfsmLight-$(VERSION)
 
@@ -74,7 +55,7 @@ installer:
 	ln -s /Applications /Volumes/$(RFSM_VOLUME)/Applications
 	cp -r $(INSTALL_DIR)/examples /Volumes/$(RFSM_VOLUME)/Examples
 	cp -r $(INSTALL_DIR)/doc /Volumes/$(RFSM_VOLUME)/Documentation
-	cp $(INSTALL_DIR)/{CHANGES.txt,KNOWN-BUGS,LICENSE,README.txt,INSTALL} /Volumes/$(RFSM_VOLUME)
+	cp $(INSTALL_DIR)/{CHANGES.md,KNOWN-BUGS.md,LICENSE,README.md,INSTALL} /Volumes/$(RFSM_VOLUME)
 	hdiutil detach /Volumes/$(RFSM_VOLUME)
 	hdiutil convert /tmp/RfsmLight.dmg -format UDZO -o /tmp/RfsmLight_ro.dmg
 	@echo "** Copying disk image into ./binaries"
