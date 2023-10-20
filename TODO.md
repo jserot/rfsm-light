@@ -11,6 +11,9 @@
 - Export to SCXML ?
 - Allow resizing of state boxes
 
+* BUILD
+- add qmake target to src top Makefile
+
 * TOOLS
 
 * DOC
