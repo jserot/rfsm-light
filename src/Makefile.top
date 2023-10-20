@@ -1,0 +1,5 @@
+include config
+include platform
+
+all:
+	make -f Makefile-qt-$(QT_VERSION)

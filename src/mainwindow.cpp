@@ -665,7 +665,8 @@ void MainWindow::openResultFile(QString fname)
     }
   else if ( f.suffix() == "vcd" ) {
     QString gFile = changeSuffix(fname, ".gtkw");
-    QFile gf = QFile(gFile);
+    QFile gf(gFile);
+    // QFile gf = QFile(gFile);
     if ( gf.exists() ) args << gFile;
     customView("VCDVIEWER", args, wDir);
     }
@@ -820,7 +821,11 @@ bool MainWindow::executeCmd(QString wDir, QString cmd, QStringList args, bool sy
   proc.setWorkingDirectory(wDir);
   proc.start(cmd,args);
   if ( proc.error() == QProcess::FailedToStart ) {
+#if QT_VERSION >= 0x060000
     qDebug() << "Command failed to start" << Qt::endl;
+#else
+    qDebug() << "Command failed to start" << endl;
+#endif
     return false;
     }
   if ( sync ) {

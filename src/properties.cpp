@@ -34,6 +34,7 @@
 #include <stdexcept>
 #include <QMessageBox>
 #include <QStandardItemModel>
+#include <QDebug>
 
 PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 {
@@ -62,7 +63,11 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     connect(state_attr_field, &QLineEdit::textEdited, this, &PropertiesPanel::setStateAttr);
     connect(transition_start_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionSrcState);
     connect(transition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionDstState);
+#if QT_VERSION >= 0x060000
     connect(transition_event_field, &QComboBox::activated, this, &PropertiesPanel::setTransitionEvent);
+#else
+    connect(transition_event_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionEvent);
+#endif
     connect(transition_guard_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionGuard);
     connect(transition_actions_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionActions);
     connect(itransition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setITransitionDstState);
@@ -157,7 +162,11 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   rowLayout->addWidget(io_kind);
   widgetToIo.insert((QWidget*)io_kind, io);
   widgetToLayout.insert((QWidget*)io_kind, rowLayout);
+#if QT_VERSION >= 0x060000
   connect(io_kind, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoKind);
+#else
+  connect(io_kind, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PropertiesPanel::editIoKind);
+#endif
 
   QComboBox *io_type = new QComboBox();
   io_type->addItem("event", QVariant(Iov::TyEvent));
@@ -167,7 +176,11 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   rowLayout->addWidget(io_type);
   widgetToIo.insert((QWidget*)io_type, io);
   widgetToLayout.insert((QWidget*)io_type, rowLayout);
+#if QT_VERSION >= 0x060000
   connect(io_type, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoType);
+#else
+  connect(io_type, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PropertiesPanel::editIoType);
+#endif
 
   QComboBox *io_stim = new QComboBox();
   io_stim->addItem("None", QVariant(Stimulus::None));
@@ -177,7 +190,11 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   io_stim->setCurrentIndex(io->stim.kind);
   setStimChoices(io_stim, io);
   rowLayout->addWidget(io_stim);
+#if QT_VERSION >= 0x060000
   connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
+#else
+  connect(io_stim, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::editIoStim);
+#endif
   widgetToLayout.insert((QWidget*)io_stim, rowLayout);
   widgetToIo.insert((QWidget*)io_stim, io);
 

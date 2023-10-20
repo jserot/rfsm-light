@@ -17,6 +17,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QFile>
 #include <QTextStream>
+#include <QDebug>
 
 QString Model::statePrefix = "S";
 int Model::stateCounter = 0;
@@ -678,7 +679,7 @@ QString export_rfsm_stim(Stimulus &st)
       r += " " + QString::number(t);
       r += ",";
       }
-    if ( r.last(1) == "," ) r.chop(1);
+    if ( r.endsWith(",") ) r.chop(1);
     r += ")";
     break;
   case Stimulus::ValueChanges: 
@@ -687,7 +688,7 @@ QString export_rfsm_stim(Stimulus &st)
       r += QString::number(vc.first) + ":" + QString::number(vc.second);
       r += ",";
       }
-    if ( r.last(1) == "," ) r.chop(1);
+    if ( r.endsWith(",") ) r.chop(1);
     r += ")";
     break;
   }

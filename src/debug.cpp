@@ -33,7 +33,11 @@ void debugMessageHandler(QtMsgType type, const QMessageLogContext &, const QStri
       QFile outFile("rfsm-light.log");
       outFile.open(QIODevice::WriteOnly | QIODevice::Append);
       QTextStream ts(&outFile);
+#if QT_VERSION >= 0x060000
       ts << txt << Qt::endl;
+#else
+      ts << txt << endl;
+#endif
       }
     else
       fprintf(stderr, "%s\n", txt.toStdString().c_str());

@@ -14,6 +14,7 @@ rfsmc_dir=/Users/jserot/Dev/ml/rfsm
 doc='yes'
 sysc_dir='/usr/local/systemc-2.3.0'
 local=''
+qt_version='5.8.0'
 
 # Parse command-line arguments
 
@@ -38,6 +39,8 @@ while : ; do
         rfsmlib=$2; shift;;
     -no-doc|--no-doc)
         doc='';;
+    -qtversion|--qtversion)
+        qt_version=$2; shift;;
     -dot|--dot)
         dotprogram=$2; shift;;
     -dotviewer|--dotviewer)
@@ -57,6 +60,7 @@ Options: [defaults in brackets after descriptions]
   --docdir DIR            install documentation in DIR [default: $install_docdir]
   --rfsmdir PATH          path to rfsm source directory [default: $rfsmdir]
   --no-doc                do not build the documentation from sources
+  --qt VERSION            set Qt version for building (currently supported: 5.8.0, 6.3.1)
   --dot NAME              command for runing dot program [default: $dotprogram]
   --dotviewer NAME        command for displaying .dot files [default: $dotviewer]
   --vcdviewer NAME        command for displaying .vcd files [default: $vcdviewer]
@@ -92,6 +96,8 @@ echo "RFSMC_SRCDIR=$rfsmc_dir" >> config
 echo "" >> config
 echo "PLATFORM=$platform" >> config
 echo "$version" >> config
+echo "QT_VERSION=$qt_version" >> config
+echo "" >> config
 echo "BUILD_DOC=$doc" >> config
 echo "" >> config
 echo "# INSTALL PATHS" >> config

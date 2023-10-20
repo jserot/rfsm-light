@@ -236,7 +236,11 @@ void CompilerOptions::saveToFile(QString fname)
     CompilerOption opt = i.value();
     QString v = opt.val.toString();
     if ( ! v.isEmpty() ) 
+#if QT_VERSION >= 0x060000
       os << i.key() << "=" << v << Qt::endl;
+#else
+      os << i.key() << "=" << v << endl;
+#endif
     }
   os.flush();
   f.close();

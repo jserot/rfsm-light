@@ -38,7 +38,11 @@ void ImageViewer::scaleImage(double scaleFactor)
   if ( scaleFactor > maxScaleFactor || scaleFactor < minScaleFactor) return;
   Q_ASSERT(imageIsLoaded);
   //Q_ASSERT(imageLabel->pixmap());
+#if QT_VERSION >= 0x060000
   imageLabel->resize( scaleFactor * imageLabel->pixmap().size());
+#else
+  imageLabel->resize( scaleFactor * imageLabel->pixmap()->size());
+#endif
   adjustScrollBar(this->horizontalScrollBar(), scaleFactor);
   adjustScrollBar(this->verticalScrollBar(), scaleFactor);
   update();
