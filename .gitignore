@@ -14,7 +14,7 @@ README.html
 doc/Using.txt
 doc/Using.html
 HOWTO.md
-platform
+./platform
 config
 config-stamp
 *.dvi
@@ -45,6 +45,7 @@ examples/*/vhdl/
 *.gif
 *.o
 *.vcd
+src/Makefile-*
 src/moc_*.*
 src/qrc_resources.*
 src/rfsm-light.app/

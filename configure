@@ -14,7 +14,13 @@ rfsmc_dir=/Users/jserot/Dev/ml/rfsm
 doc='yes'
 sysc_dir='/usr/local/systemc-2.3.0'
 local=''
+qmake='/Developer/Qt5.8/5.8/clang_64/bin/qmake'
 qt_version='5.8.0'
+qt_spec='macx-clang'
+qt_config='x86_64'
+#qmake='/Users/jserot/Qt/6.3.1/macos/bin/qmake'
+#qt_version='6.3.1'
+#qt_config='arm64'
 
 # Parse command-line arguments
 
@@ -39,8 +45,14 @@ while : ; do
         rfsmlib=$2; shift;;
     -no-doc|--no-doc)
         doc='';;
-    -qtversion|--qtversion)
+    -qmake|--make)
+        qmake=$2; shift;;
+    -qt_version|--qt_version)
         qt_version=$2; shift;;
+    -qt_spec|--qt_spec)
+        qt_spec=$2; shift;;
+    -qt_config|--qt_config)
+        qt_config=$2; shift;;
     -dot|--dot)
         dotprogram=$2; shift;;
     -dotviewer|--dotviewer)
@@ -60,7 +72,10 @@ Options: [defaults in brackets after descriptions]
   --docdir DIR            install documentation in DIR [default: $install_docdir]
   --rfsmdir PATH          path to rfsm source directory [default: $rfsmdir]
   --no-doc                do not build the documentation from sources
-  --qt VERSION            set Qt version for building (currently supported: 5.8.0, 6.3.1)
+  --qmake CMD             set qmake command [default: $qmake]
+  --qt_version VERSION    set Qt version for building [default: $qt_version]
+  --qt_spec NAME          set Qt spec for building [default: $qt_spec]
+  --qt_config NAME        set Qt config for building [default: $qt_config]
   --dot NAME              command for runing dot program [default: $dotprogram]
   --dotviewer NAME        command for displaying .dot files [default: $dotviewer]
   --vcdviewer NAME        command for displaying .vcd files [default: $vcdviewer]
@@ -96,7 +111,11 @@ echo "RFSMC_SRCDIR=$rfsmc_dir" >> config
 echo "" >> config
 echo "PLATFORM=$platform" >> config
 echo "$version" >> config
+echo "" >> config
+echo "QMAKE=$qmake" >> config
 echo "QT_VERSION=$qt_version" >> config
+echo "QT_SPEC=$qt_spec" >> config
+echo "QT_CONFIG=$qt_config" >> config
 echo "" >> config
 echo "BUILD_DOC=$doc" >> config
 echo "" >> config
