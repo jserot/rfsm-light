@@ -30,12 +30,8 @@ install:
 	mkdir $(INSTALL_DIR)
 	cp -r src/rfsm-light.app $(INSTALL_DIR)/RfsmLight.app
 	cp $(RFSMC) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmc
-#	cp tools/rfsmlint/_build/default/rfsmlint.exe $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmlint
-#   ^ No longer used
 	cp $(RFSMMAKE) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmmake
 	cp ./dist/macos/rfsm-light.ini $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
-#	cp ./etc/options_spec.txt $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
-#   ^ Already present in .app/Contents/MacOS dir
 	cp ./dist/macos/INSTALL $(INSTALL_DIR)/INSTALL
 	mkdir $(INSTALL_DIR)/doc
 	cp  doc/Using.{pdf,html} $(INSTALL_DIR)/doc
@@ -59,7 +55,8 @@ installer:
 	hdiutil detach /Volumes/$(RFSM_VOLUME)
 	hdiutil convert /tmp/RfsmLight.dmg -format UDZO -o /tmp/RfsmLight_ro.dmg
 	@echo "** Copying disk image into ./binaries"
-	mv /tmp/RfsmLight_ro.dmg ./binaries/RfsmLight-$(VERSION).dmg
+	mkdir -p ./binaries # May not exist on cloned repositories
+	mv /tmp/RfsmLight_ro.dmg ./binaries/RfsmLight-$(VERSION)-$(QT_CONFIG).dmg
 
 clean:
 	(cd src; make clean)

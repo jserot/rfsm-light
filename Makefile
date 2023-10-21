@@ -53,9 +53,9 @@ endif
 
 macos-dist:
 	@echo "** Cleaning"
-#	make clobber
+	make clobber
 	@echo "Building documentation"
-#	(cd doc; make)
+	(cd doc; make)
 	make -f Makefile.macos build
 	make -f Makefile.macos install
 	make -f Makefile.macos installer
