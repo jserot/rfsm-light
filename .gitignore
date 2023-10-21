@@ -49,7 +49,6 @@ src/Makefile-*
 src/moc_*.*
 src/qrc_resources.*
 src/rfsm-light.app/
-src/Makefile
 src/gui/options_spec.txt
 doc/figs/*.pdf
 doc/etc/
