@@ -14,7 +14,7 @@ README.html
 doc/Using.txt
 doc/Using.html
 HOWTO.md
-./platform
+platform
 config
 config-stamp
 *.dvi
