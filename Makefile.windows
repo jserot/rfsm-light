@@ -40,7 +40,11 @@ else
 endif
 	cp $(OTHERLIBDIR)/{libgcc_s_dw2-1,libstdc++-6,libwinpthread-1}.dll $(INSTALL_DIR)
 	mkdir $(INSTALL_DIR)/platforms
-	cp $(OTHERLIBDIR)/qwindows.dll $(INSTALL_DIR)/platforms
+ifeq ($(BINVER),debug)
+	cp $(OTHERLIBDIR)/{qwindowsd.dll,qminimald.dll} $(INSTALL_DIR)/platforms
+else
+	cp $(OTHERLIBDIR)/{qwindows.dll,qminimal.dll} $(INSTALL_DIR)/platforms
+endif
 	cp {CHANGES.md,KNOWN-BUGS.md,LICENSE,README.md} $(INSTALL_DIR)
 	cp ./dist/windows/icons/*.{bmp,ico} $(INSTALL_DIR)
 #	cp ./dist/windows/rfsm-light.ini $(INSTALL_DIR)
