@@ -1,31 +1,31 @@
 [Setup]
 AppId={{5D1BF4DD-8593-48B4-96CA-0225513733D7}
 AppName=RfsmLight
-AppVersion=1.2.0
+AppVersion=1.3.0
 AppContact=jocelyn.serot@uca.fr
 AppCopyright=Copyright (C) 2019-2021 J. Serot
 AppPublisher=J. Serot / Clermont-Auvergne University
 AppPublisherURL=https://github.com/jserot/rfsm-light
-LicenseFile=F:/Qt/rfsm-light/LICENSE
+LicenseFile=Z:/Qt/rfsm-light/LICENSE
 UsePreviousAppDir=false
 DefaultDirName={pf}/RfsmLight
 DefaultGroupName=RfsmLight
 Compression=none
 ;Compression=lzma2
 ;SolidCompression=yes
-OutputBaseFilename=RfsmLight-1.2.0_setup
+OutputBaseFilename=RfsmLight-1.3.0_setup
 OutputDir=.
-WizardImageFile=F:\Qt\rfsm-light\build\rfsm.bmp
-WizardSmallImageFile=F:\Qt\rfsm-light\build\rfsm_small.bmp
+WizardImageFile=Z:\Qt\rfsm-light\build\rfsm.bmp
+WizardSmallImageFile=Z:\Qt\rfsm-light\build\rfsm_small.bmp
 
 [Files]
-Source: "F:\Qt\rfsm-light\build\*"; DestDir: "{app}"; Excludes:"examples"; Flags: recursesubdirs
-Source: "F:\Qt\rfsm-light\build\examples\*"; DestDir: "{code:GetDirs|0}\RfsmLightExamples"; Flags: recursesubdirs
+Source: "Z:\Qt\rfsm-light\build\*"; DestDir: "{app}"; Excludes:"examples"; Flags: recursesubdirs
+Source: "Z:\Qt\rfsm-light\build\examples\*"; DestDir: "{code:GetDirs|0}\RfsmLightExamples"; Flags: recursesubdirs
  
 [Icons]
-Name: "{group}\RfsmLight"; Filename: "{app}\RfsmLight.exe";IconFilename: "F:\Qt\rfsm-light\build\rfsm.ico"
-Name: "{group}\{cm:UninstallProgram,RfsmLight}"; Filename: "{uninstallexe}";IconFilename: "F:\Qt\rfsm-light\build\rfsmun.ico"
-Name: "{commondesktop}\RfsmLight"; Filename: "{app}\RfsmLight.exe";    IconFilename: "F:\Qt\rfsm-light\build\rfsm.ico"
+Name: "{group}\RfsmLight"; Filename: "{app}\RfsmLight.exe";IconFilename: "Z:\Qt\rfsm-light\build\rfsm.ico"
+Name: "{group}\{cm:UninstallProgram,RfsmLight}"; Filename: "{uninstallexe}";IconFilename: "Z:\Qt\rfsm-light\build\rfsmun.ico"
+Name: "{commondesktop}\RfsmLight"; Filename: "{app}\RfsmLight.exe";    IconFilename: "Z:\Qt\rfsm-light\build\rfsm.ico"
 
 [Run]
 Filename: "{app}\rfsm-light.exe"; Description: "Launch application"; Flags: postinstall nowait skipifsilent unchecked
