@@ -1,11 +1,11 @@
 # Changes
 
-# 1.3.0 (Sep 28, 2023)
+# 1.3.0 (Oct 25, 2023)
 
 * Builds and run on Mac M1 platforms withMac OS >= 12.6 and Qt 6.3
 * Now uses `rfsm` compiler v2.0
 * Removed `rfsmlint` external syntax verifier (thx to new error reporting mechanism in rfsmc-2.0)
-* Custom (and hopefully more user friendly) dialog for speciying input stimuli
+* Custom (and hopefully more user friendly) dialog for specifying input stimuli
 
 # 1.2.0 (Sep 20, 2021)
 
