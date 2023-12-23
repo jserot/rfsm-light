@@ -55,8 +55,7 @@ For Windows, a quick Install Guide is available
 #### Pre-requisites
 
 * [ocaml](http://ocaml.org) (version>=4.08) with latest version of the following [opam](http://opam.ocaml.org) packages installed:
-  - [lascar](http://opam.ocaml.org/packages/lascar)
-  - [rfsm](http://opam.ocaml.org/packages/rfsm) (version>=1.7)
+  - [rfsm](http://opam.ocaml.org/packages/rfsm) (version>=2.0)
 * [Qt](http://www.qt.io) (version>=5.8)
 
 #### How to build

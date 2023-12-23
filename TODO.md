@@ -20,4 +20,5 @@ a simplified form (limited to expressions and assignations)
 
 * DOC
 - document restrictions compared to the full RFSM language
+- make several videos for showing different features (entering a model, generating code, ...)
 
