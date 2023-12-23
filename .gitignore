@@ -19,6 +19,7 @@ config-stamp
 *.dvi
 *.pdf
 !dist/windows/windows-install-guide.pdf
+!doc/using.pdf
 *.aux
 *.log
 *.rel

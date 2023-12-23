@@ -25,7 +25,8 @@ Then
 - `git clone https://github.com/jserot/rfsm-light.git`
 - and, on the W64 side, *from a MinGW terminal* this time
   - `cd /z/Qt/rfsm-light`
-  - `./configure -platform windows`
+  - `./configure -platform windows` (do not be alarmed if certain fields in the generated `config`
+    file are wrong; they will be overriden in the sequel)
   - `make win-build`
   - `make win-install`
   - `make win-installer`
