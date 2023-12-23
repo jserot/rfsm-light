@@ -17,7 +17,7 @@ ifeq ($(PLATFORM),macos)
 endif
 ifeq ($(PLATFORM),linux)
 	(cd src; $(QMAKE) main.pro; make)
-	(cd tools/rfsmlint; make)
+#	(cd tools/rfsmlint; make)
 endif
 
 doc: 
@@ -36,13 +36,14 @@ ifeq ($(PLATFORM),linux)
 	mkdir -p $(INSTALL_BINDIR)
 #	cp $(RFSMC) $(RFSMMAKE) $(INSTALL_BINDIR)
 	cp $(RFSMC) $(INSTALL_BINDIR)
-	cp ./tools/rfsmlint/_build/default/rfsmlint.exe $(INSTALL_BINDIR)/rfsmlint
+#	cp ./tools/rfsmlint/_build/default/rfsmlint.exe $(INSTALL_BINDIR)/rfsmlint
 #	sed -e 's,__LIBDIR__,$(INSTALL_LIBDIR),' ./etc/rfsmmake > $(INSTALL_BINDIR)/rfsmmake
 #	chmod a+x $(INSTALL_BINDIR)/rfsmmake
 	cp -r src/rfsm-light $(INSTALL_BINDIR)
-	cp ./etc/options_spec.txt $(INSTALL_BINDIR)
+	cp ./lib/etc/options_spec.txt $(INSTALL_BINDIR)
 	chmod a+r $(INSTALL_BINDIR)/options_spec.txt
-	chmod a+x $(INSTALL_BINDIR)/{rfsmc,rfsm-light,rfsmlint}
+	chmod a+x $(INSTALL_BINDIR)/rfsmc
+	chmod a+x $(INSTALL_BINDIR)/rfsm-light
 	echo "COMPILER=" $(RFSMC) > $(INSTALL_BINDIR)/rfsm-light.ini
 	echo "DOTVIEWER=" $(DOTVIEWER) >> $(INSTALL_BINDIR)/rfsm-light.ini
 	echo "VCDVIEWER=" $(VCDVIEWER) >> $(INSTALL_BINDIR)/rfsm-light.ini

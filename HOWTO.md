@@ -35,13 +35,13 @@ Then
 
 - if required, install `ocaml` and `opam`: `apt install ocaml`
 - if required, install `Qt` (`qt5-default` is pre-installed in `LinuxMint 19`)
-- check that the `lascar`, `rfsm` and `ppx_deriving_yojson` opam packages are installed and up to date
-- clone the source dir; from MacOS:
-  - `cd ~/Desktop/SF3`
+- install latest version of `rfsm` package : `opam install rfsm`
+- clone the source dir
+  - `cd /media/sf_SF2`
   - `rm -rf rfsm-light`
-  - `git clone ~/Dev/Qt/rfsm/rfsm-light`
-- on the Linux side 
-  - `cd /media/sf_SF/rfsm-light`
+  - `git clone https://github.com/jserot/rfsm-light`
+- build 
+  - `cd rfsm-light`
   - `./configure --platform linux --no-doc`
   - `make`
   - `make install`
