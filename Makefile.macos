@@ -10,7 +10,7 @@ DOTVIEWER="open -a Graphviz"
 VCDVIEWER="open -a gtkwave"
 TXTVIEWER="open"
 
-RFSMC=$(RFSMC_SRCDIR)/_build/default/src/guests/full/bin/rfsmc.exe
+RFSMC=$(RFSMC_SRCDIR)/_build/default/src/guests/std/bin/rfsmc.exe
 RFSMMAKE=$(RFSMC_SRCDIR)/etc/bin/rfsmmake
 RFSMLIB=$(RFSMC_SRCDIR)/etc/lib
 
