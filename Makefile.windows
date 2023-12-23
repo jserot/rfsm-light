@@ -11,8 +11,8 @@ VCDVIEWER="C:/Program Files/gtkwave/bin/gtkwave.exe"
 
 RFSM=Z:/Caml/rfsm
 RFSMC=$(RFSM)/_build/default/src/guests/full/bin/rfsmc.exe
-RFSMMAKE=$(RFSM)/etc/bin/rfsmmake
-RFSMLIB=$(RFSM)/etc
+#RFSMMAKE=$(RFSM)/etc/bin/rfsmmake
+RFSMLIB=$(RFSM)/etc/lib
 BINVER=debug
 #BINVER=release
 

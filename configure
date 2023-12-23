@@ -1,7 +1,7 @@
 #!/bin/bash
 
 configure_options="$*"
-platform=linux
+platform=macos
 dotprogram='dot'
 dotviewer='graphviz'
 vcdviewer='gtkwave'
@@ -15,13 +15,13 @@ rfsmlib='~/.opam/5.0.0/share/rfsm/lib'
 doc='yes'
 sysc_dir='/usr/local/systemc-2.3.0'
 local=''
-qmake='/Developer/Qt5.8/5.8/clang_64/bin/qmake'
-qt_version='5.8.0'
 qt_spec='macx-clang'
-qt_config='x86_64'
-#qmake='/Users/jserot/Qt/6.3.1/macos/bin/qmake'
-#qt_version='6.3.1'
-#qt_config='arm64'
+#qmake='/Developer/Qt5.8/5.8/clang_64/bin/qmake'
+#qt_version='5.8.0'
+#qt_config='x86_64'
+qmake='/Users/jserot/Qt/6.3.1/macos/bin/qmake'
+qt_version='6.3.1'
+qt_config='arm64'
 
 # Parse command-line arguments
 
@@ -66,7 +66,7 @@ while : ; do
         cat <<EOF
 Usage: configure [options]
 Options: [defaults in brackets after descriptions]
-  --platform NAME         target platform (linux, macos or windows) [default: linux]
+  --platform NAME         target platform (linux, macos or windows) [default: $platform]
   --prefix DIR            install executables, libs and docs in DIR [default: $prefix]
   --bindir DIR            install  executables in DIR [default: $install_bindir]
   --libdir DIR            install libraries in in DIR [default: $install_libdir]
