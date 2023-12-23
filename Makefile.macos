@@ -3,16 +3,10 @@
 include config
 include platform
 
-QMAKE=/Users/jserot/Qt/6.3.1/macos/bin/qmake
-
 DOTPROGRAM="dot"
 DOTVIEWER="open -a Graphviz"
 VCDVIEWER="open -a gtkwave"
 TXTVIEWER="open"
-
-RFSMC=$(RFSMC_SRCDIR)/_build/default/src/guests/std/bin/rfsmc.exe
-RFSMMAKE=$(RFSMC_SRCDIR)/etc/bin/rfsmmake
-RFSMLIB=$(RFSMC_SRCDIR)/etc/lib
 
 .PHONY: build install installer
 
@@ -30,7 +24,8 @@ install:
 	mkdir $(INSTALL_DIR)
 	cp -r src/rfsm-light.app $(INSTALL_DIR)/RfsmLight.app
 	cp $(RFSMC) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmc
-	cp $(RFSMMAKE) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmmake
+#	cp $(RFSMMAKE) $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS/rfsmmake
+	cp ./lib/etc/options_spec.txt $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
 	cp ./dist/macos/rfsm-light.ini $(INSTALL_DIR)/RfsmLight.app/Contents/MacOS
 	cp ./dist/macos/INSTALL $(INSTALL_DIR)/INSTALL
 	mkdir $(INSTALL_DIR)/doc
