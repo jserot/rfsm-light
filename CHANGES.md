@@ -1,6 +1,6 @@
 # Changes
 
-# 1.3.0 (Oct 25, 2023)
+# 1.3.0 (Dec 23, 2023)
 
 * Builds and run on Mac M1 platforms withMac OS >= 12.6 and Qt 6.3
 * Now uses `rfsm` compiler v2.0

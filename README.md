@@ -44,7 +44,7 @@ This short [video](https://youtu.be/SLB0Hw2DQ88) can also be used as a tutorial.
 
 ### Using binary versions
 
-Prebuilt Windows and MacOS versions can be downloaded
+Prebuilt Windows and MacOS (Intel and M1) versions can be downloaded
 [here](https://github.com/jserot/rfsm-light/releases) (check the `Assets` tab).
 
 For Windows, a quick Install Guide is available
@@ -54,7 +54,8 @@ For Windows, a quick Install Guide is available
 
 #### Pre-requisites
 
-* [ocaml](http://ocaml.org) (version>=4.08) with latest version of the following [opam](http://opam.ocaml.org) packages installed:
+* [ocaml](http://ocaml.org) (version>=5.0) with latest version of the following [opam](http://opam.ocaml.org) packages installed:
+  - [dune](http://opam.ocaml.org/packages/dune) (version>=3.11)
   - [rfsm](http://opam.ocaml.org/packages/rfsm) (version>=2.0)
 * [Qt](http://www.qt.io) (version>=5.8)
 
