@@ -70,7 +70,7 @@ private slots:
     bool checkSyntax(bool withStimuli);
     bool checkSyntaxWithStimuli();
     bool checkSyntaxWithoutStimuli();
-    void generateDot();
+    void renderDot();
     void generateRfsmModel();
     void generateRfsmTestbench();
     void generateCTask();
@@ -105,6 +105,7 @@ private:
     void saveToFile(QString fname);
     QString generateRfsm(bool withTestbench);
     void addResultTab(QString fname);
+    void addDotTab(void);
     void openResultFile(QString fname);
     
     Model *model;
@@ -125,7 +126,7 @@ private:
     QAction *exitAction;
     QAction *checkSyntaxWithoutStimuliAction;
     QAction *checkSyntaxWithStimuliAction;
-    QAction *generateDotAction;
+    QAction *renderDotAction;
     QAction *generateRfsmModelAction;
     QAction *generateRfsmTestbenchAction;
     QAction *generateCTaskAction;
@@ -176,7 +177,7 @@ private:
     bool unsaved_changes;
     QString currentFileName;
     QString initDir;
-    ImageViewer* selectedImageViewer();
+    QWidget* selectedTab();
 
     QFont codeFont;
     static QString title;

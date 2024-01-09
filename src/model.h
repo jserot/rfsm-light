@@ -26,6 +26,7 @@ class QPointF;
 class QGraphicsLineItem;
 class QFont;
 class QColor;
+class QGVScene;
 QT_END_NAMESPACE
 
 class Model : public QGraphicsScene
@@ -67,6 +68,7 @@ public:
 
     bool check_model(bool withStimuli);
 
+    void renderDot(QGVScene *scene);
     void exportDot(QString fname, QStringList options);
     void exportRfsm(QString fname, bool withTestbench = false);
 

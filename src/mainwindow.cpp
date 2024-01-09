@@ -22,10 +22,11 @@
 
 #include <QtWidgets>
 #include <QVariant>
+#include "QGVScene.h"
 
 QString MainWindow::title = "RFSM Light";
 QString MainWindow::version = "1.3.0";  // Warning : must also be adjusted manually for the About panel
-int MainWindow::canvas_width = 1000;
+int MainWindow::canvas_width = 500;
 int MainWindow::canvas_height = 1000;
 
 MainWindow::MainWindow()
@@ -202,9 +203,10 @@ void MainWindow::createActions()
     checkSyntaxWithStimuliAction->setShortcut(tr("Ctrl+Shift+K"));
     connect(checkSyntaxWithStimuliAction, SIGNAL(triggered()), this, SLOT(checkSyntaxWithStimuli()));
 
-    generateDotAction = new QAction(QIcon(":/images/compileDot.png"), tr("Generate DOT representation"), this);
-    generateDotAction->setToolTip(tr("Generate DOT representation"));
-    connect(generateDotAction, SIGNAL(triggered()), this, SLOT(generateDot()));
+    renderDotAction = new QAction(QIcon(":/images/compileDot.png"), tr("Generate DOT representation"), this);
+    renderDotAction->setToolTip(tr("Generate DOT representation"));
+    renderDotAction->setShortcut(tr("Ctrl+R"));
+    connect(renderDotAction, SIGNAL(triggered()), this, SLOT(renderDot()));
 
     generateRfsmModelAction = new QAction(tr("Generate RFSM code (model only)"), this);
     connect(generateRfsmModelAction, SIGNAL(triggered()), this, SLOT(generateRfsmModel()));
@@ -320,6 +322,14 @@ void MainWindow::updateViewActions()
     normalSizeAction->setEnabled(!b);
     return;
     }
+  else if ( widget->whatsThis() == "dotView" ) {
+    fitToWindowAction->setEnabled(true);
+    fitToWindowAction->setChecked(true);
+    zoomInAction->setEnabled(true);
+    zoomOutAction->setEnabled(true);
+    normalSizeAction->setEnabled(true);
+    return;
+    }
  unselect:
     fitToWindowAction->setEnabled(false);
     zoomInAction->setEnabled(false);
@@ -344,7 +354,7 @@ void MainWindow::createMenus()
     checkMenu->addAction(checkSyntaxWithStimuliAction);
 
     buildMenu = menuBar()->addMenu(tr("&Build"));
-    buildMenu->addAction(generateDotAction);
+    buildMenu->addAction(renderDotAction);
     buildMenu->addAction(generateCTaskAction);
     buildMenu->addAction(generateSystemCModelAction);
     buildMenu->addAction(generateVHDLModelAction);
@@ -394,7 +404,7 @@ void MainWindow::createToolbars()
 
      compileToolBar = addToolBar(tr("Compile"));
      compileToolBar->addWidget(spacer2);
-     compileToolBar->addAction(generateDotAction);
+     compileToolBar->addAction(renderDotAction);
      compileToolBar->addAction(generateCTaskAction);
      compileToolBar->addAction(generateSystemCModelAction);
      compileToolBar->addAction(generateVHDLModelAction);
@@ -446,10 +456,11 @@ void MainWindow::openFile()
       return;
       }
     //qDebug () << model->getIos();
-    properties_panel->update();
-    QRectF bb = view->scene()->itemsBoundingRect();
-    view->centerOn(bb.center());
+    view->ensureVisible(model->itemsBoundingRect());
+    //QRectF bb = view->scene()->itemsBoundingRect();
+    //view->centerOn(bb.center());
     currentFileName = fname;
+    properties_panel->update();
     setUnsavedChanges(false);
 }
 
@@ -542,15 +553,20 @@ QString changeSuffix(QString fname, QString suffix)
   // return f.completeBaseName() + suffix;
 }
 
-void MainWindow::generateDot()
+void MainWindow::renderDot()
 {
-  QString sFname = getCurrentFileName();
-  if ( sFname.isEmpty() ) return;
-  QString rFname = changeSuffix(sFname, ".dot");
-  QStringList opts = compilerOptions->getOptions("dot");
-  model->exportDot(rFname, opts);
-  logMessage("Wrote file " + rFname);
-  openResultFile(rFname);
+  QStringList genOpts = compilerOptions->getOptions("general");
+  if ( genOpts.contains("-dot_qgv") )
+    addDotTab();
+  else {
+    QString sFname = getCurrentFileName();
+    if ( sFname.isEmpty() ) return;
+    QString rFname = changeSuffix(sFname, ".dot");
+    QStringList opts = compilerOptions->getOptions("dot");
+    model->exportDot(rFname, opts);
+    logMessage("Wrote file " + rFname);
+    openResultFile(rFname);
+    }
 }
 
 QString MainWindow::generateRfsm(bool withTestbench ) // TODO : factorize
@@ -890,39 +906,91 @@ void MainWindow::zoomOut()
 
 void MainWindow::normalSize()
 {
-  ImageViewer *viewer = selectedImageViewer();
-  if ( viewer == NULL ) return;
-  viewer->adjustImageSize();
-  // updateSelectedTabTitle(); // TODO ? 
+  // TO FIX
+  // ImageViewer *viewer = selectedImageViewer();
+  // if ( viewer == NULL ) return;
+  // viewer->adjustImageSize();
+  // // updateSelectedTabTitle(); // TODO ? 
 }
 
 void MainWindow::fitToWindow()
 {
-  ImageViewer *viewer = selectedImageViewer();
-  if ( viewer == NULL ) return;
-  viewer->fitToWindow(fitToWindowAction->isChecked() );
-  //updateViewActions(viewer);
+  // TO FIX
+  // ImageViewer *viewer = selectedImageViewer();
+  // if ( viewer == NULL ) return;
+  // viewer->fitToWindow(fitToWindowAction->isChecked() );
+  // //updateViewActions(viewer);
 }
 
-ImageViewer* MainWindow::selectedImageViewer()
+// ImageViewer* MainWindow::selectedImageViewer()
+// {
+//   int i = results->currentIndex();
+//   if ( i < 0 ) return NULL;
+//   QWidget *tab = results->widget(i);
+//   return tab->whatsThis() == "ImageViewer" ? (ImageViewer *)tab : NULL;
+// }
+
+QWidget* MainWindow::selectedTab()
 {
   int i = results->currentIndex();
   if ( i < 0 ) return NULL;
   QWidget *tab = results->widget(i);
-  return tab->whatsThis() == "ImageViewer" ? (ImageViewer *)tab : NULL;
+  return tab;
 }
+
+// void MainWindow::scaleImage(double factor)
+// {
+//   ImageViewer *viewer = selectedImageViewer();
+//   if ( viewer == NULL ) return;
+//   double newScaleFactor = factor * viewer->getScaleFactor();
+//   viewer->scaleImage(newScaleFactor);
+//   zoomInAction->setEnabled(newScaleFactor < 3.0);
+//   zoomOutAction->setEnabled(newScaleFactor > 0.33);
+//   // updateSelectedTabTitle(); // TODO ? 
+// }
 
 void MainWindow::scaleImage(double factor)
 {
-  ImageViewer *viewer = selectedImageViewer();
-  if ( viewer == NULL ) return;
-  double newScaleFactor = factor * viewer->getScaleFactor();
-  viewer->scaleImage(newScaleFactor);
-  zoomInAction->setEnabled(newScaleFactor < 3.0);
-  zoomOutAction->setEnabled(newScaleFactor > 0.33);
+  QWidget *w = selectedTab();
+  QString k =  w->whatsThis();
+  qDebug() << "Tab selected has kind " << k;
+  if ( k == "ImageViewer" ) {
+    ImageViewer* viewer = static_cast<ImageViewer*>(w);
+    if ( viewer == NULL ) return;
+    double newScaleFactor = factor * viewer->getScaleFactor();
+    viewer->scaleImage(newScaleFactor);
+    zoomInAction->setEnabled(newScaleFactor < 3.0);
+    zoomOutAction->setEnabled(newScaleFactor > 0.33);
+   }
+  else if ( k == "dotView" ) {
+    QGraphicsView* dotView = static_cast<QGraphicsView*>(w);
+    if ( dotView == NULL ) return;
+    dotView->scale(factor, factor);
+  }
   // updateSelectedTabTitle(); // TODO ? 
 }
 
+// In-app DOT rendering (since version 1.3.0)
+
+void MainWindow::addDotTab(void)
+{
+  QString tabName = "dot";
+  for ( int i=0; i<results->count(); i++ )
+    if ( results->tabText(i) == tabName ) closeResultTab(i); // Do not open two tabs with the same name
+  QGVScene *dotScene = new QGVScene("DOT", this);
+  dotScene->setSceneRect(QRectF(0, 0, canvas_width, canvas_height));
+  QGraphicsView *dotView = new QGraphicsView(dotScene);
+  dotView->setWhatsThis("dotView");
+  dotView->setMinimumWidth(200);
+  dotView->setMinimumHeight(400);
+  results->addTab(dotView, tabName);
+  dotView->setScene(dotScene);
+  model->renderDot(dotScene);
+  dotScene->applyLayout();
+  //dotView->fitInView(dotScene->sceneRect(), Qt::KeepAspectRatio);
+  dotView->ensureVisible(dotScene->itemsBoundingRect());
+  results->setCurrentIndex(results->count()-1);
+}
 
 // Configuration
 

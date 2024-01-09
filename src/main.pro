@@ -1,6 +1,13 @@
 TEMPLATE = app
 TARGET = rfsm-light
-INCLUDEPATH += .
+
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.6
+
+INCLUDEPATH += ../../qgv/QGVCore
+LIBS += -L../../qgv/lib -lQGVCore
+DEPENDPATH += ../../gqv/QGVCore
+
+include(./GraphViz.pri)
 
 QT       += core gui
 QT 		 += widgets

@@ -7,8 +7,10 @@ QMAKE=qmake
 
 all: build
 
-build:
+options_spec: lib/etc/builtin_options_spec.txt
 	cat lib/etc/builtin_options_spec.txt $(RFSMLIB)/options_spec.txt > lib/etc/options_spec.txt
+
+build: options_spec
 ifeq ($(PLATFORM),windows)
 	make -f Makefile.windows
 endif
