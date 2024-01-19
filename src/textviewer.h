@@ -11,38 +11,22 @@
 /***********************************************************************/
 
 
-#ifndef ImageViewer_H
-#define ImageViewer_H
+#ifndef TextViewer_H
+#define TextViewer_H
 
-#include <QScrollArea>
+#include <QPlainTextEdit>
+#include "syntaxHighlighters.h"
 
-QT_BEGIN_NAMESPACE
-class QImage;
-class QLabel;
-QT_END_NAMESPACE
-
-class ImageViewer : public QScrollArea
+class TextViewer : public QPlainTextEdit
 {
   Q_OBJECT
 
 public:
-  ImageViewer(const QPixmap& pixmap, QWidget *parent);
-
-  void scaleImage(double scaleFactor);
-
-  bool isFittedToWindow(void);
-
-public slots:
-  void fitToWindow(const bool& bValue);
-  void normalSize();
+  TextViewer(QFile& file, const QFont& font, QWidget *parent = 0);
+  ~TextViewer();
 
 private:
-    static const double minScaleFactor;
-    static const double maxScaleFactor;
-    bool fittedToWindow;
-    QLabel *image;
-
-    void adjustScrollBar(QScrollBar *scrollBar, double factor);
+  SyntaxHighlighter* highlighter;
 };
 
 #endif

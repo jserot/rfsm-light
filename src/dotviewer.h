@@ -11,38 +11,23 @@
 /***********************************************************************/
 
 
-#ifndef ImageViewer_H
-#define ImageViewer_H
+#ifndef DotViewer_H
+#define DotViewer_H
 
-#include <QScrollArea>
+#include <QGraphicsView>
+#include "QGVScene.h"
+#include "model.h"
 
-QT_BEGIN_NAMESPACE
-class QImage;
-class QLabel;
-QT_END_NAMESPACE
-
-class ImageViewer : public QScrollArea
+class DotViewer : public QGraphicsView
 {
   Q_OBJECT
 
 public:
-  ImageViewer(const QPixmap& pixmap, QWidget *parent);
-
-  void scaleImage(double scaleFactor);
-
-  bool isFittedToWindow(void);
-
-public slots:
-  void fitToWindow(const bool& bValue);
-  void normalSize();
+  DotViewer(Model *model, int width, int height, QWidget *parent);
+  ~DotViewer();
 
 private:
-    static const double minScaleFactor;
-    static const double maxScaleFactor;
-    bool fittedToWindow;
-    QLabel *image;
-
-    void adjustScrollBar(QScrollBar *scrollBar, double factor);
+  QGVScene *scene;
 };
 
 #endif

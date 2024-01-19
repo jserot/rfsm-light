@@ -11,38 +11,24 @@
 /***********************************************************************/
 
 
-#ifndef ImageViewer_H
-#define ImageViewer_H
+#include <QtWidgets>
+#include "dotviewer.h"
 
-#include <QScrollArea>
-
-QT_BEGIN_NAMESPACE
-class QImage;
-class QLabel;
-QT_END_NAMESPACE
-
-class ImageViewer : public QScrollArea
+DotViewer::DotViewer(Model *model, int width, int height, QWidget *parent) : QGraphicsView(parent)
 {
-  Q_OBJECT
+  scene = new QGVScene("DOT", this);
+  scene->setSceneRect(QRectF(0, 0, width, height));
+  setScene(scene);
+  setMinimumWidth(200); // TOFIX : use app-level cst here
+  setMinimumHeight(400); // TOFIX : use app-level cst here
+  model->renderDot(scene);
+  setWhatsThis("dotView");
+  scene->applyLayout();
+  //view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+  ensureVisible(scene->itemsBoundingRect());
+}
 
-public:
-  ImageViewer(const QPixmap& pixmap, QWidget *parent);
-
-  void scaleImage(double scaleFactor);
-
-  bool isFittedToWindow(void);
-
-public slots:
-  void fitToWindow(const bool& bValue);
-  void normalSize();
-
-private:
-    static const double minScaleFactor;
-    static const double maxScaleFactor;
-    bool fittedToWindow;
-    QLabel *image;
-
-    void adjustScrollBar(QScrollBar *scrollBar, double factor);
-};
-
-#endif
+DotViewer::~DotViewer()
+{
+  if ( scene ) delete scene;
+}

@@ -17,42 +17,31 @@
 #include <QtGui>
 #include <QPainter>
 
-const double ImageViewer::minScaleFactor = 0.1;
-const double ImageViewer::maxScaleFactor = 2.0;
 
-ImageViewer::ImageViewer(QWidget *parent) : QScrollArea(parent)
+ImageViewer::ImageViewer(const QPixmap& pixmap, QWidget *parent) : QScrollArea(parent)
 {
-  imageLabel = new QLabel;
-  imageLabel->setBackgroundRole(QPalette::Base);
-  imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-  imageLabel->setScaledContents(true);
-  this->setBackgroundRole(QPalette::Dark);
-  this->setWidget(imageLabel);
-  imageIsLoaded = false;
+  image = new QLabel;
+  image->setBackgroundRole(QPalette::Base);
+  image->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+  image->setPixmap(pixmap);
+  image->setScaledContents(true);
+  setBackgroundRole(QPalette::Dark);
+  setWidget(image);
   fittedToWindow = false;
-  currentScaleFactor = 1.0;
+  setWhatsThis("ImageViewer");
 }
 
 void ImageViewer::scaleImage(double scaleFactor)
 {
-  if ( scaleFactor > maxScaleFactor || scaleFactor < minScaleFactor) return;
-  Q_ASSERT(imageIsLoaded);
-  //Q_ASSERT(imageLabel->pixmap());
 #if QT_VERSION >= 0x060000
-  imageLabel->resize( scaleFactor * imageLabel->pixmap().size());
+  image->resize( scaleFactor * image->pixmap().size());
 #else
-  imageLabel->resize( scaleFactor * imageLabel->pixmap()->size());
+  image->resize( scaleFactor * image->pixmap()->size());
 #endif
   adjustScrollBar(this->horizontalScrollBar(), scaleFactor);
   adjustScrollBar(this->verticalScrollBar(), scaleFactor);
   update();
   updateGeometry();
-  currentScaleFactor = scaleFactor;
-}
-
-bool ImageViewer::isImageLoaded()
-{
-    return imageIsLoaded;
 }
 
 bool ImageViewer::isFittedToWindow()
@@ -60,32 +49,14 @@ bool ImageViewer::isFittedToWindow()
     return fittedToWindow;
 }
 
-double ImageViewer::getScaleFactor()
-{
-    return currentScaleFactor;
-}
-
-void ImageViewer::setPixmap(const QPixmap &pixmap)
-{
-    imageLabel->setPixmap(pixmap);
-    imageIsLoaded = true;
-    currentScaleFactor = 1.0;
-}
-
-void ImageViewer::adjustImageSize()
-{
-    imageLabel->adjustSize();
-}
-
 void ImageViewer::normalSize()
 {
-  imageLabel->adjustSize();
-  currentScaleFactor = 1.0;
+  image->adjustSize();
 }
 
 void ImageViewer::fitToWindow(const bool &t)
 {
-  this->setWidgetResizable(t);
+  setWidgetResizable(t);
   if ( !t ) normalSize();
   fittedToWindow = t;
 }

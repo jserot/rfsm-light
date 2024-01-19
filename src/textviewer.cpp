@@ -11,38 +11,28 @@
 /***********************************************************************/
 
 
-#ifndef ImageViewer_H
-#define ImageViewer_H
+#include <QtWidgets>
+#include "textviewer.h"
 
-#include <QScrollArea>
-
-QT_BEGIN_NAMESPACE
-class QImage;
-class QLabel;
-QT_END_NAMESPACE
-
-class ImageViewer : public QScrollArea
+SyntaxHighlighter* makeSyntaxHighlighter(QString suffix, QTextDocument* doc)
 {
-  Q_OBJECT
+    if ( suffix == "fsm" ) return new FsmSyntaxHighlighter(doc);
+    if ( suffix == "c" || suffix == "h" || suffix == "cpp" ) return new CTaskSyntaxHighlighter(doc);
+    return NULL;
+}
 
-public:
-  ImageViewer(const QPixmap& pixmap, QWidget *parent);
+TextViewer::TextViewer(QFile& f, const QFont& font, QWidget *parent) : QPlainTextEdit(parent)
+{
+  QFileInfo fi(f);
+  setFont(font);
+  setPlainText(QString::fromUtf8(f.readAll()));
+  setReadOnly(true);
+  setWhatsThis("TextViewer");
+  highlighter = makeSyntaxHighlighter(fi.suffix(), document());
+  setProperty("attachedSyntaxHighlighter", QVariant::fromValue(static_cast<void*>(highlighter)));
+}
 
-  void scaleImage(double scaleFactor);
-
-  bool isFittedToWindow(void);
-
-public slots:
-  void fitToWindow(const bool& bValue);
-  void normalSize();
-
-private:
-    static const double minScaleFactor;
-    static const double maxScaleFactor;
-    bool fittedToWindow;
-    QLabel *image;
-
-    void adjustScrollBar(QScrollBar *scrollBar, double factor);
-};
-
-#endif
+TextViewer::~TextViewer()
+{
+  if ( highlighter ) delete highlighter;
+}

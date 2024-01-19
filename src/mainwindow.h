@@ -178,12 +178,17 @@ private:
     QString currentFileName;
     QString initDir;
     QWidget* selectedTab();
+    double currentScaleFactor;
 
     QFont codeFont;
-    static QString title;
-    static QString version;
-    static int canvas_width;
-    static int canvas_height;
+    static const QString title;
+    static const QString version;
+    static const int canvas_width;
+    static const int canvas_height;
+    static const double zoomInFactor;
+    static const double zoomOutFactor;
+    static const double minScaleFactor;
+    static const double maxScaleFactor;
 
     QProcess proc; 
     QString compileMsgs;

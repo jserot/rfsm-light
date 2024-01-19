@@ -28,6 +28,8 @@ HEADERS += include/nlohmann_json.h \
            stimuli.h \
            command.h \
            imageviewer.h \
+           textviewer.h \
+           dotviewer.h \
            syntaxHighlighters.h \
            compilerPaths.h \
            compilerOption.h \
@@ -46,7 +48,9 @@ SOURCES += transition.cpp \
            compilerPaths.cpp \
            compilerOption.cpp \
            compilerOptions.cpp \
+           textviewer.cpp \
            imageviewer.cpp \
+           dotviewer.cpp \
            debug.cpp \
            main.cpp \
            mainwindow.cpp

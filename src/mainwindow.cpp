@@ -15,19 +15,23 @@
 #include "model.h"
 #include "mainwindow.h"
 #include "imageviewer.h"
-#include "syntaxHighlighters.h"
+#include "textviewer.h"
+#include "dotviewer.h"
 #include "compilerPaths.h"
 #include "compilerOptions.h"
 #include "debug.h"
 
 #include <QtWidgets>
 #include <QVariant>
-#include "QGVScene.h"
 
-QString MainWindow::title = "RFSM Light";
-QString MainWindow::version = "1.3.0";  // Warning : must also be adjusted manually for the About panel
-int MainWindow::canvas_width = 500;
-int MainWindow::canvas_height = 1000;
+const QString MainWindow::title = "RFSM Light";
+const QString MainWindow::version = "1.3.0";  // Warning : must also be adjusted manually for the About panel
+const int MainWindow::canvas_width = 500;
+const int MainWindow::canvas_height = 1000;
+const double MainWindow::zoomInFactor = 1.25;
+const double MainWindow::zoomOutFactor = 0.8;
+const double MainWindow::minScaleFactor = 0.2;
+const double MainWindow::maxScaleFactor = 2.0;
 
 MainWindow::MainWindow()
 {
@@ -110,7 +114,9 @@ MainWindow::MainWindow()
     unsaved_changes = false;
     updateActions();
 
-    splitter->setSizes(QList<int>()<<250<<250<<200);
+    splitter->setSizes(QList<int>()<<250<<250<<200); // TO FIX : do not use hw constants here !
+
+    currentScaleFactor = 1.0;
 }
 
 
@@ -599,61 +605,40 @@ void MainWindow::generateRfsmTestbench()
 
 // Displaying result files
 
-SyntaxHighlighter* makeSyntaxHighlighter(QString suffix, QTextDocument* doc)
-{
-    if ( suffix == "fsm" ) return new FsmSyntaxHighlighter(doc);
-    if ( suffix == "c" || suffix == "h" || suffix == "cpp" ) return new CTaskSyntaxHighlighter(doc);
-    return NULL;
-}
-
-
 void MainWindow::addResultTab(QString fname)
 {
   QFile file(fname);
-  QFileInfo f(fname);
   if ( ! file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
       QMessageBox::warning(this,"Error:","cannot open file:\n"+fname);
       return;
     }
+  QFileInfo f(fname);
   QString tabName = f.suffix() == "gif" ? changeSuffix(f.fileName(),".dot") : f.fileName();
   for ( int i=0; i<results->count(); i++ )
     if ( results->tabText(i) == tabName ) closeResultTab(i); // Do not open two tabs with the same name
   if ( f.suffix() == "gif" ) {
     QPixmap pixmap(f.filePath());
-    ImageViewer *viewer = new ImageViewer();
-    viewer->setWhatsThis("ImageViewer");
-    viewer->setPixmap(pixmap);
+    ImageViewer *viewer = new ImageViewer(pixmap, results);
     results->addTab(viewer, tabName);
-    viewer->scaleImage(1);
-    viewer->setProperty("attachedSyntaxHighlighter", QVariant::fromValue(static_cast<void*>(0)));
-    // QSize sz1 = pixmap.size();
-    // QSize sz2 = results->currentWidget()->size();
-    //viewer->scaleImage((double)sz2.height()/sz1.height());
     } 
   else {
-    QPlainTextEdit* edit = new QPlainTextEdit();
-// #ifdef Q_OS_MACOS
-    edit->setFont(codeFont);
-// #endif
-    edit->setPlainText(QString::fromUtf8(file.readAll()));
-    edit->setReadOnly(true);
-    edit->setWhatsThis("TextViewer");
-    //edit->setObjectName(fname);
-    results->addTab(edit, tabName);
-    SyntaxHighlighter* highlighter = makeSyntaxHighlighter(f.suffix(), edit->document());
-    edit->setProperty("attachedSyntaxHighlighter", QVariant::fromValue(static_cast<void*>(highlighter)));
-    // We need to keep track of the allocated highlighters to delete them when the corresponding tab is closed !
+    TextViewer *viewer = new TextViewer(file, codeFont, results);
+    results->addTab(viewer, tabName);
     }
   results->setCurrentIndex(results->count()-1);
 }
 
 void MainWindow::closeResultTab(int index)
 {
-  QWidget *edit = results->widget(index);
-  if ( edit == NULL ) return; 
-  QVariant v = edit->property("attachedSyntaxHighlighter");
-  SyntaxHighlighter *hl = static_cast<SyntaxHighlighter*>(v.value<void*>());
-  if ( hl != NULL ) delete hl;
+  // TODO: we should have to call w->delete() here and let the bound widget handle the delete of their associated data ...
+  QWidget *w = results->widget(index);
+  if ( w == NULL ) return; 
+  if ( w->whatsThis() == "TextEdit" ) {
+    QVariant v = w->property("attachedSyntaxHighlighter");
+    SyntaxHighlighter *hl = static_cast<SyntaxHighlighter*>(v.value<void*>());
+    if ( hl != NULL ) delete hl;
+    }
+  // TBC
   results->removeTab(index);
 }
 
@@ -895,40 +880,39 @@ void MainWindow::setCodeFont()
 
 void MainWindow::zoomIn()
 {
-  scaleImage(1.25);
+  scaleImage(zoomInFactor);
 }
 
 
 void MainWindow::zoomOut()
 {
-  scaleImage(0.8);
+  scaleImage(zoomOutFactor);
 }
 
 void MainWindow::normalSize()
 {
-  // TO FIX
-  // ImageViewer *viewer = selectedImageViewer();
-  // if ( viewer == NULL ) return;
-  // viewer->adjustImageSize();
-  // // updateSelectedTabTitle(); // TODO ? 
+  QWidget *w = selectedTab();
+  QString k =  w->whatsThis();
+  if ( k == "ImageViewer" ) {
+    ImageViewer* viewer = static_cast<ImageViewer*>(w);
+    if ( viewer == NULL ) return;
+    viewer->normalSize();
+    }
+  // updateSelectedTabTitle(); // TODO ? 
 }
 
 void MainWindow::fitToWindow()
 {
-  // TO FIX
-  // ImageViewer *viewer = selectedImageViewer();
-  // if ( viewer == NULL ) return;
-  // viewer->fitToWindow(fitToWindowAction->isChecked() );
-  // //updateViewActions(viewer);
+  QWidget *w = selectedTab();
+  QString k =  w->whatsThis();
+  if ( k == "ImageViewer" ) {
+    ImageViewer* viewer = static_cast<ImageViewer*>(w);
+    if ( viewer == NULL ) return;
+    viewer->fitToWindow(fitToWindowAction->isChecked() );
+    }
+  // updateSelectedTabTitle(); // TODO ? 
+  //updateViewActions(viewer);
 }
-
-// ImageViewer* MainWindow::selectedImageViewer()
-// {
-//   int i = results->currentIndex();
-//   if ( i < 0 ) return NULL;
-//   QWidget *tab = results->widget(i);
-//   return tab->whatsThis() == "ImageViewer" ? (ImageViewer *)tab : NULL;
-// }
 
 QWidget* MainWindow::selectedTab()
 {
@@ -938,35 +922,23 @@ QWidget* MainWindow::selectedTab()
   return tab;
 }
 
-// void MainWindow::scaleImage(double factor)
-// {
-//   ImageViewer *viewer = selectedImageViewer();
-//   if ( viewer == NULL ) return;
-//   double newScaleFactor = factor * viewer->getScaleFactor();
-//   viewer->scaleImage(newScaleFactor);
-//   zoomInAction->setEnabled(newScaleFactor < 3.0);
-//   zoomOutAction->setEnabled(newScaleFactor > 0.33);
-//   // updateSelectedTabTitle(); // TODO ? 
-// }
-
 void MainWindow::scaleImage(double factor)
 {
   QWidget *w = selectedTab();
   QString k =  w->whatsThis();
-  qDebug() << "Tab selected has kind " << k;
+  currentScaleFactor = factor * currentScaleFactor;
   if ( k == "ImageViewer" ) {
     ImageViewer* viewer = static_cast<ImageViewer*>(w);
     if ( viewer == NULL ) return;
-    double newScaleFactor = factor * viewer->getScaleFactor();
-    viewer->scaleImage(newScaleFactor);
-    zoomInAction->setEnabled(newScaleFactor < 3.0);
-    zoomOutAction->setEnabled(newScaleFactor > 0.33);
+    viewer->scaleImage(currentScaleFactor); // Absolute scaling
    }
   else if ( k == "dotView" ) {
     QGraphicsView* dotView = static_cast<QGraphicsView*>(w);
     if ( dotView == NULL ) return;
-    dotView->scale(factor, factor);
+    dotView->scale(factor, factor); // Relative scaling
   }
+  zoomInAction->setEnabled(currentScaleFactor < maxScaleFactor);
+  zoomOutAction->setEnabled(currentScaleFactor > minScaleFactor);
   // updateSelectedTabTitle(); // TODO ? 
 }
 
@@ -977,18 +949,8 @@ void MainWindow::addDotTab(void)
   QString tabName = "dot";
   for ( int i=0; i<results->count(); i++ )
     if ( results->tabText(i) == tabName ) closeResultTab(i); // Do not open two tabs with the same name
-  QGVScene *dotScene = new QGVScene("DOT", this);
-  dotScene->setSceneRect(QRectF(0, 0, canvas_width, canvas_height));
-  QGraphicsView *dotView = new QGraphicsView(dotScene);
-  dotView->setWhatsThis("dotView");
-  dotView->setMinimumWidth(200);
-  dotView->setMinimumHeight(400);
-  results->addTab(dotView, tabName);
-  dotView->setScene(dotScene);
-  model->renderDot(dotScene);
-  dotScene->applyLayout();
-  //dotView->fitInView(dotScene->sceneRect(), Qt::KeepAspectRatio);
-  dotView->ensureVisible(dotScene->itemsBoundingRect());
+  DotViewer *view = new DotViewer(model, 200, 400, results); // TODO: use app-level dims here
+  results->addTab(view, tabName);
   results->setCurrentIndex(results->count()-1);
 }
 
