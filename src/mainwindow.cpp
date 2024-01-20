@@ -25,13 +25,15 @@
 #include <QVariant>
 
 const QString MainWindow::title = "RFSM Light";
-const QString MainWindow::version = "1.3.0";  // Warning : must also be adjusted manually for the About panel
+const QString MainWindow::version = "1.3.0"; 
 const int MainWindow::canvas_width = 500;
 const int MainWindow::canvas_height = 1000;
+const QList<int> MainWindow::splitterSizes = { 250, 250, 250 };
 const double MainWindow::zoomInFactor = 1.25;
 const double MainWindow::zoomOutFactor = 0.8;
 const double MainWindow::minScaleFactor = 0.2;
 const double MainWindow::maxScaleFactor = 2.0;
+const QStringList guiOnlyOpts = { "-dot_external_viewer", "-sync_externals", "-dot_qgv" };
 
 MainWindow::MainWindow()
 {
@@ -114,7 +116,7 @@ MainWindow::MainWindow()
     unsaved_changes = false;
     updateActions();
 
-    splitter->setSizes(QList<int>()<<250<<250<<200); // TO FIX : do not use hw constants here !
+    splitter->setSizes(splitterSizes); 
 
     currentScaleFactor = 1.0;
 }
@@ -163,11 +165,11 @@ void MainWindow::modelModified()
 void MainWindow::about()
 {
     QMessageBox::about(this,
-      tr("About RFSM Light"),
-      tr("<p>Finite State Diagram Editor, Simulator and Compiler</p>\
-          <p>version 1.3.0</p>\
+      "About RFSM Light",
+      "<p>Finite State Diagram Editor, Simulator and Compiler</p>\
+          <p>version " + version + "</p>\
          <p><a href=\"github.com/jserot/rfsm-light\">github.com/jserot/rfsm-light</a></p>\
-         <p>(C) J. Sérot (jocelyn.serot@uca.fr), 2019-now"));
+         <p>(C) J. Sérot (jocelyn.serot@uca.fr), 2019-now");
 }
 
 // Actions
@@ -618,11 +620,11 @@ void MainWindow::addResultTab(QString fname)
     if ( results->tabText(i) == tabName ) closeResultTab(i); // Do not open two tabs with the same name
   if ( f.suffix() == "gif" ) {
     QPixmap pixmap(f.filePath());
-    ImageViewer *viewer = new ImageViewer(pixmap, results);
+    ImageViewer *viewer = new ImageViewer(pixmap, "ImageViewer", results);
     results->addTab(viewer, tabName);
     } 
   else {
-    TextViewer *viewer = new TextViewer(file, codeFont, results);
+    TextViewer *viewer = new TextViewer(file, codeFont, "TextViewer", results);
     results->addTab(viewer, tabName);
     }
   results->setCurrentIndex(results->count()-1);
@@ -630,15 +632,8 @@ void MainWindow::addResultTab(QString fname)
 
 void MainWindow::closeResultTab(int index)
 {
-  // TODO: we should have to call w->delete() here and let the bound widget handle the delete of their associated data ...
   QWidget *w = results->widget(index);
-  if ( w == NULL ) return; 
-  if ( w->whatsThis() == "TextEdit" ) {
-    QVariant v = w->property("attachedSyntaxHighlighter");
-    SyntaxHighlighter *hl = static_cast<SyntaxHighlighter*>(v.value<void*>());
-    if ( hl != NULL ) delete hl;
-    }
-  // TBC
+  if ( w ) delete w;
   results->removeTab(index);
 }
 
@@ -685,7 +680,7 @@ void MainWindow::customView(QString toolName, QStringList args, QString wDir)
      }
   QStringList genOpts = compilerOptions->getOptions("general");
   bool sync = genOpts.contains("-sync_externals");
-   if ( ! executeCmd(wDir, cmd, args, sync ) ) {
+  if ( ! executeCmd(wDir, cmd, args, sync ) ) {
      QMessageBox::warning(this, "", "Failed to launch external program " + toolName);
      //addResultTab(fname);
      }
@@ -767,8 +762,8 @@ void MainWindow::generate(QString target, bool withTestbench)
       QDir().mkdir(targetPath);
       }
     }
-  if ( genOpts.contains("-dot_external_viewer") ) genOpts.removeOne("-dot_external_viewer");
-  if ( genOpts.contains("-sync_externals") ) genOpts.removeOne("-sync_externals");
+  foreach ( QString opt, genOpts)
+    if ( genOpts.contains(opt) ) genOpts.removeOne(opt);
   QStringList args =
     QStringList()
     << "-" + target
@@ -949,7 +944,7 @@ void MainWindow::addDotTab(void)
   QString tabName = "dot";
   for ( int i=0; i<results->count(); i++ )
     if ( results->tabText(i) == tabName ) closeResultTab(i); // Do not open two tabs with the same name
-  DotViewer *view = new DotViewer(model, 200, 400, results); // TODO: use app-level dims here
+  DotViewer *view = new DotViewer(model, "dotViewer", 200, 400, results); // TODO: let the dotViewer class decide of the canvas dimensions 
   results->addTab(view, tabName);
   results->setCurrentIndex(results->count()-1);
 }

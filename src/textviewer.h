@@ -22,7 +22,7 @@ class TextViewer : public QPlainTextEdit
   Q_OBJECT
 
 public:
-  TextViewer(QFile& file, const QFont& font, QWidget *parent = 0);
+  TextViewer(QFile& file, const QFont& font, QString id, QWidget *parent = 0);
   ~TextViewer();
 
 private:

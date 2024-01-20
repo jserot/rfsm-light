@@ -13,16 +13,21 @@
 
 #include <QtWidgets>
 #include "dotviewer.h"
+#include "QGVScene.h"
+#include "model.h"
 
-DotViewer::DotViewer(Model *model, int width, int height, QWidget *parent) : QGraphicsView(parent)
+const int DotViewer::minCanvasWidth = 200;
+const int DotViewer::minCanvasHeight = 400;
+
+DotViewer::DotViewer(Model *model, const QString id, int width, int height, QWidget *parent) : QGraphicsView(parent)
 {
   scene = new QGVScene("DOT", this);
   scene->setSceneRect(QRectF(0, 0, width, height));
   setScene(scene);
-  setMinimumWidth(200); // TOFIX : use app-level cst here
-  setMinimumHeight(400); // TOFIX : use app-level cst here
+  setMinimumWidth(minCanvasWidth);
+  setMinimumHeight(minCanvasHeight);
   model->renderDot(scene);
-  setWhatsThis("dotView");
+  setWhatsThis(id);
   scene->applyLayout();
   //view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
   ensureVisible(scene->itemsBoundingRect());

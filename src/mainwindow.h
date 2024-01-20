@@ -185,10 +185,12 @@ private:
     static const QString version;
     static const int canvas_width;
     static const int canvas_height;
+    static const QList<int> splitterSizes;
     static const double zoomInFactor;
     static const double zoomOutFactor;
     static const double minScaleFactor;
     static const double maxScaleFactor;
+    static QStringList guiOnlyOpts;
 
     QProcess proc; 
     QString compileMsgs;

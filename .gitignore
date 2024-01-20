@@ -50,6 +50,7 @@ src/moc_*.*
 src/qrc_resources.*
 src/rfsm-light.app/
 src/gui/options_spec.txt
+src/BROWSE
 doc/figs/*.pdf
 doc/etc/
 videos/

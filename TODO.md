@@ -1,4 +1,5 @@
 * GUI
+- replace whatThis mechanism by className
 - When reading a `.fsd` file, do _not_ clear the current model before the new one is  successfully
   read (this will need two fsm objects : the current one and the new one; swap only if read succeeds)
 - add sized ints

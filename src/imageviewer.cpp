@@ -18,7 +18,7 @@
 #include <QPainter>
 
 
-ImageViewer::ImageViewer(const QPixmap& pixmap, QWidget *parent) : QScrollArea(parent)
+ImageViewer::ImageViewer(const QPixmap& pixmap, QString id, QWidget *parent) : QScrollArea(parent)
 {
   image = new QLabel;
   image->setBackgroundRole(QPalette::Base);
@@ -28,7 +28,7 @@ ImageViewer::ImageViewer(const QPixmap& pixmap, QWidget *parent) : QScrollArea(p
   setBackgroundRole(QPalette::Dark);
   setWidget(image);
   fittedToWindow = false;
-  setWhatsThis("ImageViewer");
+  setWhatsThis(id);
 }
 
 void ImageViewer::scaleImage(double scaleFactor)
@@ -64,4 +64,8 @@ void ImageViewer::fitToWindow(const bool &t)
 void ImageViewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {
   scrollBar->setValue(int(factor * scrollBar->value() + ((factor - 1) * scrollBar->pageStep()/2)));
+}
+
+ImageViewer::~ImageViewer()
+{
 }

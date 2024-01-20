@@ -10,20 +10,23 @@
 /*                                                                     */
 /***********************************************************************/
 
-
 #ifndef DotViewer_H
 #define DotViewer_H
 
 #include <QGraphicsView>
-#include "QGVScene.h"
-#include "model.h"
+
+class Model;
+class QGVScene;
 
 class DotViewer : public QGraphicsView
 {
   Q_OBJECT
 
+  const static int minCanvasWidth;
+  const static int minCanvasHeight;
+
 public:
-  DotViewer(Model *model, int width, int height, QWidget *parent);
+  DotViewer(Model *model, QString id, int width, int height, QWidget *parent);
   ~DotViewer();
 
 private:
