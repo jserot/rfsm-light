@@ -91,6 +91,8 @@ private slots:
     void setCodeFont();
     void readProcStdout();
     void readProcStderr();
+    void updateCursor();
+    void resetCursor();
 
 private:
     void createActions();

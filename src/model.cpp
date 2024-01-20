@@ -39,6 +39,11 @@ void Model::setMode(Mode mode)
     this->mode = mode;
 }
 
+Model::Mode Model::getMode(void)
+{
+  return mode;
+}
+
 Iov* Model::addIo(const QString name, const Iov::IoKind kind, const Iov::IoType type, const Stimulus stim)
 {
   qDebug () << "Model::addIo" << name << kind << type << stim.toString() ;
@@ -154,6 +159,25 @@ Transition* Model::addTransition(State* srcState,
   transition->setZValue(-1000.0);
   addItem(transition);
   return transition;
+}
+
+bool Model::event(QEvent *event)
+{
+  //qDebug() << "Got event " << event->type();
+  switch ( event->type() ) {
+    // Note. The [Enter] and [Leave] events cannot be handled by the model itself
+    // because the associated action [setCursor] can only be applied to the _enclosing_ view...
+    // This workaround uses signals to delegate 
+    case QEvent::Enter:
+      emit mouseEnter();
+      return true;
+    case QEvent::GraphicsSceneLeave:
+      emit mouseLeave();
+      return true;
+    default:
+        break;
+    }
+  return QGraphicsScene::event(event);
 }
 
 void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)

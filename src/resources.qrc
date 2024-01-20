@@ -14,5 +14,11 @@
         <file>images/compileSystemC.png</file>
         <file>images/compileVHDL.png</file>
         <file>images/runSimulation.png</file>
+        <file>cursors/delete.png</file>
+        <file>cursors/state.png</file>
+        <file>cursors/initstate.png</file>
+        <file>cursors/transition.png</file>
+        <file>cursors/loop.png</file>
+        <file>cursors/select.png</file>
     </qresource>
 </RCC>

@@ -63,6 +63,8 @@ MainWindow::MainWindow()
     connect(model, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
     connect(model, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
     connect(model, SIGNAL(modelModified()), this, SLOT(modelModified()));
+    connect(model, SIGNAL(mouseEnter()), this, SLOT(updateCursor()));
+    connect(model, SIGNAL(mouseLeave()), this, SLOT(resetCursor()));
 
     properties_panel = new PropertiesPanel(this); // Warning: the model must be created before 
     properties_panel->setMinimumWidth(280);
@@ -395,7 +397,7 @@ void MainWindow::createToolbars()
 {
      QWidget *spacer1 = new QWidget(this);
      spacer1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-     QWidget *spacer2 = new QWidget(this);
+     QWidget *spacer2 = new QWidget(this);
      spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
      fileToolBar = addToolBar(tr("File"));
@@ -950,6 +952,30 @@ void MainWindow::addDotTab(void)
   DotViewer *view = new DotViewer(model, 200, 400, results); // TODO: let the dotViewer class decide of the canvas dimensions 
   results->addTab(view, tabName);
   results->setCurrentIndex(results->count()-1);
+}
+
+// Dynamic cursor handling (since 1.3.0)
+
+QCursor cursorOf(Model::Mode mode)
+{
+  switch ( mode ) {
+  case Model::InsertState: return QCursor(QPixmap(":cursors/state.png"),0,0);
+  case Model::InsertPseudoState: return QCursor(QPixmap(":cursors/initstate.png"),0,0);
+  case Model::InsertTransition: return QCursor(QPixmap(":cursors/transition.png"),0,0);
+  case Model::InsertLoopTransition: return QCursor(QPixmap(":cursors/loop.png"),0,0);
+  case Model::DeleteItem: return QCursor(QPixmap(":cursors/delete.png"),0,0);
+  default: return Qt::ArrowCursor;
+  }
+}
+
+void MainWindow::updateCursor()
+{
+  setCursor(cursorOf(model->getMode()));
+}
+
+void MainWindow::resetCursor()
+{
+  setCursor(Qt::ArrowCursor);
 }
 
 // Configuration
