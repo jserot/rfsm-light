@@ -313,6 +313,7 @@ void MainWindow::updateActions()
 void MainWindow::updateViewActions()
 {
   QWidget *widget;
+  QString kind;
   if ( results->count() == 0 ) {
     closeResultsAction->setEnabled(false);
     goto unselect;
@@ -320,7 +321,8 @@ void MainWindow::updateViewActions()
   closeResultsAction->setEnabled(true);
   widget = results->widget(results->currentIndex());  
   if ( widget == NULL ) goto unselect;
-  if ( widget->whatsThis() == "ImageViewer" ) {
+  kind = widget->metaObject()->className();
+  if ( kind == "ImageViewer" ) {
     ImageViewer* viewer = static_cast<ImageViewer*>(widget);
     bool b = viewer->isFittedToWindow();
     fitToWindowAction->setEnabled(true);
@@ -330,7 +332,7 @@ void MainWindow::updateViewActions()
     normalSizeAction->setEnabled(!b);
     return;
     }
-  else if ( widget->whatsThis() == "dotView" ) {
+  else if ( kind == "DotViewer" ) {
     fitToWindowAction->setEnabled(true);
     fitToWindowAction->setChecked(true);
     zoomInAction->setEnabled(true);
@@ -620,21 +622,22 @@ void MainWindow::addResultTab(QString fname)
     if ( results->tabText(i) == tabName ) closeResultTab(i); // Do not open two tabs with the same name
   if ( f.suffix() == "gif" ) {
     QPixmap pixmap(f.filePath());
-    ImageViewer *viewer = new ImageViewer(pixmap, "ImageViewer", results);
+    ImageViewer *viewer = new ImageViewer(pixmap, results);
     results->addTab(viewer, tabName);
     } 
   else {
-    TextViewer *viewer = new TextViewer(file, codeFont, "TextViewer", results);
+    TextViewer *viewer = new TextViewer(file, codeFont, results);
     results->addTab(viewer, tabName);
     }
   results->setCurrentIndex(results->count()-1);
+  // qDebug() << "** Added tab, current index now " << results->count()-1 << "/" << results->count();
 }
 
 void MainWindow::closeResultTab(int index)
 {
   QWidget *w = results->widget(index);
-  if ( w ) delete w;
   results->removeTab(index);
+  if ( w ) delete w; // removeTab does _not_ delete the tabbed widget
 }
 
 void MainWindow::closeResults()
@@ -887,7 +890,7 @@ void MainWindow::zoomOut()
 void MainWindow::normalSize()
 {
   QWidget *w = selectedTab();
-  QString k =  w->whatsThis();
+  QString k = w->metaObject()->className();
   if ( k == "ImageViewer" ) {
     ImageViewer* viewer = static_cast<ImageViewer*>(w);
     if ( viewer == NULL ) return;
@@ -899,7 +902,7 @@ void MainWindow::normalSize()
 void MainWindow::fitToWindow()
 {
   QWidget *w = selectedTab();
-  QString k =  w->whatsThis();
+  QString k = w->metaObject()->className();
   if ( k == "ImageViewer" ) {
     ImageViewer* viewer = static_cast<ImageViewer*>(w);
     if ( viewer == NULL ) return;
@@ -920,14 +923,14 @@ QWidget* MainWindow::selectedTab()
 void MainWindow::scaleImage(double factor)
 {
   QWidget *w = selectedTab();
-  QString k =  w->whatsThis();
+  QString k = w->metaObject()->className();
   currentScaleFactor = factor * currentScaleFactor;
   if ( k == "ImageViewer" ) {
     ImageViewer* viewer = static_cast<ImageViewer*>(w);
     if ( viewer == NULL ) return;
     viewer->scaleImage(currentScaleFactor); // Absolute scaling
    }
-  else if ( k == "dotView" ) {
+  else if ( k == "DotViewer" ) {
     QGraphicsView* dotView = static_cast<QGraphicsView*>(w);
     if ( dotView == NULL ) return;
     dotView->scale(factor, factor); // Relative scaling
@@ -944,7 +947,7 @@ void MainWindow::addDotTab(void)
   QString tabName = "dot";
   for ( int i=0; i<results->count(); i++ )
     if ( results->tabText(i) == tabName ) closeResultTab(i); // Do not open two tabs with the same name
-  DotViewer *view = new DotViewer(model, "dotViewer", 200, 400, results); // TODO: let the dotViewer class decide of the canvas dimensions 
+  DotViewer *view = new DotViewer(model, 200, 400, results); // TODO: let the dotViewer class decide of the canvas dimensions 
   results->addTab(view, tabName);
   results->setCurrentIndex(results->count()-1);
 }

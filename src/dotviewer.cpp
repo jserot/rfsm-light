@@ -19,7 +19,7 @@
 const int DotViewer::minCanvasWidth = 200;
 const int DotViewer::minCanvasHeight = 400;
 
-DotViewer::DotViewer(Model *model, const QString id, int width, int height, QWidget *parent) : QGraphicsView(parent)
+DotViewer::DotViewer(Model *model, int width, int height, QWidget *parent) : QGraphicsView(parent)
 {
   scene = new QGVScene("DOT", this);
   scene->setSceneRect(QRectF(0, 0, width, height));
@@ -27,7 +27,6 @@ DotViewer::DotViewer(Model *model, const QString id, int width, int height, QWid
   setMinimumWidth(minCanvasWidth);
   setMinimumHeight(minCanvasHeight);
   model->renderDot(scene);
-  setWhatsThis(id);
   scene->applyLayout();
   //view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
   ensureVisible(scene->itemsBoundingRect());

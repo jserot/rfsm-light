@@ -21,13 +21,12 @@ SyntaxHighlighter* makeSyntaxHighlighter(QString suffix, QTextDocument* doc)
     return NULL;
 }
 
-TextViewer::TextViewer(QFile& f, const QFont& font, QString id, QWidget *parent) : QPlainTextEdit(parent)
+TextViewer::TextViewer(QFile& f, const QFont& font, QWidget *parent) : QPlainTextEdit(parent)
 {
   QFileInfo fi(f);
   setFont(font);
   setPlainText(QString::fromUtf8(f.readAll()));
   setReadOnly(true);
-  setWhatsThis(id);
   highlighter = makeSyntaxHighlighter(fi.suffix(), document());
   setProperty("attachedSyntaxHighlighter", QVariant::fromValue(static_cast<void*>(highlighter)));
 }

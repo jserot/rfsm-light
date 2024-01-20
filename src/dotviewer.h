@@ -26,7 +26,7 @@ class DotViewer : public QGraphicsView
   const static int minCanvasHeight;
 
 public:
-  DotViewer(Model *model, QString id, int width, int height, QWidget *parent);
+  DotViewer(Model *model, int width, int height, QWidget *parent);
   ~DotViewer();
 
 private:

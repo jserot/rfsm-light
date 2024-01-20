@@ -18,7 +18,7 @@
 #include <QPainter>
 
 
-ImageViewer::ImageViewer(const QPixmap& pixmap, QString id, QWidget *parent) : QScrollArea(parent)
+ImageViewer::ImageViewer(const QPixmap& pixmap, QWidget *parent) : QScrollArea(parent)
 {
   image = new QLabel;
   image->setBackgroundRole(QPalette::Base);
@@ -28,7 +28,6 @@ ImageViewer::ImageViewer(const QPixmap& pixmap, QString id, QWidget *parent) : Q
   setBackgroundRole(QPalette::Dark);
   setWidget(image);
   fittedToWindow = false;
-  setWhatsThis(id);
 }
 
 void ImageViewer::scaleImage(double scaleFactor)
