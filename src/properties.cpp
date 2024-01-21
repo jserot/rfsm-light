@@ -40,8 +40,10 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 {
     main_window = parent;
 
-    createModelPanel();
-    createIoPanel();
+    createNamePanel();
+    createInputPanel();
+    createOutputPanel();
+    createVarPanel();
     createStatePanel();
     createTransitionPanel();
     createInitTransitionPanel();
@@ -50,8 +52,10 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     layout->setAlignment(Qt::AlignTop);
     //layout->setMinimumWidth(200);
 
-    layout->addWidget(model_panel);
-    layout->addWidget(io_panel);
+    layout->addWidget(name_panel);
+    layout->addWidget(inp_panel);
+    layout->addWidget(outp_panel);
+    layout->addWidget(var_panel);
     layout->addWidget(state_panel);
     layout->addWidget(transition_panel);
     layout->addWidget(itransition_panel);
@@ -73,8 +77,10 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     connect(itransition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setITransitionDstState);
     connect(itransition_actions_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionActions);
 
-    model_panel->show();
-    io_panel->show();
+    name_panel->show();
+    inp_panel->show();
+    outp_panel->show();
+    var_panel->show();
     state_panel->hide();
     transition_panel->hide();
     itransition_panel->hide();
@@ -84,47 +90,63 @@ PropertiesPanel::~PropertiesPanel()
 {
 }
 
-void PropertiesPanel::createModelPanel()
+void PropertiesPanel::createNamePanel()
 {
-    model_panel = new QGroupBox("Model");
-    QVBoxLayout* modelPanelLayout = new QVBoxLayout();
-    model_panel->setMaximumHeight(100);
-    //model_panel->setMinimumWidth(200);
-
-    QLabel* nameLabel = new QLabel("Name");
+    name_panel = new QGroupBox("Name");
+    QVBoxLayout* layout = new QVBoxLayout();
+    name_panel->setMaximumHeight(100);
+    //name_panel->setMinimumWidth(200);
+    //QLabel* nameLabel = new QLabel("Name");
     model_name_field = new QLineEdit();
-    modelPanelLayout->addWidget(nameLabel);
-    modelPanelLayout->addWidget(model_name_field);
-
-    model_panel->setLayout(modelPanelLayout);
+    // layout->addWidget(nameLabel);
+    layout->addWidget(model_name_field);
+    name_panel->setLayout(layout);
 }
 
-void PropertiesPanel::createIoPanel()
+QPushButton* PropertiesPanel::createIoPanel(QString title, QGroupBox **io_panel, QVBoxLayout **io_layout)
 {
   QHBoxLayout *rowLayout;
-  io_panel = new QGroupBox("I/Os and variables");
-  io_panel->setObjectName("io_panel");
+  QGroupBox *panel = new QGroupBox(title);
+  //panel->setObjectName(title);
   //io_panel->setMaximumHeight(200);
   //io_panel->setMinimumWidth(200);
-  ioLayout = new QVBoxLayout();
-  ioLayout->setSpacing(4);
-  ioLayout->setContentsMargins(11, 11, 11, 11);
+  QVBoxLayout *layout = new QVBoxLayout();
+  layout->setSpacing(4);
+  layout->setContentsMargins(11, 11, 11, 11);
 
   rowLayout = new QHBoxLayout();
   QPushButton* add_button = new QPushButton("Add");
   rowLayout->addWidget(add_button);
-  ioLayout->addLayout(rowLayout);
-  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addIo);
-    
-  rowLayout = new QHBoxLayout();
-  rowLayout->addWidget(new QLabel("Name"));
-  rowLayout->addWidget(new QLabel("Kind"));
-  rowLayout->addWidget(new QLabel("Type"));
-  rowLayout->addWidget(new QLabel("Stim"));
-  rowLayout->addWidget(new QLabel("")); // For padding
-  ioLayout->addLayout(rowLayout);
+  layout->addLayout(rowLayout);
+  // rowLayout = new QHBoxLayout();
+  // rowLayout->addWidget(new QLabel("Name"));
+  // rowLayout->addWidget(new QLabel("Type"));
+  // rowLayout->addWidget(new QLabel("Stim"));
+  // //rowLayout->addWidget(new QLabel("")); // For padding
+  // layout->addLayout(rowLayout);
+  panel->setLayout(layout);
 
-  io_panel->setLayout(ioLayout);
+  *io_panel = panel;
+  *io_layout = layout;
+  return add_button;
+}
+
+void PropertiesPanel::createInputPanel()
+{
+  QPushButton* add_button = createIoPanel("Inputs", &inp_panel, &inp_layout);
+  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addInput);
+}
+
+void PropertiesPanel::createOutputPanel()
+{
+  QPushButton* add_button = createIoPanel("Outputs", &outp_panel, &outp_layout);
+  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addOutput);
+}
+
+void PropertiesPanel::createVarPanel()
+{
+  QPushButton* add_button = createIoPanel("Variables", &var_panel, &var_layout);
+  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addVar);
 }
 
 void enableComboBoxItem(QComboBox* box, int i, bool enabled)
@@ -136,16 +158,36 @@ void enableComboBoxItem(QComboBox* box, int i, bool enabled)
   item->setEnabled(enabled);
 }
 
+QGroupBox* PropertiesPanel::io_panel_of(Iov::IoKind kind)
+{
+  switch ( kind ) {
+  case Iov::IoIn: return inp_panel;
+  case Iov::IoOut: return outp_panel;
+  case Iov::IoVar: return var_panel;
+  }
+}
+
+QVBoxLayout* PropertiesPanel::io_layout_of(Iov::IoKind kind)
+{
+  switch ( kind ) {
+  case Iov::IoIn: return inp_layout;
+  case Iov::IoOut: return outp_layout;
+  case Iov::IoVar: return var_layout;
+  }
+}
+
 void PropertiesPanel::_addIo(Model* model, Iov* io)
 {
-  qDebug () << "Adding IO" << io->name << " to panel";
+  qDebug () << "Adding" << io->kind << io->name << "to panel";
   Q_ASSERT(model);
   Q_ASSERT(io);
+  QGroupBox *io_panel = io_panel_of(io->kind);
+  QVBoxLayout *io_layout = io_layout_of(io->kind);
   QHBoxLayout *rowLayout = new QHBoxLayout(io_panel);
   rowLayout->setObjectName("ioRowLayout");
 
   QLineEdit *io_name = new QLineEdit();
-  io_name->setMinimumSize(40,io_name->minimumHeight());
+  io_name->setMinimumSize(80,io_name->minimumHeight());
   io_name->setFrame(true);
   io_name->setText(io->name);
   io_name->setCursorPosition(0);
@@ -154,19 +196,19 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   widgetToLayout.insert((QWidget*)io_name, rowLayout);
   connect(io_name, &QLineEdit::textChanged, this, &PropertiesPanel::editIoName);
 
-  QComboBox *io_kind = new QComboBox();
-  io_kind->addItem("in", QVariant(Iov::IoIn));
-  io_kind->addItem("out", QVariant(Iov::IoOut));
-  io_kind->addItem("var", QVariant(Iov::IoVar));
-  io_kind->setCurrentIndex(io->kind);
-  rowLayout->addWidget(io_kind);
-  widgetToIo.insert((QWidget*)io_kind, io);
-  widgetToLayout.insert((QWidget*)io_kind, rowLayout);
-#if QT_VERSION >= 0x060000
-  connect(io_kind, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoKind);
-#else
-  connect(io_kind, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PropertiesPanel::editIoKind);
-#endif
+ //  QComboBox *io_kind = new QComboBox();
+//   io_kind->addItem("in", QVariant(Iov::IoIn));
+//   io_kind->addItem("out", QVariant(Iov::IoOut));
+//   io_kind->addItem("var", QVariant(Iov::IoVar));
+//   io_kind->setCurrentIndex(io->kind);
+//   rowLayout->addWidget(io_kind);
+//   widgetToIo.insert((QWidget*)io_kind, io);
+//   widgetToLayout.insert((QWidget*)io_kind, rowLayout);
+// #if QT_VERSION >= 0x060000
+//   connect(io_kind, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoKind);
+// #else
+//   connect(io_kind, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PropertiesPanel::editIoKind);
+// #endif
 
   QComboBox *io_type = new QComboBox();
   io_type->addItem("event", QVariant(Iov::TyEvent));
@@ -182,21 +224,23 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   connect(io_type, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PropertiesPanel::editIoType);
 #endif
 
-  QComboBox *io_stim = new QComboBox();
-  io_stim->addItem("None", QVariant(Stimulus::None));
-  io_stim->addItem("Periodic", QVariant(Stimulus::Periodic));
-  io_stim->addItem("Sporadic", QVariant(Stimulus::Sporadic));
-  io_stim->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
-  io_stim->setCurrentIndex(io->stim.kind);
-  setStimChoices(io_stim, io);
-  rowLayout->addWidget(io_stim);
+  if ( io->kind == Iov::IoIn ) {
+    QComboBox *io_stim = new QComboBox();
+    io_stim->addItem("None", QVariant(Stimulus::None));
+    io_stim->addItem("Periodic", QVariant(Stimulus::Periodic));
+    io_stim->addItem("Sporadic", QVariant(Stimulus::Sporadic));
+    io_stim->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
+    io_stim->setCurrentIndex(io->stim.kind);
+    setStimChoices(io_stim, io);
+    rowLayout->addWidget(io_stim);
 #if QT_VERSION >= 0x060000
-  connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
+    connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
 #else
-  connect(io_stim, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::editIoStim);
+    connect(io_stim, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::editIoStim);
 #endif
-  widgetToLayout.insert((QWidget*)io_stim, rowLayout);
-  widgetToIo.insert((QWidget*)io_stim, io);
+    widgetToLayout.insert((QWidget*)io_stim, rowLayout);
+    widgetToIo.insert((QWidget*)io_stim, io);
+  }
 
   QPushButton *io_delete = new QPushButton();
   io_delete->setIcon(QIcon(":/images/delete.png"));
@@ -204,15 +248,19 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   connect(io_delete, &QPushButton::clicked, this, &PropertiesPanel::removeIo);
   widgetToLayout.insert((QWidget*)io_delete, rowLayout);
   widgetToIo.insert((QWidget*)io_delete, io);
-  ioLayout->insertLayout(-1,rowLayout);
+  io_layout->insertLayout(-1,rowLayout);
   ioToLayout.insert(io,rowLayout);
 }
 
-void PropertiesPanel::addIo()
+void PropertiesPanel::addInput() { addIo(Iov::IoIn); }
+void PropertiesPanel::addOutput() { addIo(Iov::IoOut); }
+void PropertiesPanel::addVar() { addIo(Iov::IoVar); }
+
+void PropertiesPanel::addIo(Iov::IoKind kind)
 {
   Model* model = main_window->getModel();
   Q_ASSERT(model != 0);
-  Iov* io = model->addIo("", Iov::IoIn, Iov::TyInt, Stimulus(Stimulus::None));
+  Iov* io = model->addIo("", kind, Iov::TyInt, Stimulus(Stimulus::None));
   _addIo(model, io);
 }
 
@@ -444,6 +492,9 @@ void PropertiesPanel::unselectItem()
     state_panel->hide();
     transition_panel->hide();
     itransition_panel->hide();
+    inp_panel->show();
+    outp_panel->show();
+    var_panel->show();
 }
 
 void PropertiesPanel::setSelectedItem(State* state)
@@ -453,6 +504,9 @@ void PropertiesPanel::setSelectedItem(State* state)
     itransition_panel->hide();
     if ( ! state->isPseudo() ) {
       selected_item = state;
+      inp_panel->hide();
+      outp_panel->hide();
+      var_panel->hide();
       state_panel->show();
       state_name_field->setText(state->getId());
       state_attr_field->setText(state->getAttr());
@@ -464,6 +518,9 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
     //qDebug() << "Transition " << transition->toString() << " selected";
     selected_item = transition;
     state_panel->hide();
+    inp_panel->hide();
+    outp_panel->hide();
+    var_panel->hide();
 
     if ( transition->isInitial() ) {
       transition_panel->hide();

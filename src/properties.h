@@ -23,12 +23,12 @@
 #include <QStringListModel>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include "iov.h"
 
 class MainWindow;
 class State;
 class Transition;
 class Model;
-class Iov;
 
 class PropertiesPanel : public QFrame
 {
@@ -39,10 +39,12 @@ class PropertiesPanel : public QFrame
 
     QGraphicsItem* selected_item;
 
-    QGroupBox* model_panel;
+    QGroupBox* name_panel;
     QLineEdit* model_name_field;
 
-    QGroupBox* io_panel;
+    QGroupBox* inp_panel;
+    QGroupBox* outp_panel;
+    QGroupBox* var_panel;
     QLineEdit* io_name;
     QComboBox* io_kind;
     QLineEdit* io_type;
@@ -64,7 +66,9 @@ class PropertiesPanel : public QFrame
     QComboBox* itransition_end_state_field;
     QLineEdit* itransition_actions_field;
 
-    QVBoxLayout* ioLayout;
+    QVBoxLayout* inp_layout;
+    QVBoxLayout* outp_layout;
+    QVBoxLayout* var_layout;
     QHash<QWidget*, QHBoxLayout*> widgetToLayout; 
     QHash<QWidget*, Iov*> widgetToIo; 
     QHash<Iov*, QHBoxLayout*> ioToLayout; 
@@ -87,10 +91,9 @@ class PropertiesPanel : public QFrame
     void setStateName(const QString& name);
     void setStateAttr(const QString& name);
 
-    void _addIo(Model* model, Iov* io);
-    void addIo();
-    void delete_io_row(QLayout *layout);
-    void _removeIo(Model* model, Iov* io);
+    void addInput();
+    void addOutput();
+    void addVar();
     void removeIo();
     void editIoName();
     void editIoKind();
@@ -110,8 +113,11 @@ class PropertiesPanel : public QFrame
   void clearIos();
 
   private:
-    void createModelPanel();
-    void createIoPanel();
+    void createNamePanel();
+    QPushButton* createIoPanel(QString title, QGroupBox **io_panel, QVBoxLayout **io_layout);
+    void createInputPanel();
+    void createOutputPanel();
+    void createVarPanel();
     void createStatePanel();
     void createTransitionPanel();
     void createInitTransitionPanel();
@@ -119,6 +125,14 @@ class PropertiesPanel : public QFrame
     void fillModelName();
     void fillIos();
     void setStimChoices(QComboBox* box, Iov *io);
+
+    void delete_io_row(QLayout *layout);
+    void _removeIo(Model* model, Iov* io);
+
+    QGroupBox* io_panel_of(Iov::IoKind kind);
+    QVBoxLayout* io_layout_of(Iov::IoKind kind);
+    void _addIo(Model* model, Iov* io);
+    void addIo(Iov::IoKind kind);
 };
 
 #endif

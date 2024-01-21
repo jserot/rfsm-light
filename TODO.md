@@ -1,6 +1,5 @@
 * GUI
 - make switch to QGV a config/compile time option, not a GUI option
-- Split IO panel in 3 : Inputs, Outputs, Vars; attach stimuli only to the first
 - add sized ints
 - Allow attachement of priorities to transitions
 - Draw state boxes with round corners
