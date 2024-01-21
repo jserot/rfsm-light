@@ -65,22 +65,26 @@ void Model::clear(void)
   QGraphicsScene::clear();
 }
 
+void Model::addState(State *state)
+{
+  state->setBrush(boxColor);
+  addItem(state);
+}
+
 State* Model::addState(QPointF pos, QString id, QString attr)
 {
   State* state = new State(id, attr);
-  state->setBrush(boxColor);
-  addItem(state);
   state->setPos(pos);
+  addState(state);
   return state;
 }
 
 State* Model::addPseudoState(QPointF pos)
 {
-   State* state = new State();
-   state->setBrush(boxColor);
-   addItem(state);
-   state->setPos(pos);
-   return state;
+  State* state = new State(); // Pseudo-state
+  state->setPos(pos);
+  addState(state);
+  return state;
 }
 
 QList<State*> Model::states()
@@ -146,6 +150,16 @@ bool Model::hasPseudoState()
   return false;
 }
 
+void Model::addTransition(Transition *transition)
+{
+  State *srcState = transition->srcState();
+  State *dstState = transition->dstState();
+  srcState->addTransition(transition);
+  if ( dstState != srcState ) dstState->addTransition(transition); // Do _not_ add self-transitions twice !
+  transition->setZValue(-1000.0);
+  addItem(transition);
+}
+
 Transition* Model::addTransition(State* srcState,
                                State* dstState,
                                QString event,
@@ -154,10 +168,7 @@ Transition* Model::addTransition(State* srcState,
                                State::Location location)
 {
   Transition *transition = new Transition(srcState, dstState, event, guard, actions, location);
-  srcState->addTransition(transition);
-  if ( dstState != srcState ) dstState->addTransition(transition); // Do _not_ add self-transitions twice !
-  transition->setZValue(-1000.0);
-  addItem(transition);
+  addTransition(transition);
   return transition;
 }
 
@@ -396,39 +407,41 @@ void Model::readFromFile(QString fname)
   
     auto json = nlohmann::json::parse(txt.toStdString()); 
 
-    clear(); // TODO : do not do this before parsing successfully completed !!!
-    
-    QMap<std::string, State*> states;
-    stateCounter = 0;
+    // We cannot directly update the model, because an error can occur when reading the JSON file !
+    // Instead, we build lists of IOs, states and transitions by parsing the JSON  file ...
 
-    name = QString::fromStdString(json.at("name"));
+    QString name = QString::fromStdString(json.at("name"));
 
+    QList<Iov *> ios;
     for ( const auto & json_io : json.at("ios") ) {
       std::string name = json_io.at("name");
       std::string kind = json_io.at("kind");
       std::string type = json_io.at("type");
       std::string stim = json_io.at("stim");
-      addIo(QString::fromStdString(name),
-            Iov::ioKindOfString(QString::fromStdString(kind)),
-            Iov::ioTypeOfString(QString::fromStdString(type)),
-            Stimulus(QString::fromStdString(stim)));
+      Iov *io = new Iov(QString::fromStdString(name),
+                        Iov::ioKindOfString(QString::fromStdString(kind)),
+                        Iov::ioTypeOfString(QString::fromStdString(type)),
+                        Stimulus(QString::fromStdString(stim)));
+      ios.append(io);
       }
 
+    QMap<std::string, State*> states;
     for ( const auto & json_state : json.at("states") ) {
       std::string id = json_state.at("id");
       std::string attr = json_state.at("attr");
+      qreal x =  json_state.at("x");
+      qreal y =  json_state.at("y");
       State* state;
       if ( id == State::initPseudoId.toStdString() )
-        state = addPseudoState(QPointF(json_state.at("x"), json_state.at("y")));
+        state = new State(QPointF(x,y));
       else 
-        state = addState(QPointF(json_state.at("x"),
-                                 json_state.at("y")),
-                         QString::fromStdString(id),
-                         QString::fromStdString(attr));
+        state = new State(QString::fromStdString(id),
+                          QString::fromStdString(attr),
+                          QPointF(x,y));
       states.insert(id, state);
-      stateCounter++;
       }   
 
+    QList<Transition *> transitions;
     for ( const auto & json_transition : json.at("transitions") ) {
       std::string src_state = json_transition.at("src_state");
       std::string dst_state = json_transition.at("dst_state");
@@ -447,11 +460,31 @@ void Model::readFromFile(QString fname)
         throw std::invalid_argument("Model::fromString: invalid state id");
       State *srcState = states.value(src_state);
       State *dstState = states.value(dst_state);
-      Transition *transition = addTransition(srcState, dstState,
-                                             QString::fromStdString(event),
-                                             QString::fromStdString(guard),
-                                             QString::fromStdString(actions),
-                                             location);
+      Transition *transition = new Transition(srcState,
+                                              dstState,
+                                              QString::fromStdString(event),
+                                              QString::fromStdString(guard),
+                                              QString::fromStdString(actions),
+                                              location);
+      transitions.append(transition);
+      }
+
+    // ... and, if (and only if) parsing succeeds, we update the model.
+
+    clear();
+    this->name = name;
+
+    foreach ( Iov* io, ios) {
+      qDebug () << "Model::readFromFile: adding IO" << io->name << io->kind << io->type << io->stim.toString() ;
+      this->ios.append(io);
+      }
+    foreach ( State *state, states.values() ) {
+      qDebug () << "Model::readFromFile: adding state" << state->getId();
+      addState(state);
+      }
+    foreach ( Transition *transition, transitions ) {
+      qDebug () << "Model::readFromFile: adding transition" << transition->srcState()->getId() << " -> " << transition->dstState()->getId();
+      addTransition(transition);
       transition->updatePosition();
       }
     qDebug() << "Done";

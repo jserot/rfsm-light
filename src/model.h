@@ -94,6 +94,8 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
+    void addState(State *state);
+    void addTransition(Transition *transition);
     void check_state(State* s);
     void check_transition(Transition *t);
     void report_error(QString msg);

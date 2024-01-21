@@ -138,7 +138,7 @@ void enableComboBoxItem(QComboBox* box, int i, bool enabled)
 
 void PropertiesPanel::_addIo(Model* model, Iov* io)
 {
-  qDebug () << "Adding IO" << io->name << io->kind << io->type;
+  qDebug () << "Adding IO" << io->name << " to panel";
   Q_ASSERT(model);
   Q_ASSERT(io);
   QHBoxLayout *rowLayout = new QHBoxLayout(io_panel);
@@ -218,7 +218,7 @@ void PropertiesPanel::addIo()
 
 void PropertiesPanel::setStimChoices(QComboBox* box, Iov *io)
 {
-  qDebug() << "setStimChoices:" << io->name << io->type;
+  // qDebug() << "setStimChoices:" << io->name << io->type;
   switch ( io->type ) {
   case Iov::TyEvent:
     enableComboBoxItem(box, 0, true); // TO FIX: we should not use hardcoded index here 
@@ -506,7 +506,6 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
       for ( auto ev: inpEvents ) 
         transition_event_field->addItem(ev, QVariant(ev));
       QString event = transition->getEvent();
-      qDebug() << event << inpEvents;
       if ( event == "" ) 
         transition_event_field->setCurrentIndex(0);
       else {
@@ -624,6 +623,7 @@ void PropertiesPanel::setTransitionActions(const QString& actions)
 
 void PropertiesPanel::update()
 {
+    clearIos();
     fillIos();
     fillModelName();
 }
@@ -637,12 +637,9 @@ void PropertiesPanel::fillModelName()
 
 void PropertiesPanel::fillIos()
 {
-  qDebug() << "Filling IOs";
   Model* model = main_window->getModel();
   Q_ASSERT(model);
   if ( model == NULL ) return;
-  QStringList ios;
-  qDebug() << ios.length();
   for (auto io: model->getIos())
     _addIo(model, io);
 }
@@ -669,10 +666,10 @@ void PropertiesPanel::clearModelName()
 
 void PropertiesPanel::clearIos()
 {
-    Model* model = main_window->getModel();
-    if ( model == NULL ) return;
-    QStringList ios;
-    for (auto io: model->getIos())
-      _removeIo(model, io);
+  foreach ( Iov* io, ioToLayout.keys() ) {
+    qDebug() << "Removing IO " << io->name << " from panel";
+    QHBoxLayout *row_layout = ioToLayout.take(io);
+    delete_io_row(row_layout);
+    }
 }
 

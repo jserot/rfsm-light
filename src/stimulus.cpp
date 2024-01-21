@@ -40,7 +40,6 @@ Stimulus::Stimulus(Kind kind, QList<int> params)
 Stimulus::Stimulus(QString txt)
 {
   QStringList l = txt.split(" ");
-  qDebug () << l;
   Q_ASSERT(l.length() >= 1 );
   if ( l.at(0).trimmed() == "None" ) {
     kind = None;

@@ -456,8 +456,6 @@ void MainWindow::openFile()
 {
     checkUnsavedChanges();
     
-    properties_panel->clear(); // TOFIX : this should not be done before the new FSM is validated
-    
     QString fname = QFileDialog::getOpenFileName(this, "Open file", initDir, "FSD file (*.fsd)");
     if ( fname.isEmpty() ) return;
     try {
@@ -467,11 +465,11 @@ void MainWindow::openFile()
       QMessageBox::warning(this, "Error", "Unable to import : " + QString(e.what()));
       return;
       }
-    //qDebug () << model->getIos();
     view->ensureVisible(model->itemsBoundingRect());
     //QRectF bb = view->scene()->itemsBoundingRect();
     //view->centerOn(bb.center());
     currentFileName = fname;
+    //properties_panel->clear(); 
     properties_panel->update();
     setUnsavedChanges(false);
 }
@@ -632,7 +630,6 @@ void MainWindow::addResultTab(QString fname)
     results->addTab(viewer, tabName);
     }
   results->setCurrentIndex(results->count()-1);
-  // qDebug() << "** Added tab, current index now " << results->count()-1 << "/" << results->count();
 }
 
 void MainWindow::closeResultTab(int index)
@@ -667,7 +664,6 @@ void MainWindow::openResultFile(QString fname)
   else if ( f.suffix() == "vcd" ) {
     QString gFile = changeSuffix(fname, ".gtkw");
     QFile gf(gFile);
-    // QFile gf = QFile(gFile);
     if ( gf.exists() ) args << gFile;
     customView("VCDVIEWER", args, wDir);
     }

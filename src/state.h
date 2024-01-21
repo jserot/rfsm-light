@@ -37,7 +37,9 @@ public:
     enum Location { None=0, North=1, South=2, East=3, West=4 }; // for looping transitions;
 
     State(QString id, QString attr, QGraphicsItem *parent = 0);
+    State(QString id, QString attr, QPointF pos, QGraphicsItem *parent = 0);
     State(QGraphicsItem *parent = 0); // For initial pseudo-states
+    State(QPointF pos, QGraphicsItem *parent = 0); 
 
     void removeTransition(Transition *transition);
     void removeTransitions();
@@ -60,6 +62,7 @@ public:
     static QString initPseudoId;
 
 protected:
+    void init(QString id, QString attr, QSize sz);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
 
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;

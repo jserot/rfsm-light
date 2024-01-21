@@ -1,6 +1,6 @@
 * GUI
-- When reading a `.fsd` file, do _not_ clear the current model before the new one is  successfully
-  read (this will need two fsm objects : the current one and the new one; swap only if read succeeds)
+- make switch to QGV a config/compile time option, not a GUI option
+- Split IO panel in 3 : Inputs, Outputs, Vars; attach stimuli only to the first
 - add sized ints
 - Allow attachement of priorities to transitions
 - Draw state boxes with round corners
@@ -17,7 +17,7 @@ the compiler is too vague in case of syntax error in this case). I.o.w. re-vive 
 a simplified form (limited to expressions and assignations)
 
 * DOC
-- document -dot_qgv option
+- document -dot_qgv option (?)
 - document restrictions compared to the full RFSM language
 - make several videos for showing different features (entering a model, generating code, ...)
 

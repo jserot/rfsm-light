@@ -24,41 +24,51 @@ QColor State::selectedColor = Qt::darkCyan;
 QColor State::unSelectedColor = Qt::black;
 QString State::initPseudoId = "_init";
 
-State::State(QString id, QString attr, QGraphicsItem *parent)
-    : QGraphicsPolygonItem(parent)
+void State::init(QString id, QString attr, QSize sz)
 {
     QPainterPath path;
-    myPolygon << QPointF(-boxSize.width()/2, -boxSize.height()/2) // P1-----P2
-              << QPointF(boxSize.width()/2, -boxSize.height()/2)  //  |     |
-              << QPointF(boxSize.width()/2, boxSize.height()/2)   //  |     |
-              << QPointF(-boxSize.width()/2, boxSize.height()/2)  // P4-----P3
-              << QPointF(-boxSize.width()/2, -boxSize.height()/2);
+    myPolygon << QPointF(-sz.width()/2, -sz.height()/2) // P1-----P2
+              << QPointF(sz.width()/2, -sz.height()/2)  //  |     |
+              << QPointF(sz.width()/2, sz.height()/2)   //  |     |
+              << QPointF(-sz.width()/2, sz.height()/2)  // P4-----P3
+              << QPointF(-sz.width()/2, -sz.height()/2);
     setPolygon(myPolygon);
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     this->id = id;
     this->attr = attr;
-    isPseudoState = false;
 }
 
+State::State(QString id, QString attr, QGraphicsItem *parent)
+    : QGraphicsPolygonItem(parent)
+{
+  init(id, attr, boxSize);
+  isPseudoState = false;
+}
+
+State::State(QString id, QString attr, QPointF pos, QGraphicsItem *parent)
+    : QGraphicsPolygonItem(parent)
+{
+  init(id, attr, boxSize);
+  isPseudoState = false;
+  setPos(pos);
+}
+  
 State::State(QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
-    QPainterPath path;
-    myPolygon << QPointF(-dskSize.width()/2, -dskSize.height()/2) 
-              << QPointF(dskSize.width()/2, -dskSize.height()/2) 
-              << QPointF(dskSize.width()/2, dskSize.height()/2) 
-              << QPointF(-dskSize.width()/2, dskSize.height()/2)
-              << QPointF(-dskSize.width()/2, -dskSize.height()/2);
-    setPolygon(myPolygon);
-    setFlag(QGraphicsItem::ItemIsMovable, true);
-    setFlag(QGraphicsItem::ItemIsSelectable, true);
-    setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-    this->id = initPseudoId;
-    isPseudoState = true;
+  init(initPseudoId, attr, dskSize);
+  isPseudoState = true;
 }
 
+State::State(QPointF pos, QGraphicsItem *parent)
+    : QGraphicsPolygonItem(parent)
+{
+  init(initPseudoId, attr, dskSize);
+  isPseudoState = true;
+  setPos(pos);
+}
 
 void State::removeTransition(Transition *transition)
 {
