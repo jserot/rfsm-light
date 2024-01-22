@@ -348,30 +348,6 @@ void setComboBoxItemEnabled(QComboBox* comboBox, int index, bool enabled)
     item->setEnabled(enabled);
 }
 
-void PropertiesPanel::editIoKind()
-{
-  QComboBox* box = qobject_cast<QComboBox*>(sender());
-  Iov* io = widgetToIo.value(box);
-  QHBoxLayout* row_layout = widgetToLayout.value(box);
-  Q_ASSERT(row_layout);
-  Q_ASSERT(io);
-  io->kind = (Iov::IoKind)(box->currentIndex());
-  qDebug () << "Setting IO kind: " << io->kind;
-  QComboBox *stim_box = qobject_cast<QComboBox*>(row_layout->itemAt(3)->widget());
-  Q_ASSERT(stim_box);
-  switch ( io->kind ) {
-  case Iov::IoIn: 
-    for ( int i=0; i<stim_box->count(); i++ ) 
-      setComboBoxItemEnabled(stim_box, i, true);
-    break;
-  default:
-    for ( int i=0; i<stim_box->count(); i++ ) 
-      setComboBoxItemEnabled(stim_box, i, false);
-    break;
-  }
-  main_window->setUnsavedChanges(true);
-}
-
 void PropertiesPanel::editIoType()
 {
   QComboBox* box = qobject_cast<QComboBox*>(sender());
@@ -381,7 +357,7 @@ void PropertiesPanel::editIoType()
   qDebug () << "Setting IO type: " << io->type;
   QHBoxLayout* row_layout = widgetToLayout.value(box);
   Q_ASSERT(row_layout);
-  QComboBox *stim_box = qobject_cast<QComboBox*>(row_layout->itemAt(3)->widget());
+  QComboBox *stim_box = qobject_cast<QComboBox*>(row_layout->itemAt(2)->widget());
   Q_ASSERT(stim_box);
   setStimChoices(stim_box, io);
   main_window->setUnsavedChanges(true);

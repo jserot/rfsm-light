@@ -1,5 +1,5 @@
 * GUI
-- make switch to QGV a config/compile time option, not a GUI option
+- separate fields for entering guards and actions
 - add sized ints
 - Allow attachement of priorities to transitions
 - Draw state boxes with round corners
@@ -16,7 +16,6 @@ the compiler is too vague in case of syntax error in this case). I.o.w. re-vive 
 a simplified form (limited to expressions and assignations)
 
 * DOC
-- document -dot_qgv option (?)
 - document restrictions compared to the full RFSM language
 - make several videos for showing different features (entering a model, generating code, ...)
 

@@ -18,9 +18,11 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#ifdef USE_QGV
 #include "QGVScene.h"
 #include "QGVNode.h"
 #include "QGVEdge.h"
+#endif
 
 QString Model::statePrefix = "S";
 int Model::stateCounter = 0;
@@ -806,6 +808,7 @@ void Model::exportRfsm(QString fname, bool withTestbench)
   file.close();
 }
 
+#ifdef USE_QGV
 // Direct DOT rendering using QGV library (since 1.3.0)
 
 void Model::renderDot(QGVScene *dotScene)
@@ -843,3 +846,4 @@ void Model::renderDot(QGVScene *dotScene)
     }
   }
 }
+#endif

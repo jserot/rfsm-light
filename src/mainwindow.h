@@ -107,7 +107,9 @@ private:
     void saveToFile(QString fname);
     QString generateRfsm(bool withTestbench);
     void addResultTab(QString fname);
+#ifdef USE_QGV
     void addDotTab(void);
+#endif
     void openResultFile(QString fname);
     
     Model *model;

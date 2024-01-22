@@ -96,7 +96,6 @@ class PropertiesPanel : public QFrame
     void addVar();
     void removeIo();
     void editIoName();
-    void editIoKind();
     void editIoType();
     void editIoStim();
 

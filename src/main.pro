@@ -3,16 +3,24 @@ TARGET = rfsm-light
 
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.6
 
-INCLUDEPATH += ../../qgv/QGVCore
-LIBS += -L../../qgv/lib -lQGVCore
-DEPENDPATH += ../../gqv/QGVCore
-
-include(./GraphViz.pri)
-
 QT       += core gui
 QT 		 += widgets
 greaterThan(QT_MAJOR_VERSION,5) {
 QT 		 += core5compat
+}
+
+include(../platform)
+
+equals(USE_QGV,"yes") {
+message("Building with QGV support")
+message($$QGVDIR)
+INCLUDEPATH += $$QGVDIR/QGVCore
+LIBS += -L$$QGVDIR/lib -lQGVCore
+DEPENDPATH += $$QGVDIR//QGVCore
+include(./GraphViz.pri)
+QMAKE_CXXFLAGS += -DUSE_QGV
+} else {
+message("Building without QGV support")
 }
 
 CONFIG += c++11 console debug
@@ -29,7 +37,6 @@ HEADERS += include/nlohmann_json.h \
            command.h \
            imageviewer.h \
            textviewer.h \
-           dotviewer.h \
            syntaxHighlighters.h \
            compilerPaths.h \
            compilerOption.h \
@@ -50,9 +57,12 @@ SOURCES += transition.cpp \
            compilerOptions.cpp \
            textviewer.cpp \
            imageviewer.cpp \
-           dotviewer.cpp \
            debug.cpp \
            main.cpp \
            mainwindow.cpp
+equals(USE_QGV,"yes") {
+HEADERS += dotviewer.h
+SOURCES += dotviewer.cpp
+}
 
 RESOURCES += resources.qrc

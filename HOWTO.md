@@ -1,6 +1,11 @@
-# Build MacOS M1 / QT6 version
+# Build MacOS M1 / QT6 version (with Graphviz, without QGV)
 
 - `./configure -platform macos -qt_spec macx-clang -qt_version 6.3.1 -qmake /Users/jserot/Qt/6.3.1/macos/bin/qmake -qt_config arm64`
+- `make macos-dist`
+
+# Build MacOS M1 / QT6 version (without Graphviz, with QGV)
+
+- `./configure -platform macos -qt_spec macx-clang -qt_version 6.3.1 -qmake /Users/jserot/Qt/6.3.1/macos/bin/qmake -qt_config arm64 -qgv /Users/jserot/Dev/Qt/qgv`
 - `make macos-dist`
 
 # Build MacOS Intel / QT5 version

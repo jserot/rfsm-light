@@ -16,7 +16,9 @@
 #include "mainwindow.h"
 #include "imageviewer.h"
 #include "textviewer.h"
+#ifdef USE_QGV
 #include "dotviewer.h"
+#endif
 #include "compilerPaths.h"
 #include "compilerOptions.h"
 #include "debug.h"
@@ -33,7 +35,7 @@ const double MainWindow::zoomInFactor = 1.25;
 const double MainWindow::zoomOutFactor = 0.8;
 const double MainWindow::minScaleFactor = 0.2;
 const double MainWindow::maxScaleFactor = 2.0;
-const QStringList guiOnlyOpts = { "-dot_external_viewer", "-sync_externals", "-dot_qgv" };
+const QStringList guiOnlyOpts = { "-dot_external_viewer", "-sync_externals" };
 
 MainWindow::MainWindow()
 {
@@ -565,10 +567,9 @@ QString changeSuffix(QString fname, QString suffix)
 
 void MainWindow::renderDot()
 {
-  QStringList genOpts = compilerOptions->getOptions("general");
-  if ( genOpts.contains("-dot_qgv") )
+#ifdef USE_QGV
     addDotTab();
-  else {
+#else
     QString sFname = getCurrentFileName();
     if ( sFname.isEmpty() ) return;
     QString rFname = changeSuffix(sFname, ".dot");
@@ -576,7 +577,7 @@ void MainWindow::renderDot()
     model->exportDot(rFname, opts);
     logMessage("Wrote file " + rFname);
     openResultFile(rFname);
-    }
+#endif
 }
 
 QString MainWindow::generateRfsm(bool withTestbench ) // TODO : factorize
@@ -940,6 +941,7 @@ void MainWindow::scaleImage(double factor)
 
 // In-app DOT rendering (since version 1.3.0)
 
+#ifdef USE_QGV
 void MainWindow::addDotTab(void)
 {
   QString tabName = "dot";
@@ -949,6 +951,7 @@ void MainWindow::addDotTab(void)
   results->addTab(view, tabName);
   results->setCurrentIndex(results->count()-1);
 }
+#endif
 
 // Dynamic cursor handling (since 1.3.0)
 

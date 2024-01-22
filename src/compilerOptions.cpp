@@ -47,6 +47,9 @@ void CompilerOptions::readSpecFile(QString fname)
     QString line = file.readLine();
     if ( line[0] == '#' ) continue;
     QStringList items = line.split(";");
+#ifdef USE_QGV
+    if ( items[2] == "-dot_external_viewer" ) continue;
+#endif
     // 0: IDE flag, 1: category, 2: name, 3: kind, 5: desc
     if ( items.length() < 6 || items[0] != "ide" ) continue;
     if ( items[3] == "Arg.Unit" ) {

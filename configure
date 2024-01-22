@@ -4,6 +4,7 @@ configure_options="$*"
 platform=macos
 dotprogram='dot'
 dotviewer='graphviz'
+qgv_dir=''
 vcdviewer='gtkwave'
 txtviewer='nano'
 install_prefix='/usr/local/rfsm-light'
@@ -58,6 +59,8 @@ while : ; do
         dotprogram=$2; shift;;
     -dotviewer|--dotviewer)
         dotviewer=$2; shift;;
+    -qgv|--qgv)
+        qgv_dir=$2; shift;;
     -vcdviewer|--vcdviewer)
         vcdviewer=$2; shift;;
     -txtviewer|--txtviewer)
@@ -80,6 +83,7 @@ Options: [defaults in brackets after descriptions]
   --qt_config NAME        set Qt config for building [default: $qt_config]
   --dot NAME              command for runing dot program [default: $dotprogram]
   --dotviewer NAME        command for displaying .dot files [default: $dotviewer]
+  --qgv DIR               enable use of the QGV library for DOT rendering, with the path to the source directory [default: not]
   --vcdviewer NAME        command for displaying .vcd files [default: $vcdviewer]
   --txtviewer NAME        command for displaying text files [default: $txtviewer]
   --help                  print this message
@@ -155,8 +159,13 @@ echo "# To be adjusted if necessary" >> platform
 echo "" >> platform
 
 pwd=`pwd`
+if [ -n "$qgv_dir" ]; then
+echo "USE_QGV=yes" >> platform
+echo "QGVDIR=$qgv_dir" >> platform
+else
 echo "DOT=dot" >> platform
 echo "DOTVIEWER=graphviz" >> platform
+fi
 echo "VCDVIEWER=gtkwave" >> platform
 echo "TXTVIEWER=nano" >> platform
 echo "" >> platform
