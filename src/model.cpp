@@ -160,6 +160,7 @@ void Model::addTransition(Transition *transition)
   if ( dstState != srcState ) dstState->addTransition(transition); // Do _not_ add self-transitions twice !
   transition->setZValue(-1000.0);
   addItem(transition);
+  qDebug()<<"** added transition " << srcState->getId() << "->" << dstState->getId() << "[" << transition->getGuards() << "/" << transition->getActions() << "]";
 }
 
 Transition* Model::addTransition(State* srcState,
@@ -467,8 +468,8 @@ void Model::readFromFile(QString fname)
       Transition *transition = new Transition(srcState,
                                               dstState,
                                               QString::fromStdString(event),
-                                              QString::fromStdString(guards).split("."),
-                                              QString::fromStdString(actions).split(";"),
+                                              QString::fromStdString(guards).split(","),
+                                              QString::fromStdString(actions).split(","),
                                               location);
       transitions.append(transition);
       }
@@ -544,8 +545,8 @@ void Model::saveToFile(QString fname)
         json["src_state"] = transition->getSrcState()->getId().toStdString();
         json["dst_state"] = transition->getDstState()->getId().toStdString();
         json["event"] = transition->getEvent().toStdString();
-        json["guard"] = transition->getGuards().join(".").toStdString();
-        json["actions"] = transition->getActions().join(";").toStdString();
+        json["guard"] = transition->getGuards().join(",").toStdString(); // Use "," as separator for compatibility with existing .fsd files
+        json["actions"] = transition->getActions().join(",").toStdString(); // Use "," as separator for compatibility with existing .fsd files
         json["location"] = transition->getLocation();
         json_res["transitions"].push_back(json);
         }
