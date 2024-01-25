@@ -1,6 +1,5 @@
 * GUI
-- fix bug when changing src/dst state when editing a transition
-- when deleting an initial state, the phantom init state is not deleted
+- fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints
 - Allow attachement of priorities to transitions
 - Draw state boxes with round corners

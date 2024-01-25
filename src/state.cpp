@@ -81,10 +81,16 @@ void State::removeTransition(Transition *transition)
 void State::removeTransitions()
 {
     foreach (Transition *transition, transitions) {
-        transition->getSrcState()->removeTransition(transition);
-        transition->getDstState()->removeTransition(transition);
-        scene()->removeItem(transition);
-        delete transition;
+      State *srcState = transition->getSrcState();
+      State *dstState = transition->getDstState();
+      srcState->removeTransition(transition);
+      if ( transition->isInitial() ) {
+        scene()->removeItem(srcState);
+        delete srcState;
+        }
+      dstState->removeTransition(transition);
+      scene()->removeItem(transition);
+      delete transition;
     }
 }
 

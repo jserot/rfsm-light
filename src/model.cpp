@@ -242,9 +242,10 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             switch ( item->type() ) {
             case Transition::Type: {
               transition = qgraphicsitem_cast<Transition *>(item);
+              qDebug() << "Deleting transition" << transition->toString();
               State *srcState = transition->getSrcState();
               State *dstState = transition->getDstState();
-              if ( srcState->isPseudo() ) {
+              if ( transition->isInitial() ) {
                 srcState->removeTransitions();
                 removeItem(srcState);
                 }
@@ -260,6 +261,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
               break;
             case State::Type:
               state = qgraphicsitem_cast<State *>(item);
+              qDebug() << "Deleting state" << state->getId();
               state->removeTransitions();
               removeItem(item);
               emit stateDeleted(state);
