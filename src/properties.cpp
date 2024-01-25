@@ -45,8 +45,9 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     createOutputPanel();
     createVarPanel();
     createStatePanel();
-    createTransitionPanel();
-    createInitTransitionPanel();
+    createTransitionBasePanel();
+    createTransitionGuardsPanel();
+    createTransitionActionsPanel();
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setAlignment(Qt::AlignTop);
@@ -57,8 +58,9 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     layout->addWidget(outp_panel);
     layout->addWidget(var_panel);
     layout->addWidget(state_panel);
-    layout->addWidget(transition_panel);
-    layout->addWidget(itransition_panel);
+    layout->addWidget(transition_base_panel);
+    layout->addWidget(transition_guards_panel);
+    layout->addWidget(transition_actions_panel);
 
     this->setLayout(layout);
 
@@ -72,23 +74,20 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 #else
     connect(transition_event_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionEvent);
 #endif
-    connect(transition_guard_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionGuard);
-    connect(transition_actions_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionActions);
-    connect(itransition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setITransitionDstState);
-    connect(itransition_actions_field, &QLineEdit::textEdited, this, &PropertiesPanel::setTransitionActions);
 
     name_panel->show();
-    inp_panel->show();
-    outp_panel->show();
-    var_panel->show();
+    show_io_panels();
     state_panel->hide();
-    transition_panel->hide();
-    itransition_panel->hide();
+    transition_base_panel->hide();
+    transition_guards_panel->hide();
+    transition_actions_panel->hide();
 }
 
 PropertiesPanel::~PropertiesPanel()
 {
 }
+
+// [Name] panel
 
 void PropertiesPanel::createNamePanel()
 {
@@ -102,6 +101,29 @@ void PropertiesPanel::createNamePanel()
     layout->addWidget(model_name_field);
     name_panel->setLayout(layout);
 }
+
+void PropertiesPanel::setModelName(const QString& name)
+{
+  Model* model = main_window->getModel();
+  model->setName(name.trimmed());
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::fillModelName()
+{
+    Model* model = main_window->getModel();
+    if ( model == NULL ) return;
+    model_name_field->setText(model->getName());
+}
+
+void PropertiesPanel::clearModelName()
+{
+    Model* model = main_window->getModel();
+    if ( model == NULL ) return;
+    model_name_field->setText("");
+}
+
+// [IO] Panels
 
 QPushButton* PropertiesPanel::createIoPanel(QString title, QGroupBox **io_panel, QVBoxLayout **io_layout)
 {
@@ -118,18 +140,27 @@ QPushButton* PropertiesPanel::createIoPanel(QString title, QGroupBox **io_panel,
   QPushButton* add_button = new QPushButton("Add");
   rowLayout->addWidget(add_button);
   layout->addLayout(rowLayout);
-  // rowLayout = new QHBoxLayout();
-  // rowLayout->addWidget(new QLabel("Name"));
-  // rowLayout->addWidget(new QLabel("Type"));
-  // rowLayout->addWidget(new QLabel("Stim"));
-  // //rowLayout->addWidget(new QLabel("")); // For padding
-  // layout->addLayout(rowLayout);
   panel->setLayout(layout);
 
   *io_panel = panel;
   *io_layout = layout;
   return add_button;
 }
+
+void PropertiesPanel::show_io_panels()
+{
+    inp_panel->show();
+    outp_panel->show();
+    var_panel->show();
+}
+
+void PropertiesPanel::hide_io_panels()
+{
+    inp_panel->hide();
+    outp_panel->hide();
+    var_panel->hide();
+}
+
 
 void PropertiesPanel::createInputPanel()
 {
@@ -196,20 +227,6 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   widgetToLayout.insert((QWidget*)io_name, rowLayout);
   connect(io_name, &QLineEdit::textChanged, this, &PropertiesPanel::editIoName);
 
- //  QComboBox *io_kind = new QComboBox();
-//   io_kind->addItem("in", QVariant(Iov::IoIn));
-//   io_kind->addItem("out", QVariant(Iov::IoOut));
-//   io_kind->addItem("var", QVariant(Iov::IoVar));
-//   io_kind->setCurrentIndex(io->kind);
-//   rowLayout->addWidget(io_kind);
-//   widgetToIo.insert((QWidget*)io_kind, io);
-//   widgetToLayout.insert((QWidget*)io_kind, rowLayout);
-// #if QT_VERSION >= 0x060000
-//   connect(io_kind, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoKind);
-// #else
-//   connect(io_kind, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PropertiesPanel::editIoKind);
-// #endif
-
   QComboBox *io_type = new QComboBox();
   io_type->addItem("event", QVariant(Iov::TyEvent));
   io_type->addItem("int", QVariant(Iov::TyInt));
@@ -266,7 +283,6 @@ void PropertiesPanel::addIo(Iov::IoKind kind)
 
 void PropertiesPanel::setStimChoices(QComboBox* box, Iov *io)
 {
-  // qDebug() << "setStimChoices:" << io->name << io->type;
   switch ( io->type ) {
   case Iov::TyEvent:
     enableComboBoxItem(box, 0, true); // TO FIX: we should not use hardcoded index here 
@@ -389,6 +405,26 @@ void PropertiesPanel::editIoStim()
   main_window->setUnsavedChanges(true);
 }
 
+void PropertiesPanel::fillIos()
+{
+  Model* model = main_window->getModel();
+  Q_ASSERT(model);
+  if ( model == NULL ) return;
+  for (auto io: model->getIos())
+    _addIo(model, io);
+}
+
+void PropertiesPanel::clearIos()
+{
+  foreach ( Iov* io, ioToLayout.keys() ) {
+    qDebug() << "Removing IO " << io->name << " from panel";
+    QHBoxLayout *row_layout = ioToLayout.take(io);
+    delete_io_row(row_layout);
+    }
+}
+
+// [State] panel
+
 void PropertiesPanel::createStatePanel()
 {
     state_panel = new QGroupBox("State properties");
@@ -409,158 +445,6 @@ void PropertiesPanel::createStatePanel()
     state_panel->setLayout(statePanelLayout);
 }
 
-void PropertiesPanel::createTransitionPanel()
-{
-    transition_panel = new QGroupBox("Transition properties");
-    QGridLayout* transitionLayout = new QGridLayout();
-    transition_panel->setMaximumHeight(180);
-
-    QLabel* startLabel = new QLabel("Start State");
-    transition_start_state_field = new QComboBox();
-    transitionLayout->addWidget(startLabel, 0, 0, 1, 3);
-    transitionLayout->addWidget(transition_start_state_field, 1, 0, 1, 3);
-
-    QLabel* endLabel = new QLabel("End State");
-    transition_end_state_field = new QComboBox();
-    transitionLayout->addWidget(endLabel, 0, 3, 1, 3);
-    transitionLayout->addWidget(transition_end_state_field, 1, 3, 1, 3);
-
-    QLabel* eventLabel = new QLabel("Event");
-    transition_event_field = new QComboBox();
-    transitionLayout->addWidget(eventLabel, 2, 0, 1, 2);
-    transitionLayout->addWidget(transition_event_field, 2, 2, 1, 4);
-
-    QLabel* guardLabel = new QLabel("Guard");
-    transition_guard_field = new QLineEdit();
-    transitionLayout->addWidget(guardLabel, 3, 0, 1, 2);
-    transitionLayout->addWidget(transition_guard_field, 3, 2, 1, 4);
-
-    QLabel* actionsLabel = new QLabel("Action(s)");
-    transition_actions_field = new QLineEdit();
-    transitionLayout->addWidget(actionsLabel, 4, 0, 1, 2);
-    transitionLayout->addWidget(transition_actions_field, 4, 2, 1, 4);
-
-    transition_panel->setLayout(transitionLayout);
-}
-
-void PropertiesPanel::createInitTransitionPanel()
-{
-    itransition_panel = new QGroupBox("Transition properties");
-    QVBoxLayout* transitionLayout = new QVBoxLayout();
-
-    QLabel* endLabel = new QLabel("End State");
-    itransition_end_state_field = new QComboBox();
-    transitionLayout->addWidget(endLabel);
-    transitionLayout->addWidget(itransition_end_state_field);
-
-    QLabel* actionsLabel = new QLabel("Action(s)");
-    itransition_actions_field = new QLineEdit();
-    transitionLayout->addWidget(actionsLabel);
-    transitionLayout->addWidget(itransition_actions_field);
-
-    itransition_panel->setLayout(transitionLayout);
-}
-
-
-void PropertiesPanel::unselectItem()
-{
-    selected_item = nullptr;
-    state_panel->hide();
-    transition_panel->hide();
-    itransition_panel->hide();
-    inp_panel->show();
-    outp_panel->show();
-    var_panel->show();
-}
-
-void PropertiesPanel::setSelectedItem(State* state)
-{
-    //qDebug() << "State " << state->getId() << " selected";
-    transition_panel->hide();
-    itransition_panel->hide();
-    if ( ! state->isPseudo() ) {
-      selected_item = state;
-      inp_panel->hide();
-      outp_panel->hide();
-      var_panel->hide();
-      state_panel->show();
-      state_name_field->setText(state->getId());
-      state_attr_field->setText(state->getAttr());
-      }
-}
-
-void PropertiesPanel::setSelectedItem(Transition* transition)
-{
-    //qDebug() << "Transition " << transition->toString() << " selected";
-    selected_item = transition;
-    state_panel->hide();
-    inp_panel->hide();
-    outp_panel->hide();
-    var_panel->hide();
-
-    if ( transition->isInitial() ) {
-      transition_panel->hide();
-      itransition_panel->show();
-      itransition_end_state_field->clear();
-      foreach ( State* state, main_window->getModel()->states() ) {
-        if ( ! state->isPseudo() ) {
-          QString id = state->getId();
-          itransition_end_state_field->addItem(id, QVariant(id));
-          if ( transition->dstState()->getId() == id ) 
-            itransition_end_state_field->setCurrentIndex(itransition_end_state_field->count()-1);
-          }
-        }
-      itransition_actions_field->setText(transition->getActions());
-      }
-    else {
-      itransition_panel->hide();
-      transition_panel->show();
-      transition_start_state_field->clear();
-      transition_end_state_field->clear();
-      foreach ( State* state, main_window->getModel()->states() ) {
-        if ( ! state->isPseudo() ) {
-          QString id = state->getId();
-          transition_start_state_field->addItem(id, QVariant(id));
-          transition_end_state_field->addItem(id, QVariant(id));
-          if ( transition->srcState()->getId() == id )
-            transition_start_state_field->setCurrentIndex(transition_start_state_field->count()-1);
-          if ( transition->dstState()->getId() == id ) 
-            transition_end_state_field->setCurrentIndex(transition_end_state_field->count()-1);
-          }
-        }
-
-      Model* model = main_window->getModel();
-      Q_ASSERT(model);
-      QStringList inpEvents = model->getInpEvents();
-      if ( inpEvents.isEmpty() )
-        QMessageBox::warning( this, "Error", "No input event available to trigger this transition");
-      transition_event_field->clear();
-      // qDebug() << "Adding input events to transition selector:" << inpEvents;
-      for ( auto ev: inpEvents ) 
-        transition_event_field->addItem(ev, QVariant(ev));
-      QString event = transition->getEvent();
-      if ( event == "" ) 
-        transition_event_field->setCurrentIndex(0);
-      else {
-        if ( inpEvents.contains(event) ) 
-          transition_event_field->setCurrentText(event);
-        else
-          QMessageBox::warning( this, "Error", "The triggering event for this transition is no longer listed in the model inputs");
-      }
-
-      transition_guard_field->setText(transition->getGuard());
-      transition_actions_field->setText(transition->getActions());
-    }
-}
-
-void PropertiesPanel::setModelName(const QString& name)
-{
-  Model* model = main_window->getModel();
-  model->setName(name.trimmed());
-  main_window->setUnsavedChanges(true);
-}
-
-
 void PropertiesPanel::setStateName(const QString& name)
 {
     State* state = qgraphicsitem_cast<State*>(selected_item);
@@ -579,6 +463,33 @@ void PropertiesPanel::setStateAttr(const QString& attr)
         main_window->getModel()->update();
         main_window->setUnsavedChanges(true);
     }
+}
+
+// [Transition] base panel (common to standard and initial transitions)
+// Note: for initial transitions, the [start_state] and [event] elements will be hidden
+
+void PropertiesPanel::createTransitionBasePanel()
+{
+    transition_base_panel = new QGroupBox("Transition");
+    QGridLayout* transitionLayout = new QGridLayout();
+    transition_base_panel->setMaximumHeight(180);
+
+    transition_start_state_label = new QLabel("Start State");
+    transition_start_state_field = new QComboBox();
+    transitionLayout->addWidget(transition_start_state_label, 0, 0, 1, 3);
+    transitionLayout->addWidget(transition_start_state_field, 1, 0, 1, 3);
+
+    transition_end_state_label = new QLabel("End State");
+    transition_end_state_field = new QComboBox();
+    transitionLayout->addWidget(transition_end_state_label, 0, 3, 1, 3);
+    transitionLayout->addWidget(transition_end_state_field, 1, 3, 1, 3);
+
+    transition_event_label = new QLabel("Event");
+    transition_event_field = new QComboBox();
+    transitionLayout->addWidget(transition_event_label, 2, 0, 1, 2);
+    transitionLayout->addWidget(transition_event_field, 2, 2, 1, 4);
+
+    transition_base_panel->setLayout(transitionLayout);
 }
 
 void PropertiesPanel::setTransitionSrcState(int index)
@@ -609,20 +520,6 @@ void PropertiesPanel::setTransitionDstState(int index)  // TODO: factorize with 
   main_window->setUnsavedChanges(true);
 }
 
-void PropertiesPanel::setITransitionDstState(int index)  // TODO: factorize with above code
-{
-  if ( index == -1 ) return;
-  Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
-  if ( transition == nullptr ) return;
-  QString state_id = itransition_end_state_field->itemText(index);
-  State* state = main_window->getModel()->getState(state_id);
-  if ( state == nullptr )
-    throw std::invalid_argument(std::string("No state found with id : ") + state_id.toStdString());
-  transition->setDstState(state);
-  main_window->getModel()->update();
-  main_window->setUnsavedChanges(true);
-}
-
 void PropertiesPanel::setTransitionEvent()
 {
   QComboBox* selector = qobject_cast<QComboBox*>(sender());
@@ -636,22 +533,331 @@ void PropertiesPanel::setTransitionEvent()
   main_window->setUnsavedChanges(true);
 }
 
-void PropertiesPanel::setTransitionGuard(const QString& guard)
+// [Transition Actions] panel
+
+void PropertiesPanel::createTransitionActionsPanel()
 {
-  Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
-  if ( transition == nullptr ) return;
-  transition->setGuard(guard);
-  main_window->getModel()->update();
+  QGroupBox *panel = new QGroupBox("Transition actions");
+  //panel->setMaximumHeight(200);
+  //panel->setMinimumWidth(200);
+  QVBoxLayout *layout = new QVBoxLayout();
+  layout->setSpacing(4);
+  layout->setContentsMargins(11, 11, 11, 11);
+  QHBoxLayout *rowLayout = new QHBoxLayout();
+  QPushButton* add_button = new QPushButton("Add");
+  rowLayout->addWidget(add_button);
+  layout->addLayout(rowLayout);
+  panel->setLayout(layout);
+  transition_actions_panel = panel;
+  transition_actions_layout = layout;
+  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addTransitionAction);
+}
+
+void PropertiesPanel::addTransitionAction()
+{
+  _addTransitionAction("");
+}
+
+void PropertiesPanel::_addTransitionAction(QString action)
+{
+  QHBoxLayout *rowLayout = new QHBoxLayout(transition_actions_panel);
+  rowLayout->setObjectName("actionRowLayout");
+  QLineEdit *action_field = new QLineEdit();
+  action_field->setMinimumSize(80,action_field->minimumHeight());
+  action_field->setFrame(true);
+  action_field->setText(action);
+  action_field->setCursorPosition(0);
+  rowLayout->addWidget(action_field);
+  // TODO: validate text field 
+  connect(action_field, &QLineEdit::textChanged, this, &PropertiesPanel::editTransitionAction);
+
+  QPushButton *action_delete = new QPushButton();
+  action_delete->setIcon(QIcon(":/images/delete.png"));
+  rowLayout->addWidget(action_delete);
+  connect(action_delete, &QPushButton::clicked, this, &PropertiesPanel::removeTransitionAction);
+  transition_actions_layout->insertLayout(-1,rowLayout);
+}
+
+void PropertiesPanel::editTransitionAction() // SLOT
+{
+  QStringList actions;
+  for ( int i=1; i<transition_actions_layout->count(); i++ ) {
+    QHBoxLayout *row_layout = static_cast<QHBoxLayout*>(transition_actions_layout->itemAt(i));
+    QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+    actions << ledit->text().trimmed();
+    }
+  qDebug () << "Actions=" << actions;
+  setTransitionActions(actions);
   main_window->setUnsavedChanges(true);
 }
 
-void PropertiesPanel::setTransitionActions(const QString& actions)
+void PropertiesPanel::removeTransitionAction() // SLOT
+{
+  QPushButton* button = qobject_cast<QPushButton*>(sender());
+  QHBoxLayout *row_layout = NULL;
+  // Retrieve the row to delete in [transition_actions_layout] 
+  int row;
+  int nb_rows = transition_actions_layout->count();
+  for ( row=1; row<nb_rows; row++ ) {
+    row_layout = static_cast<QHBoxLayout*>(transition_actions_layout->itemAt(row));
+    if ( button == qobject_cast<QPushButton*>(row_layout->itemAt(1)->widget()) ) break;
+    }
+  assert(row >= 1 && row <nb_rows && row_layout );
+  qDebug() << "Deleting action #" << row;
+  delete_action_row(row_layout);
+  transition_actions_layout->takeAt(row);
+  editTransitionAction();
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::delete_action_row(QHBoxLayout *row_layout)
+{
+  QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+  assert(ledit);
+  QPushButton *button = qobject_cast<QPushButton*>(row_layout->itemAt(1)->widget());
+  assert(button);
+  delete ledit;
+  delete button;
+}
+
+void PropertiesPanel::clearTransitionActionsPanel(QVBoxLayout *layout)
+{
+  QHBoxLayout *row_layout; 
+  qDebug() << "Clearing transition actions panel";
+  while ( layout->count() > 1 ) { // Do not delete the [Add] button !
+    row_layout = static_cast<QHBoxLayout*>(layout->itemAt(1));
+    delete_action_row(row_layout);
+    layout->takeAt(1);
+  }
+}
+
+void PropertiesPanel::setTransitionActions(QStringList& actions)
 {
   Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
   if ( transition == nullptr ) return;
   transition->setActions(actions);
   main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
+}
+
+// [Transition guards] panel 
+// Note: this is largely redundant with the [Transition actions] section ...
+
+void PropertiesPanel::createTransitionGuardsPanel()
+{
+  QGroupBox *panel = new QGroupBox("Transition guards");
+  //panel->setMaximumHeight(200);
+  //panel->setMinimumWidth(200);
+  QVBoxLayout *layout = new QVBoxLayout();
+  layout->setSpacing(4);
+  layout->setContentsMargins(11, 11, 11, 11);
+  QHBoxLayout *rowLayout = new QHBoxLayout();
+  QPushButton* add_button = new QPushButton("Add");
+  rowLayout->addWidget(add_button);
+  layout->addLayout(rowLayout);
+  panel->setLayout(layout);
+  transition_guards_panel = panel;
+  transition_guards_layout = layout;
+  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addTransitionGuard);
+}
+
+void PropertiesPanel::addTransitionGuard()
+{
+  _addTransitionGuard("");
+}
+
+void PropertiesPanel::_addTransitionGuard(QString guard)
+{
+  QHBoxLayout *rowLayout = new QHBoxLayout(transition_guards_panel);
+  rowLayout->setObjectName("guardRowLayout");
+  QLineEdit *guard_field = new QLineEdit();
+  guard_field->setMinimumSize(80,guard_field->minimumHeight());
+  guard_field->setFrame(true);
+  guard_field->setText(guard);
+  guard_field->setCursorPosition(0);
+  rowLayout->addWidget(guard_field);
+  // TODO: validate text field 
+  connect(guard_field, &QLineEdit::textChanged, this, &PropertiesPanel::editTransitionGuard);
+
+  QPushButton *guard_delete = new QPushButton();
+  guard_delete->setIcon(QIcon(":/images/delete.png"));
+  rowLayout->addWidget(guard_delete);
+  connect(guard_delete, &QPushButton::clicked, this, &PropertiesPanel::removeTransitionGuard);
+  transition_guards_layout->insertLayout(-1,rowLayout);
+}
+
+void PropertiesPanel::editTransitionGuard() // SLOT
+{
+  QStringList guards;
+  for ( int i=1; i<transition_guards_layout->count(); i++ ) {
+    QHBoxLayout *row_layout = static_cast<QHBoxLayout*>(transition_guards_layout->itemAt(i));
+    assert(row_layout);
+    QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+    assert(ledit);
+    guards << ledit->text().trimmed();
+    }
+  if ( guards.length() >= 2 ) {
+    for ( int i = 0; i<guards.length(); i++ ) {
+      QString guard = guards.at(i);
+      guards.replace(i, "(" + guard + ")");
+      }
+    }
+  qDebug () << "Guards=" << guards;
+  setTransitionGuards(guards);
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::removeTransitionGuard() // SLOT
+{
+  QPushButton* button = qobject_cast<QPushButton*>(sender());
+  QHBoxLayout *row_layout = NULL;
+  // Retrieve the row to delete in [transition_guards_layout] 
+  int row;
+  int nb_rows = transition_guards_layout->count();
+  for ( row=1; row<nb_rows; row++ ) {
+    row_layout = static_cast<QHBoxLayout*>(transition_guards_layout->itemAt(row));
+    if ( button == qobject_cast<QPushButton*>(row_layout->itemAt(1)->widget()) ) break;
+    }
+  assert(row >= 1 && row <nb_rows && row_layout );
+  qDebug() << "Deleting guard #" << row;
+  delete_guard_row(row_layout);
+  transition_guards_layout->takeAt(row);
+  editTransitionGuard();
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::delete_guard_row(QHBoxLayout *row_layout)
+{
+  QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+  assert(ledit);
+  QPushButton *button = qobject_cast<QPushButton*>(row_layout->itemAt(1)->widget());
+  assert(button);
+  delete ledit;
+  delete button;
+}
+
+void PropertiesPanel::clearTransitionGuardsPanel(QVBoxLayout *layout)
+{
+  QHBoxLayout *row_layout; 
+  qDebug() << "Clearing transition guards panel";
+  while ( layout->count() > 1 ) { // Do not delete the [Add] button !
+    row_layout = static_cast<QHBoxLayout*>(layout->itemAt(1));
+    delete_guard_row(row_layout);
+    layout->takeAt(1);
+  }
+}
+
+void PropertiesPanel::setTransitionGuards(QStringList& guards)
+{
+  Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
+  if ( transition == nullptr ) return;
+  transition->setGuards(guards);
+  main_window->getModel()->update();
+  main_window->setUnsavedChanges(true);
+}
+
+// [Select/Unselect] actions
+
+void PropertiesPanel::unselectItem()
+{
+    qDebug() << "Unselect item";
+    selected_item = nullptr;
+    state_panel->hide();
+    transition_base_panel->hide();
+    transition_actions_panel->hide();
+    transition_guards_panel->hide();
+    show_io_panels();
+}
+
+void PropertiesPanel::setSelectedItem(State* state)
+{
+    qDebug() << "State " << state->getId() << " selected";
+    transition_base_panel->hide();
+    transition_actions_panel->hide();
+    transition_guards_panel->hide();
+    if ( ! state->isPseudo() ) {
+      selected_item = state;
+      hide_io_panels();
+      state_panel->show();
+      state_name_field->setText(state->getId());
+      state_attr_field->setText(state->getAttr());
+      }
+}
+
+void PropertiesPanel::show_transition_base_panel(bool isInitial)
+{
+  transition_start_state_label->setVisible(!isInitial); 
+  transition_start_state_field->setVisible(!isInitial); 
+  transition_event_label->setVisible(!isInitial); 
+  transition_event_field->setVisible(!isInitial); 
+  transition_base_panel->show();
+}
+
+void PropertiesPanel::setSelectedItem(Transition* transition)
+{
+    selected_item = transition;
+    state_panel->hide();
+    hide_io_panels();
+
+    Q_ASSERT(transition);
+    bool isInitial = transition->isInitial();
+    qDebug() << "Transition" << transition->toString() << "(" << isInitial << ")" << " selected";
+    Model* model = main_window->getModel();
+    Q_ASSERT(model);
+    show_transition_base_panel(isInitial);
+    if ( isInitial ) transition_guards_panel->hide();
+    else transition_guards_panel->show();
+    transition_start_state_field->clear();
+    transition_end_state_field->clear();
+    transition_actions_panel->show();
+    if ( isInitial ) {
+      foreach ( State* state, model->states() ) {
+        if ( ! state->isPseudo() ) {
+          QString id = state->getId();
+          transition_end_state_field->addItem(id, QVariant(id));
+          if ( transition->getDstState()->getId() == id ) 
+            transition_end_state_field->setCurrentIndex(transition_end_state_field->count()-1);
+          }
+        }
+      }
+    else {
+      foreach ( State* state, model->states() ) {
+        if ( ! state->isPseudo() ) {
+          QString id = state->getId();
+          transition_start_state_field->addItem(id, QVariant(id));
+          transition_end_state_field->addItem(id, QVariant(id));
+          if ( transition->getSrcState()->getId() == id )
+            transition_start_state_field->setCurrentIndex(transition_start_state_field->count()-1);
+          if ( transition->getDstState()->getId() == id ) 
+            transition_end_state_field->setCurrentIndex(transition_end_state_field->count()-1);
+          }
+        }
+      QStringList inpEvents = model->getInpEvents();
+      // A RETABLIR !!!!!!!!
+      // if ( inpEvents.isEmpty() )
+      //   QMessageBox::warning( this, "Error", "No input event available to trigger this transition");
+      transition_event_field->clear();
+      for ( auto ev: inpEvents ) 
+        transition_event_field->addItem(ev, QVariant(ev));
+      QString event = transition->getEvent();
+      if ( event == "" ) 
+        transition_event_field->setCurrentIndex(0);
+      else {
+        if ( inpEvents.contains(event) ) 
+          transition_event_field->setCurrentText(event);
+        else
+          QMessageBox::warning( this, "Error", "The triggering event for this transition is no longer listed in the model inputs");
+      }
+      clearTransitionGuardsPanel(transition_guards_layout);
+      foreach ( QString guard, transition->getGuards() ) {
+        _addTransitionGuard(guard);
+        }
+    }
+
+    clearTransitionActionsPanel(transition_actions_layout);
+      foreach ( QString action, transition->getActions() ) {
+        _addTransitionAction(action);
+        }
 }
 
 void PropertiesPanel::update()
@@ -661,48 +867,19 @@ void PropertiesPanel::update()
     fillModelName();
 }
 
-void PropertiesPanel::fillModelName()
-{
-    Model* model = main_window->getModel();
-    if ( model == NULL ) return;
-    model_name_field->setText(model->getName());
-}
-
-void PropertiesPanel::fillIos()
-{
-  Model* model = main_window->getModel();
-  Q_ASSERT(model);
-  if ( model == NULL ) return;
-  for (auto io: model->getIos())
-    _addIo(model, io);
-}
-
 void PropertiesPanel::clear()
 {
   qDebug() << "Clearing properties panel";
   selected_item = nullptr;
 
   state_panel->hide();
-  transition_panel->hide();
-  itransition_panel->hide();
+  transition_base_panel->hide();
+  transition_guards_panel->hide();
+  transition_actions_panel->hide();
 
   clearIos();
   clearModelName();
 }
 
-void PropertiesPanel::clearModelName()
-{
-    Model* model = main_window->getModel();
-    if ( model == NULL ) return;
-    model_name_field->setText("");
-}
 
-void PropertiesPanel::clearIos()
-{
-  foreach ( Iov* io, ioToLayout.keys() ) {
-    qDebug() << "Removing IO " << io->name << " from panel";
-    QHBoxLayout *row_layout = ioToLayout.take(io);
-    delete_io_row(row_layout);
-    }
-}
 

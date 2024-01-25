@@ -113,7 +113,7 @@ State* Model::initState()
   for ( const auto item: items() )
     if ( item->type() == Transition::Type ) {
       Transition *t = qgraphicsitem_cast<Transition *>(item);
-      if ( t->isInitial() ) return t->dstState();
+      if ( t->isInitial() ) return t->getDstState();
       }
   return NULL;
 }
@@ -154,8 +154,8 @@ bool Model::hasPseudoState()
 
 void Model::addTransition(Transition *transition)
 {
-  State *srcState = transition->srcState();
-  State *dstState = transition->dstState();
+  State *srcState = transition->getSrcState();
+  State *dstState = transition->getDstState();
   srcState->addTransition(transition);
   if ( dstState != srcState ) dstState->addTransition(transition); // Do _not_ add self-transitions twice !
   transition->setZValue(-1000.0);
@@ -165,11 +165,11 @@ void Model::addTransition(Transition *transition)
 Transition* Model::addTransition(State* srcState,
                                State* dstState,
                                QString event,
-                               QString guard,
-                               QString actions,
+                               QStringList guards,
+                               QStringList actions,
                                State::Location location)
 {
-  Transition *transition = new Transition(srcState, dstState, event, guard, actions, location);
+  Transition *transition = new Transition(srcState, dstState, event, guards, actions, location);
   addTransition(transition);
   return transition;
 }
@@ -229,7 +229,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             state = qgraphicsitem_cast<State *>(item);
             if ( ! state->isPseudo() ) {
               State::Location location = state->locateEvent(mouseEvent);
-              Transition *transition = addTransition(state, state, "", "", "", location);
+              Transition *transition = addTransition(state, state, "", QStringList(), QStringList(), location);
               transition->updatePosition();
               emit fsmModified();
               emit transitionInserted(transition);
@@ -242,8 +242,8 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             switch ( item->type() ) {
             case Transition::Type: {
               transition = qgraphicsitem_cast<Transition *>(item);
-              State *srcState = transition->srcState();
-              State *dstState = transition->dstState();
+              State *srcState = transition->getSrcState();
+              State *dstState = transition->getDstState();
               if ( srcState->isPseudo() ) {
                 srcState->removeTransitions();
                 removeItem(srcState);
@@ -320,7 +320,7 @@ void Model::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
       State *dstState = qgraphicsitem_cast<State *>(dstStates.first());
       if ( srcState != dstState ) {
         State::Location location = srcState == dstState ? srcState->locateEvent(mouseEvent) : State::None;
-        Transition *transition = addTransition(srcState, dstState, "", "", "", location);
+        Transition *transition = addTransition(srcState, dstState, "", QStringList(), QStringList(), location);
         transition->updatePosition();
         emit transitionInserted(transition);
         emit fsmModified();
@@ -359,8 +359,8 @@ void Model::check_state(State *s)
 
 void Model::check_transition(Transition *t)
 {
-  check_state(t->srcState());
-  check_state(t->dstState());
+  check_state(t->getSrcState());
+  check_state(t->getDstState());
   if ( ! t->isInitial() && t->getEvent() == "" )
     report_error("No trigerring event for transition " + t->toString());
 }
@@ -448,7 +448,7 @@ void Model::readFromFile(QString fname)
       std::string src_state = json_transition.at("src_state");
       std::string dst_state = json_transition.at("dst_state");
       std::string event = json_transition.at("event");
-      std::string guard = json_transition.at("guard");
+      std::string guards = json_transition.at("guard");
       std::string actions = json_transition.at("actions");
       State::Location location;
       switch ( (int)json_transition.at("location") ) {
@@ -465,8 +465,8 @@ void Model::readFromFile(QString fname)
       Transition *transition = new Transition(srcState,
                                               dstState,
                                               QString::fromStdString(event),
-                                              QString::fromStdString(guard),
-                                              QString::fromStdString(actions),
+                                              QString::fromStdString(guards).split("."),
+                                              QString::fromStdString(actions).split(";"),
                                               location);
       transitions.append(transition);
       }
@@ -485,7 +485,7 @@ void Model::readFromFile(QString fname)
       addState(state);
       }
     foreach ( Transition *transition, transitions ) {
-      qDebug () << "Model::readFromFile: adding transition" << transition->srcState()->getId() << " -> " << transition->dstState()->getId();
+      qDebug () << "Model::readFromFile: adding transition" << transition->getSrcState()->getId() << " -> " << transition->getDstState()->getId();
       addTransition(transition);
       transition->updatePosition();
       }
@@ -539,12 +539,12 @@ void Model::saveToFile(QString fname)
       if ( item->type() == Transition::Type ) {
         Transition* transition = qgraphicsitem_cast<Transition *>(item);
         nlohmann::json json;
-        json["src_state"] = transition->srcState()->getId().toStdString();
-        json["dst_state"] = transition->dstState()->getId().toStdString();
+        json["src_state"] = transition->getSrcState()->getId().toStdString();
+        json["dst_state"] = transition->getDstState()->getId().toStdString();
         json["event"] = transition->getEvent().toStdString();
-        json["guard"] = transition->getGuard().toStdString();
-        json["actions"] = transition->getActions().toStdString();
-        json["location"] = transition->location();
+        json["guard"] = transition->getGuards().join(".").toStdString();
+        json["actions"] = transition->getActions().join(";").toStdString();
+        json["location"] = transition->getLocation();
         json_res["transitions"].push_back(json);
         }
       }
@@ -615,8 +615,8 @@ void Model::exportDot(QString fname, QStringList options)
   for ( const auto item: items() ) {
     if ( item->type() == Transition::Type ) {
       Transition* transition = qgraphicsitem_cast<Transition *>(item);
-      QString src_id = transition->srcState()->getId();
-      QString dst_id = transition->dstState()->getId();
+      QString src_id = transition->getSrcState()->getId();
+      QString dst_id = transition->getDstState()->getId();
       QString label = dotTransitionLabel(transition->getLabel());
       os << src_id << " -> " << dst_id << " [label=\"" << label << "\"]\n";
       }
@@ -642,11 +642,11 @@ QString stringOfVarList(QList<Iov*> vs, QString sep=", ", bool withType=true)
 QString stringOfTransition(Transition *t, bool abbrev=false)
 {
   QString ss;
-  ss = t->srcState()->getId() + " -> " + t->dstState()->getId();
+  ss = t->getSrcState()->getId() + " -> " + t->getDstState()->getId();
   if ( ! abbrev ) {
     if ( ! t->getEvent().isEmpty() ) ss += " on " + t->getEvent();
-    if ( ! t->getGuard().isEmpty() ) ss += " when " + t->getGuard();
-    if ( ! t->getActions().isEmpty() ) ss += " with " + t->getActions();
+    if ( ! t->getGuards().isEmpty() ) ss += " when " + t->getGuards().join(".");
+    if ( ! t->getActions().isEmpty() ) ss += " with " + t->getActions().join(",");
     }
   return ss;
 }
@@ -708,7 +708,7 @@ void Model::export_rfsm_model(QTextStream& os)
     first = true;
 
     for ( Transition* transition : transitions() ) {
-        if ( transition->srcState()->isPseudo() ) continue;
+        if ( transition->getSrcState()->isPseudo() ) continue;
         os << indent << "\n  | " << stringOfTransition(transition);
         first = false;
         }
@@ -720,7 +720,7 @@ void Model::export_rfsm_model(QTextStream& os)
     if ( iTransition == NULL ) throw std::invalid_argument("Initial transition undefined");
     os << indent << "itrans: " << "\n";
     os << indent << "| -> " << iState->getId();
-    if ( ! iTransition->getActions().isEmpty() ) os << " with " << iTransition->getActions();
+    if ( ! iTransition->getActions().isEmpty() ) os << " with " << iTransition->getActions().join(";");
     os << ";" << "\n";
     os << "}";
 }
@@ -838,8 +838,8 @@ void Model::renderDot(QGVScene *dotScene)
   for ( const auto item: items() ) {
     if ( item->type() == Transition::Type ) {
       Transition* transition = qgraphicsitem_cast<Transition *>(item);
-      QString src_id = transition->srcState()->getId();
-      QString dst_id = transition->dstState()->getId();
+      QString src_id = transition->getSrcState()->getId();
+      QString dst_id = transition->getDstState()->getId();
       QString label = transition->isInitial() ? "" : dotTransitionLabel(transition->getLabel(),"  ");
       if ( nodes.contains(src_id) && nodes.contains(dst_id) )
         dotScene->addEdge(nodes[src_id], nodes[dst_id], label);

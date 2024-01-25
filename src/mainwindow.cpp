@@ -64,7 +64,7 @@ MainWindow::MainWindow()
     connect(model, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
     connect(model, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
     connect(model, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
-    connect(model, SIGNAL(modelModified()), this, SLOT(modelModified()));
+    //connect(model, SIGNAL(modelModified()), this, SLOT(modelModified()));
     connect(model, SIGNAL(mouseEnter()), this, SLOT(updateCursor()));
     connect(model, SIGNAL(mouseLeave()), this, SLOT(resetCursor()));
 
@@ -947,7 +947,7 @@ void MainWindow::addDotTab(void)
   QString tabName = "dot";
   for ( int i=0; i<results->count(); i++ )
     if ( results->tabText(i) == tabName ) closeResultTab(i); // Do not open two tabs with the same name
-  DotViewer *view = new DotViewer(model, 200, 400, results); // TODO: let the dotViewer class decide of the canvas dimensions 
+  DotViewer *view = new DotViewer(model, 200, 400, results); // TODO: let the dotViewer class decide of the canvas dimensions ?
   results->addTab(view, tabName);
   results->setCurrentIndex(results->count()-1);
 }

@@ -17,51 +17,51 @@
 #include <QPainter>
 #include <QSet>
 
-const qreal Pi = 3.14;
+const qreal Pi = 3.141592654;
 
 QColor Transition::selectedColor = Qt::darkCyan;
 QColor Transition::unSelectedColor = Qt::black;
 double Transition::arrowSize = 20.0;
 
-Transition::Transition(State *srcState,
-                       State *dstState,
-                       QString event,
-                       QString guard,
-                       QString actions,
-                       State::Location location,
+Transition::Transition(State *_srcState,
+                       State *_dstState,
+                       QString _event,
+                       QStringList _guards,
+                       QStringList _actions,
+                       State::Location _location,
                        QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
-    mySrcState = srcState;
-    myDstState = dstState;
-    myLocation = location;
-    myEvent = event;
-    myGuard = guard;
-    myActions = actions;
-    myLabel = new QGraphicsSimpleTextItem(getLabel(), this);
-    myLabel->setFlag(QGraphicsItem::ItemIsSelectable, false);
+    srcState = _srcState;
+    dstState = _dstState;
+    location = _location;
+    event = _event;
+    guards = _guards;
+    actions = _actions;
+    label = new QGraphicsSimpleTextItem(getLabel(), this);
+    label->setFlag(QGraphicsItem::ItemIsSelectable, false);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setPen(QPen(unSelectedColor, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 }
 
 QString Transition::getLabel()
 {
-  QString r = myEvent;
-  if ( ! myGuard.isEmpty() ) r += "." + myGuard;
-  if ( ! myActions.isEmpty() ) r += "/" + myActions;
+  QString r = event;
+  if ( ! guards.isEmpty() ) r += "." + guards.join(".");
+  if ( ! actions.isEmpty() ) r += "/" + actions.join(";");
   return r;
 }
 
 bool Transition::isInitial()
 {
-  return mySrcState ? mySrcState->isPseudo() : false;
+  return srcState ? srcState->isPseudo() : false;
 }
 
 QRectF Transition::boundingRect() const
 {
     qreal extra = (pen().width() + 20) / 2.0;
 
-    if ( mySrcState == myDstState )
+    if ( srcState == dstState )
       return
         QRectF(polygon().at(0), polygon().at(2))
         .normalized()
@@ -85,17 +85,17 @@ QPainterPath Transition::shape() const
 void Transition::updatePosition()
 {
   QPolygonF p;
-  if ( mySrcState == myDstState ) {
+  if ( srcState == dstState ) {
     float w = State::boxSize.width();
     float h = State::boxSize.height();
-    p << mapFromItem(mySrcState, 0, -0.25*h)
-      << mapFromItem(mySrcState, 0, 0.25*h)
-      << mapFromItem(mySrcState, w, 0.25*h)
-      << mapFromItem(mySrcState, w, -0.25*h);
+    p << mapFromItem(srcState, 0, -0.25*h)
+      << mapFromItem(srcState, 0, 0.25*h)
+      << mapFromItem(srcState, w, 0.25*h)
+      << mapFromItem(srcState, w, -0.25*h);
     }
   else
-    p << mapFromItem(mySrcState, 0, 0)
-      << mapFromItem(myDstState, 0, 0);
+    p << mapFromItem(srcState, 0, 0)
+      << mapFromItem(dstState, 0, 0);
   setPolygon(p);
 }
 
@@ -117,10 +117,10 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
     float w = State::boxSize.width();
     float h = State::boxSize.height();
 
-    if ( mySrcState == myDstState ) { // Looping transition
+    if ( srcState == dstState ) { // Looping transition
 
-      QPointF c = mySrcState->pos(); // Box center
-      switch ( myLocation ) {
+      QPointF c = srcState->pos(); // Box center
+      switch ( location ) {
       case State::East:
         points << c + QPointF(0, 0.25*h)
                << c + QPointF(w, 0.25*h)
@@ -157,21 +157,21 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
 
     else { // Normal transition
 
-      if (mySrcState->collidesWithItem(myDstState)) return; // Do not draw if start and end statees collide
+      if (srcState->collidesWithItem(dstState)) return; // Do not draw if start and end statees collide
 
       // Find the position where to draw the arrow head
       // This is where the line and the end state intersect
 
-      QLineF centerLine(mySrcState->pos(), myDstState->pos());
-      QPolygonF endPolygon = myDstState->polygon();
-      QPointF p1 = endPolygon.first() + myDstState->pos();  // Item to scene coordinates
+      QLineF centerLine(srcState->pos(), dstState->pos());
+      QPolygonF endPolygon = dstState->polygon();
+      QPointF p1 = endPolygon.first() + dstState->pos();  // Item to scene coordinates
       QPointF p2;
       QPointF intersectPoint;
       QLineF polyLine;
       int side;  // 1: North, 2: East, 3: South, 4: West
       for (side = 1; side < endPolygon.count(); ++side) {
         // Iterating over the end box sides to find the intersection (there must be exactly one)
-        p2 = endPolygon.at(side) + myDstState->pos();
+        p2 = endPolygon.at(side) + dstState->pos();
         polyLine = QLineF(p1, p2);
 #if QT_VERSION >= 0x060000
         QLineF::IntersectType intersectType = polyLine.intersects(centerLine, &intersectPoint);
@@ -184,7 +184,7 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
       // When there are several transitions between the start and end boxes, we don't want one to hide another.
       // To avoid this, we count them and assign a rank to each one, which will be used as an offset
       
-      QList<Transition*> transitions = mySrcState->getTransitionsTo(myDstState) + myDstState->getTransitionsTo(mySrcState);
+      QList<Transition*> transitions = srcState->getTransitionsTo(dstState) + dstState->getTransitionsTo(srcState);
       // for ( auto a: transitions ) 
       //   qDebug() << "  " << a->srcState()->getId() << " -> " << a->dstState()->getId();
       transitions = remove_duplicates(transitions); 
@@ -205,7 +205,7 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
         offset = QPoint(0,0); break; // should not happen 
       }
 
-      QLineF line = QLineF(intersectPoint+offset, mySrcState->pos()+offset);
+      QLineF line = QLineF(intersectPoint+offset, srcState->pos()+offset);
       points << line.p1() << line.p2();
 
       angle = ::acos(line.dx() / line.length());
@@ -228,11 +228,11 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
     painter->drawPolyline(points);
     painter->drawPolygon(arrowHead);
 
-    myLabel->setText(getLabel());
-    myLabel->setPos(midPoint);
+    label->setText(getLabel());
+    label->setPos(midPoint);
 }
 
 QString Transition::toString()
 {
-  return srcState()->getId() + "->" + dstState()->getId() + " [" + getLabel() + "]";
+  return srcState->getId() + "->" + dstState->getId() + " [" + getLabel() + "]";
 }

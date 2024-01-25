@@ -17,6 +17,7 @@
 #include <QFrame>
 #include <QGraphicsItem>
 #include <QGroupBox>
+#include <QLabel>
 #include <QLineEdit>
 #include <QListView>
 #include <QString>
@@ -55,20 +56,23 @@ class PropertiesPanel : public QFrame
     QLineEdit* state_name_field;
     QLineEdit* state_attr_field;
 
-    QGroupBox* transition_panel;
+    QGroupBox* transition_base_panel;
+    QLabel*    transition_start_state_label;
     QComboBox* transition_start_state_field;
+    QLabel*    transition_end_state_label;
     QComboBox* transition_end_state_field;
+    QLabel*    transition_event_label;
     QComboBox* transition_event_field;
-    QLineEdit* transition_guard_field;
-    QLineEdit* transition_actions_field;
-
-    QGroupBox* itransition_panel;
-    QComboBox* itransition_end_state_field;
-    QLineEdit* itransition_actions_field;
 
     QVBoxLayout* inp_layout;
     QVBoxLayout* outp_layout;
     QVBoxLayout* var_layout;
+
+    QGroupBox* transition_guards_panel;
+    QVBoxLayout* transition_guards_layout;
+    QGroupBox* transition_actions_panel;
+    QVBoxLayout* transition_actions_layout;
+
     QHash<QWidget*, QHBoxLayout*> widgetToLayout; 
     QHash<QWidget*, Iov*> widgetToIo; 
     QHash<Iov*, QHBoxLayout*> ioToLayout; 
@@ -95,21 +99,24 @@ class PropertiesPanel : public QFrame
     void addOutput();
     void addVar();
     void removeIo();
+    void removeTransitionGuard();
+    void removeTransitionAction();
     void editIoName();
     void editIoType();
     void editIoStim();
+    void editTransitionGuard();
+    void editTransitionAction();
 
     void setTransitionSrcState(int index);
     void setTransitionDstState(int index);
     void setTransitionEvent();
-    void setTransitionGuard(const QString& guard);
-    void setTransitionActions(const QString& actions);
-    void setITransitionDstState(int index);
+    void setTransitionGuards(QStringList& guards);
+    void setTransitionActions(QStringList& actions);
 
-  void update();
-  void clear();
-  void clearModelName();
-  void clearIos();
+    void update();
+    void clear();
+    void clearModelName();
+    void clearIos();
 
   private:
     void createNamePanel();
@@ -118,20 +125,35 @@ class PropertiesPanel : public QFrame
     void createOutputPanel();
     void createVarPanel();
     void createStatePanel();
-    void createTransitionPanel();
-    void createInitTransitionPanel();
+    void createTransitionPanels();
+    void createTransitionBasePanel();
+    void createTransitionGuardsPanel();
+    void createTransitionActionsPanel();
+    void clearTransitionActionsPanel(QVBoxLayout *layout);
+    void clearTransitionGuardsPanel(QVBoxLayout *layout);
 
     void fillModelName();
     void fillIos();
     void setStimChoices(QComboBox* box, Iov *io);
 
     void delete_io_row(QLayout *layout);
+    void delete_action_row(QHBoxLayout *row_layout);
+    void delete_guard_row(QHBoxLayout *row_layout);
     void _removeIo(Model* model, Iov* io);
 
     QGroupBox* io_panel_of(Iov::IoKind kind);
     QVBoxLayout* io_layout_of(Iov::IoKind kind);
     void _addIo(Model* model, Iov* io);
     void addIo(Iov::IoKind kind);
+    void _addTransitionGuard(QString guard);
+    void addTransitionGuard();
+    void _addTransitionAction(QString action);
+    void addTransitionAction();
+
+    void show_io_panels();
+    void hide_io_panels();
+
+    void show_transition_base_panel(bool isInitial);
 };
 
 #endif

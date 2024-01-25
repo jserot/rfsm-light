@@ -81,8 +81,8 @@ void State::removeTransition(Transition *transition)
 void State::removeTransitions()
 {
     foreach (Transition *transition, transitions) {
-        transition->srcState()->removeTransition(transition);
-        transition->dstState()->removeTransition(transition);
+        transition->getSrcState()->removeTransition(transition);
+        transition->getDstState()->removeTransition(transition);
         scene()->removeItem(transition);
         delete transition;
     }
@@ -124,7 +124,7 @@ QList<Transition*> State::getTransitionsTo(State* dstState)
 {
   QList<Transition *> res;
   for ( auto a : transitions ) 
-    if ( a->dstState() == dstState ) res.append(a);
+    if ( a->getDstState() == dstState ) res.append(a);
   return res;
 }
 
@@ -132,7 +132,7 @@ QList<Transition*> State::getTransitionsFrom(State* srcState)
 {
   QList<Transition *> res;
   for ( auto a : transitions ) 
-    if ( a->srcState() == srcState ) res.append(a);
+    if ( a->getSrcState() == srcState ) res.append(a);
   return res;
 }
 
@@ -140,7 +140,7 @@ QList<Transition*> State::getTransitionsOut()
 {
   QList<Transition *> res;
   for ( auto a : transitions ) 
-    if ( a->srcState() == this ) res.append(a);
+    if ( a->getSrcState() == this ) res.append(a);
   return res;
 }
 
@@ -148,7 +148,7 @@ QList<Transition*> State::getTransitionsIn()
 {
   QList<Transition *> res;
   for ( auto a : transitions ) 
-    if ( a->dstState() == this ) res.append(a);
+    if ( a->getDstState() == this ) res.append(a);
   return res;
 }
 

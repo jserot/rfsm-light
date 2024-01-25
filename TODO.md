@@ -1,5 +1,6 @@
 * GUI
-- separate fields for entering guards and actions
+- fix bug when changing src/dst state when editing a transition
+- when deleting an initial state, the phantom init state is not deleted
 - add sized ints
 - Allow attachement of priorities to transitions
 - Draw state boxes with round corners

@@ -32,24 +32,24 @@ public:
     enum { Type = UserType + 4 };
 
     Transition(State *srcState, State *dstState,
-               QString event, QString guards, QString actions,
+               QString event, QStringList guards, QStringList actions,
                State::Location location, QGraphicsItem *parent=0);
 
     int type() const override { return Type; }
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
-    State *srcState() const { return mySrcState; }
-    State *dstState() const { return myDstState; }
-    QString getEvent() const { return myEvent; }
-    QString getGuard() const { return myGuard; }
-    QString getActions() const { return myActions; }
+    State *getSrcState() const { return srcState; }
+    State *getDstState() const { return dstState; }
+    QString getEvent() const { return event; }
+    QStringList getGuards() const { return guards; }
+    QStringList getActions() const { return actions; }
     QString getLabel();
-    void setSrcState(State *s) { mySrcState = s; }
-    void setDstState(State *s) { myDstState = s; }
-    void setEvent(QString s) { myEvent = s; }
-    void setGuard(QString s) { myGuard = s; }
-    void setActions(QString s) { myActions = s; }
-    State::Location location() const { return myLocation; }
+    void setSrcState(State *s) { srcState = s; }
+    void setDstState(State *s) { dstState = s; }
+    void setEvent(QString s) { event = s; }
+    void setGuards(QStringList ss) { guards = ss; }
+    void setActions(QStringList ss) { actions = ss; }
+    State::Location getLocation() const { return location; }
     bool isInitial();
 
     void updatePosition();
@@ -64,14 +64,14 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
 
 private:
-    State *mySrcState;
-    State *myDstState;
-    QString myEvent;
-    QString myGuard;
-    QString myActions;
+    State *srcState;
+    State *dstState;
+    QString event;
+    QStringList guards;
+    QStringList actions;
     QPolygonF arrowHead;
-    QGraphicsSimpleTextItem *myLabel;
-    State::Location myLocation;
+    QGraphicsSimpleTextItem *label;
+    State::Location location;
 };
 
 #endif // TRANSITION_H

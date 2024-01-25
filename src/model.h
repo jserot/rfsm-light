@@ -115,7 +115,7 @@ private:
     State* addState(QPointF pos, QString id, QString attr);
     State* addPseudoState(QPointF pos);
     Transition* addTransition(State* srcState, State* dstState,
-                              QString event, QString guard, QString actions,
+                              QString event, QStringList guards, QStringList actions,
                               State::Location location);
 
     QString name;
