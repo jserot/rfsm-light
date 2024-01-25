@@ -1,4 +1,5 @@
 * GUI
+- dynamic fields (as actions and guards) for state valuations
 - fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints
 - Allow attachement of priorities to transitions

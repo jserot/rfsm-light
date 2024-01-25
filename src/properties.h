@@ -35,6 +35,9 @@ class PropertiesPanel : public QFrame
 {
     Q_OBJECT
 
+  static const QRegularExpression re_uid;
+  static const QRegularExpression re_lid;
+
   private:
     MainWindow* main_window;
 
@@ -90,9 +93,8 @@ class PropertiesPanel : public QFrame
     QSize sizeHint() const { return QSize(275,300); }; 
 
   public slots:
-    void setModelName(const QString& name);
-
-    void setStateName(const QString& name);
+    void setModelName();
+    void setStateName();
     void setStateAttr(const QString& name);
 
     void addInput();

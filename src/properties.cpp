@@ -34,7 +34,11 @@
 #include <stdexcept>
 #include <QMessageBox>
 #include <QStandardItemModel>
+#include <QRegularExpression>
 #include <QDebug>
+
+const QRegularExpression PropertiesPanel::re_uid("[A-Z][A-Za-z0-9_]*");
+const QRegularExpression PropertiesPanel::re_lid("[a-z][a-z0-9_]*");
 
 PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 {
@@ -64,8 +68,8 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 
     this->setLayout(layout);
 
-    connect(model_name_field, &QLineEdit::textEdited, this, &PropertiesPanel::setModelName);
-    connect(state_name_field, &QLineEdit::textEdited, this, &PropertiesPanel::setStateName);
+    connect(model_name_field, &QLineEdit::editingFinished, this, &PropertiesPanel::setModelName);
+    connect(state_name_field, &QLineEdit::editingFinished, this, &PropertiesPanel::setStateName);
     connect(state_attr_field, &QLineEdit::textEdited, this, &PropertiesPanel::setStateAttr);
     connect(transition_start_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionSrcState);
     connect(transition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionDstState);
@@ -97,14 +101,16 @@ void PropertiesPanel::createNamePanel()
     //name_panel->setMinimumWidth(200);
     //QLabel* nameLabel = new QLabel("Name");
     model_name_field = new QLineEdit();
+    // Note: no validation installed here
     // layout->addWidget(nameLabel);
     layout->addWidget(model_name_field);
     name_panel->setLayout(layout);
 }
 
-void PropertiesPanel::setModelName(const QString& name)
+void PropertiesPanel::setModelName()
 {
   Model* model = main_window->getModel();
+  QString name = model_name_field->text();
   model->setName(name.trimmed());
   main_window->setUnsavedChanges(true);
 }
@@ -225,7 +231,9 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
   rowLayout->addWidget(io_name);
   widgetToIo.insert((QWidget*)io_name, io);
   widgetToLayout.insert((QWidget*)io_name, rowLayout);
-  connect(io_name, &QLineEdit::textChanged, this, &PropertiesPanel::editIoName);
+  QRegularExpressionValidator *io_name_validator = new QRegularExpressionValidator(re_lid);
+  io_name->setValidator(io_name_validator);
+  connect(io_name, &QLineEdit::editingFinished, this, &PropertiesPanel::editIoName);
 
   QComboBox *io_type = new QComboBox();
   io_type->addItem("event", QVariant(Iov::TyEvent));
@@ -434,6 +442,8 @@ void PropertiesPanel::createStatePanel()
 
     QLabel* nameLabel = new QLabel("Name");
     state_name_field = new QLineEdit();
+    QRegularExpressionValidator *state_name_validator = new QRegularExpressionValidator(re_uid);
+    state_name_field->setValidator(state_name_validator);
     statePanelLayout->addWidget(nameLabel, 0, 0, 1, 1);
     statePanelLayout->addWidget(state_name_field, 0, 1, 1, 1);
 
@@ -445,13 +455,14 @@ void PropertiesPanel::createStatePanel()
     state_panel->setLayout(statePanelLayout);
 }
 
-void PropertiesPanel::setStateName(const QString& name)
+void PropertiesPanel::setStateName()
 {
     State* state = qgraphicsitem_cast<State*>(selected_item);
     if(state != nullptr) {
-        state->setId(name);
-        main_window->getModel()->update();
-        main_window->setUnsavedChanges(true);
+      QString name = state_name_field->text();
+      state->setId(name);
+      main_window->getModel()->update();
+      main_window->setUnsavedChanges(true);
     }
 }
 
