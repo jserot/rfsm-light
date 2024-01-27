@@ -31,6 +31,8 @@ HEADERS += include/nlohmann_json.h \
            state.h  \
            iov.h  \
            model.h  \
+           commandExec.h \
+           syntaxChecker.h \
            properties.h \
            stimulus.h \
            stimuli.h \
@@ -47,6 +49,8 @@ SOURCES += transition.cpp \
            state.cpp \
            iov.cpp  \
            model.cpp \
+           commandExec.cpp \
+           syntaxChecker.cpp \
            properties.cpp \
            stimulus.cpp \
            stimuli.cpp \

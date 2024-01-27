@@ -18,11 +18,9 @@
 
 #include <QMainWindow>
 #include <QFileInfo>
-#include <QProcess>
 #include <QFrame>
 #include <QStatusBar>
 
-class Model;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -42,6 +40,9 @@ class QActionGroup;
 class ImageViewer;
 class CompilerPaths;
 class CompilerOptions;
+class Model;
+class CommandExec;
+class SyntaxChecker;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -89,8 +90,6 @@ private slots:
     void setCompilerPaths();
     void setCompilerOptions();
     void setCodeFont();
-    void readProcStdout();
-    void readProcStderr();
     void updateCursor();
     void resetCursor();
 
@@ -121,6 +120,8 @@ private:
     CompilerPaths *compilerPaths;
     CompilerOptions *compilerOptions;
     QStatusBar *statusBar;
+    CommandExec *executor;
+    SyntaxChecker *syntaxChecker;
 
     QAction *newDiagramAction;
     QAction *openFileAction;
@@ -196,15 +197,18 @@ private:
     static const double maxScaleFactor;
     static QStringList guiOnlyOpts;
 
-    QProcess proc; 
     QString compileMsgs;
     QString compileErrors;
 
     void logMessage(QString msg);
 
 public:
-   Model* getModel() const { return model; }
-    void setUnsavedChanges(bool unsaved_changes = true);
+  CompilerPaths *getCompilerPaths() const { return compilerPaths; }
+  CompilerOptions *getCompilerOptions() const { return compilerOptions; }
+  Model* getModel() const { return model; }
+  CommandExec *getExecutor() { return executor; }
+  SyntaxChecker *getSyntaxChecker() { return syntaxChecker; }
+  void setUnsavedChanges(bool unsaved_changes = true);
 
 };
 

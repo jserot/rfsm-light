@@ -1,9 +1,7 @@
 (executable
- (name parse)
- (flags (-w -37))
+ (name rscheck)
  (link_flags (-linkall))
- (preprocess (pps ppx_deriving.show))
- (modes byte))
+ (modes byte native))
 
 (ocamllex
   (modules lexer))

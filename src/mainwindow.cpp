@@ -21,6 +21,8 @@
 #endif
 #include "compilerPaths.h"
 #include "compilerOptions.h"
+#include "commandExec.h"
+#include "syntaxChecker.h"
 #include "debug.h"
 
 #include <QtWidgets>
@@ -68,6 +70,17 @@ MainWindow::MainWindow()
     connect(model, SIGNAL(mouseEnter()), this, SLOT(updateCursor()));
     connect(model, SIGNAL(mouseLeave()), this, SLOT(resetCursor()));
 
+    QString appDir = QApplication::applicationDirPath();
+    qDebug() << "APPDIR=" << appDir;
+    compilerPaths = new CompilerPaths(appDir + "/rfsm-light.ini", this);
+    compilerOptions = new CompilerOptions(appDir + "/options_spec.txt", this);
+    initDir = compilerPaths->getPath("INITDIR");
+
+    executor = new CommandExec();
+
+    QString syntaxCheckerPgm = getCompilerPaths()->getPath("SYNTAXCHECKER");
+    syntaxChecker = new SyntaxChecker(executor, syntaxCheckerPgm);
+
     properties_panel = new PropertiesPanel(this); // Warning: the model must be created before 
     properties_panel->setMinimumWidth(280);
     properties_panel->setMaximumWidth(360);
@@ -108,15 +121,6 @@ MainWindow::MainWindow()
     codeFont.setFixedPitch(true);
     codeFont.setPointSize(11);
 
-    QString appDir = QApplication::applicationDirPath();
-    qDebug() << "APPDIR=" << appDir;
-    compilerPaths = new CompilerPaths(appDir + "/rfsm-light.ini", this);
-    compilerOptions = new CompilerOptions(appDir + "/options_spec.txt", this);
-    initDir = compilerPaths->getPath("INITDIR");
-
-    connect(&proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readProcStdout()));
-    connect(&proc, SIGNAL(readyReadStandardError()), this, SLOT(readProcStderr()));
-    
     unsaved_changes = false;
     updateActions();
 
@@ -476,25 +480,6 @@ void MainWindow::openFile()
     setUnsavedChanges(false);
 }
 
-// Interface to the external syntax verifier
-// DEPRECATED in v 1.3.0
-
-// bool MainWindow::checkSyntax(bool withStimuli)
-// {
-//   save();
-//   QFileInfo fi(currentFileName);
-//   QString wDir = fi.absolutePath();
-//   QString compiler = compilerPaths->getPath("SYNTAXCHECKER");
-//   if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmlint"; // Last chance..
-//   QStringList args = { currentFileName };
-//   if ( withStimuli == false ) args.append("-no_stimuli"); 
-//   compileErrors.clear();
-//   bool ok = executeCmd(wDir, compiler, args, true);
-//   qDebug() << "syntax checking result is " << ok << " (" << compileErrors << ")";
-//   if ( ! ok ) QMessageBox::warning(this, "", compileErrors);
-//   return ok;
-// }
-
 bool MainWindow::checkSyntax(bool withStimuli)
 {
   return model ? model->check_model(withStimuli) : true;
@@ -681,8 +666,9 @@ void MainWindow::customView(QString toolName, QStringList args, QString wDir)
      return;
      }
   QStringList genOpts = compilerOptions->getOptions("general");
-  bool sync = genOpts.contains("-sync_externals");
-  if ( ! executeCmd(wDir, cmd, args, sync ) ) {
+  // bool sync = genOpts.contains("-sync_externals");
+  // if ( ! executeCmd(wDir, cmd, args, sync ) ) {
+  if ( executor->execute(wDir, cmd, args) ) {
      QMessageBox::warning(this, "", "Failed to launch external program " + toolName);
      //addResultTab(fname);
      }
@@ -706,12 +692,13 @@ QStringList MainWindow::compile(QString target, QString wDir, QString sFname, QS
   // Clean target directory
   // removeFiles(wDir + "/" + targetDir, eraseFirst);
   compileErrors.clear();
-  if ( executeCmd(wDir, compiler, args << "-gui" << sFname, true) )
+  if ( executor->execute(wDir, compiler, args << "-gui" << sFname) )
     return getOutputFiles(target, wDir);
   else {
     QMessageBox::warning(this, "", "Error when compiling model\n" + compileErrors);
     return QStringList();
     }
+   return QStringList();
 }
 
 QStringList MainWindow::getOutputFiles(QString target, QString wDir)
@@ -802,63 +789,13 @@ bool MainWindow::dotTransform(QFileInfo f, QString wDir)
   //QString opts = ""; // getOption("-dot_options");
   QString wdir = f.canonicalPath();
   QStringList args = { "-Tgif",  "-o", dstFile, srcFile };
-  if ( executeCmd(wDir, dotProgram, args, true) )
+  if ( executor->execute(wDir, dotProgram, args) )
     return true;
   else {
     //QMessageBox::warning(this, "", "Cannot run DOT program : command " + cmd.toString() + " failed");
     QMessageBox::warning(this, "", "Failed to run DOT program");
     return false;
     }
-}
-
-// External command execution
-
-bool MainWindow::executeCmd(QString wDir, QString cmd, QStringList args, bool sync)
-{
-  qDebug() << "executeCmd: wDir=" << wDir << " cmd=" << cmd << " args=" << args;
-  proc.setWorkingDirectory(wDir);
-  proc.start(cmd,args);
-  if ( proc.error() == QProcess::FailedToStart ) {
-#if QT_VERSION >= 0x060000
-    qDebug() << "Command failed to start" << Qt::endl;
-#else
-    qDebug() << "Command failed to start" << endl;
-#endif
-    return false;
-    }
-  if ( sync ) {
-    qDebug() << "executeCmd: sync process launched. Waiting for termination";
-    bool r = proc.waitForFinished(); 
-    QProcess::ExitStatus s = proc.exitStatus();
-    int o = proc.exitCode();
-    qDebug() << "executeCmd: exit status=" << s;
-    qDebug() << "executeCmd: exit code=" << o;
-    qDebug() << "executeCmd: stderr=" << compileErrors;
-    proc.kill();
-    proc.close();
-    proc.terminate();
-    return r && s == QProcess::NormalExit && o == 0;
-    }
-  else { 
-    qDebug() << "executeCmd: async process launched";
-    return true;
-    }
-}
-
-void MainWindow::readProcStdout()
-{
-  proc.setReadChannel(QProcess::StandardOutput);
-  while (proc.canReadLine ()) {
-    compileMsgs += QString(proc.readLine());
-      // QString r = QString(proc.readLine()).remove('\n').remove ('\r');
-      }
-}
-
-void MainWindow::readProcStderr()
-{
-  proc.setReadChannel ( QProcess::StandardError );
-  while (proc.canReadLine ()) 
-    compileErrors += QString(proc.readLine());
 }
 
 // VIEW operations 

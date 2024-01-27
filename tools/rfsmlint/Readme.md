@@ -1,3 +1,0 @@
-RfsmLight model syntax checker
-
-No longer used since version 1.3.0. Kept only in case...

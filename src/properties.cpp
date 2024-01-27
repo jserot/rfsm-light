@@ -16,6 +16,7 @@
 #include "transition.h"
 #include "model.h"
 #include "stimuli.h"
+#include "compilerPaths.h"
 
 #include <QComboBox>
 #include <QFrame>
@@ -36,6 +37,7 @@
 #include <QStandardItemModel>
 #include <QRegularExpression>
 #include <QDebug>
+#include "syntaxChecker.h"
 
 const QRegularExpression PropertiesPanel::re_uid("[A-Z][A-Za-z0-9_]*");
 const QRegularExpression PropertiesPanel::re_lid("[a-z][a-z0-9_]*");
@@ -79,6 +81,14 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     connect(transition_event_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionEvent);
 #endif
 
+    state_name_validator = new QRegularExpressionValidator(re_uid);
+    io_name_validator = new QRegularExpressionValidator(re_lid);
+    assert(main_window);
+    assert(main_window->getCompilerPaths());
+    QString syntaxChecker = main_window->getCompilerPaths()->getPath("SYNTAXCHECKER");
+    CommandExec* executor = main_window->getExecutor();
+    assert(executor);
+
     name_panel->show();
     show_io_panels();
     state_panel->hide();
@@ -101,6 +111,7 @@ void PropertiesPanel::createNamePanel()
     //name_panel->setMinimumWidth(200);
     //QLabel* nameLabel = new QLabel("Name");
     model_name_field = new QLineEdit();
+    model_name_field->setPlaceholderText("Model name");
     // Note: no validation installed here
     // layout->addWidget(nameLabel);
     layout->addWidget(model_name_field);
@@ -225,13 +236,13 @@ void PropertiesPanel::_addIo(Model* model, Iov* io)
 
   QLineEdit *io_name = new QLineEdit();
   io_name->setMinimumSize(80,io_name->minimumHeight());
+  io_name->setPlaceholderText("IO name");
   io_name->setFrame(true);
   io_name->setText(io->name);
   io_name->setCursorPosition(0);
   rowLayout->addWidget(io_name);
   widgetToIo.insert((QWidget*)io_name, io);
   widgetToLayout.insert((QWidget*)io_name, rowLayout);
-  QRegularExpressionValidator *io_name_validator = new QRegularExpressionValidator(re_lid);
   io_name->setValidator(io_name_validator);
   connect(io_name, &QLineEdit::editingFinished, this, &PropertiesPanel::editIoName);
 
@@ -442,6 +453,7 @@ void PropertiesPanel::createStatePanel()
 
     QLabel* nameLabel = new QLabel("Name");
     state_name_field = new QLineEdit();
+    state_name_field->setPlaceholderText("State identifier");
     QRegularExpressionValidator *state_name_validator = new QRegularExpressionValidator(re_uid);
     state_name_field->setValidator(state_name_validator);
     statePanelLayout->addWidget(nameLabel, 0, 0, 1, 1);
@@ -449,6 +461,7 @@ void PropertiesPanel::createStatePanel()
 
     QLabel* attrLabel = new QLabel("Output valuations");
     state_attr_field = new QLineEdit();
+    state_attr_field->setPlaceholderText("<output>=<expr>");
     statePanelLayout->addWidget(attrLabel, 1, 0, 1, 1);
     statePanelLayout->addWidget(state_attr_field, 1, 1, 1, 1);
 
@@ -531,10 +544,8 @@ void PropertiesPanel::setTransitionDstState(int index)  // TODO: factorize with 
   main_window->setUnsavedChanges(true);
 }
 
-void PropertiesPanel::setTransitionEvent()
+void PropertiesPanel::_setTransitionEvent(QComboBox* selector, Transition* transition)
 {
-  QComboBox* selector = qobject_cast<QComboBox*>(sender());
-  Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
   Q_ASSERT(selector);
   Q_ASSERT(transition);
   QString event = selector->currentText();
@@ -542,6 +553,13 @@ void PropertiesPanel::setTransitionEvent()
   transition->setEvent(event);
   main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::setTransitionEvent()
+{
+  QComboBox* selector = qobject_cast<QComboBox*>(sender());
+  Transition* transition = qgraphicsitem_cast<Transition*>(selected_item);
+  _setTransitionEvent(selector,transition);
 }
 
 // [Transition Actions] panel
@@ -574,13 +592,13 @@ void PropertiesPanel::_addTransitionAction(QString action)
   QHBoxLayout *rowLayout = new QHBoxLayout(transition_actions_panel);
   rowLayout->setObjectName("actionRowLayout");
   QLineEdit *action_field = new QLineEdit();
+  action_field->setPlaceholderText("<output or variable> := <expr>");
   action_field->setMinimumSize(80,action_field->minimumHeight());
   action_field->setFrame(true);
   action_field->setText(action);
   action_field->setCursorPosition(0);
   rowLayout->addWidget(action_field);
-  // TODO: validate text field 
-  connect(action_field, &QLineEdit::textChanged, this, &PropertiesPanel::editTransitionAction);
+  connect(action_field, &QLineEdit::editingFinished, this, &PropertiesPanel::updateTransitionActions);
 
   QPushButton *action_delete = new QPushButton();
   action_delete->setIcon(QIcon(":/images/delete.png"));
@@ -589,15 +607,24 @@ void PropertiesPanel::_addTransitionAction(QString action)
   transition_actions_layout->insertLayout(-1,rowLayout);
 }
 
-void PropertiesPanel::editTransitionAction() // SLOT
+void PropertiesPanel::updateTransitionActions() // SLOT
 {
   QStringList actions;
+  SyntaxChecker* syntaxChecker = main_window->getSyntaxChecker();
   for ( int i=1; i<transition_actions_layout->count(); i++ ) {
     QHBoxLayout *row_layout = static_cast<QHBoxLayout*>(transition_actions_layout->itemAt(i));
     QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-    actions << ledit->text().trimmed();
+    assert(ledit);
+    QString action = ledit->text().trimmed();
+    if ( syntaxChecker->check_action(action) )
+      actions << action;
+    else {
+      // ledit->clear();
+      QMessageBox::warning( this, "Error", "Invalid action: \"" + action + "\"");
+      return;
+      }
     }
-  qDebug () << "Actions=" << actions;
+  qDebug () << "** Updating transition with actions=" << actions;
   setTransitionActions(actions);
   main_window->setUnsavedChanges(true);
 }
@@ -617,7 +644,7 @@ void PropertiesPanel::removeTransitionAction() // SLOT
   qDebug() << "Deleting action #" << row;
   delete_action_row(row_layout);
   transition_actions_layout->takeAt(row);
-  editTransitionAction();
+  updateTransitionActions();
   main_window->setUnsavedChanges(true);
 }
 
@@ -682,13 +709,13 @@ void PropertiesPanel::_addTransitionGuard(QString guard)
   QHBoxLayout *rowLayout = new QHBoxLayout(transition_guards_panel);
   rowLayout->setObjectName("guardRowLayout");
   QLineEdit *guard_field = new QLineEdit();
+  guard_field->setPlaceholderText("Boolean expression");
   guard_field->setMinimumSize(80,guard_field->minimumHeight());
   guard_field->setFrame(true);
   guard_field->setText(guard);
   guard_field->setCursorPosition(0);
   rowLayout->addWidget(guard_field);
-  // TODO: validate text field 
-  connect(guard_field, &QLineEdit::textChanged, this, &PropertiesPanel::editTransitionGuard);
+  connect(guard_field, &QLineEdit::editingFinished, this, &PropertiesPanel::updateTransitionGuards);
 
   QPushButton *guard_delete = new QPushButton();
   guard_delete->setIcon(QIcon(":/images/delete.png"));
@@ -697,23 +724,32 @@ void PropertiesPanel::_addTransitionGuard(QString guard)
   transition_guards_layout->insertLayout(-1,rowLayout);
 }
 
-void PropertiesPanel::editTransitionGuard() // SLOT
+void PropertiesPanel::updateTransitionGuards() // SLOT
 {
+  SyntaxChecker* syntaxChecker = main_window->getSyntaxChecker();
+  assert(syntaxChecker);
   QStringList guards;
   for ( int i=1; i<transition_guards_layout->count(); i++ ) {
     QHBoxLayout *row_layout = static_cast<QHBoxLayout*>(transition_guards_layout->itemAt(i));
     assert(row_layout);
     QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
     assert(ledit);
-    guards << ledit->text().trimmed();
+    QString guard = ledit->text().trimmed();
+    if ( syntaxChecker->check_guard(guard) )
+      guards << guard;
+    else {
+      // ledit->clear();
+      QMessageBox::warning( this, "Error", "Invalid guard: \"" + guard + "\"");
+      return;
+      }
     }
   if ( guards.length() >= 2 ) {
     for ( int i = 0; i<guards.length(); i++ ) {
       QString guard = guards.at(i);
       guards.replace(i, "(" + guard + ")");
-      }
     }
-  qDebug () << "Guards=" << guards;
+  }
+  qDebug () << "** Updating transition with guards=" << guards;
   setTransitionGuards(guards);
   main_window->setUnsavedChanges(true);
 }
@@ -733,7 +769,7 @@ void PropertiesPanel::removeTransitionGuard() // SLOT
   qDebug() << "Deleting guard #" << row;
   delete_guard_row(row_layout);
   transition_guards_layout->takeAt(row);
-  editTransitionGuard();
+  updateTransitionGuards();
   main_window->setUnsavedChanges(true);
 }
 
@@ -811,10 +847,16 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
     hide_io_panels();
 
     Q_ASSERT(transition);
-    bool isInitial = transition->isInitial();
-    qDebug() << "Transition" << transition->toString() << "(" << isInitial << ")" << " selected";
     Model* model = main_window->getModel();
     Q_ASSERT(model);
+    QStringList inpEvents = model->getInpEvents();
+    if ( inpEvents.isEmpty() ) {
+      QMessageBox::warning( this, "Error", "No input event available to trigger this transition.\nPlease define one.");
+      show_io_panels();
+      return;
+      }
+    bool isInitial = transition->isInitial();
+    qDebug() << "Transition" << transition->toString() << "(" << isInitial << ")" << " selected";
     show_transition_base_panel(isInitial);
     if ( isInitial ) transition_guards_panel->hide();
     else transition_guards_panel->show();
@@ -843,16 +885,14 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
             transition_end_state_field->setCurrentIndex(transition_end_state_field->count()-1);
           }
         }
-      QStringList inpEvents = model->getInpEvents();
-      // A RETABLIR !!!!!!!!
-      // if ( inpEvents.isEmpty() )
-      //   QMessageBox::warning( this, "Error", "No input event available to trigger this transition");
       transition_event_field->clear();
       for ( auto ev: inpEvents ) 
         transition_event_field->addItem(ev, QVariant(ev));
       QString event = transition->getEvent();
-      if ( event == "" ) 
+      if ( event == "" ) {
         transition_event_field->setCurrentIndex(0);
+        _setTransitionEvent(transition_event_field,transition);
+        }
       else {
         if ( inpEvents.contains(event) ) 
           transition_event_field->setCurrentText(event);

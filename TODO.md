@@ -1,7 +1,9 @@
 * GUI
+- add context (inp,outps,vars) to guard and action validation 
 - dynamic fields (as actions and guards) for state valuations
 - fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints
+- add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions
 - VHDL and SystemC syntax highlighters
 - Allow multi-FSM models (use SCC-based partitionning of the graph)
@@ -12,9 +14,8 @@
 * BUILD
 
 * TOOLS
-- pre-check guard and action syntax before sending to compiler (the location reported by
-the compiler is too vague in case of syntax error in this case). I.o.w. re-vive `rfsmlint`, but in 
-a simplified form (limited to expressions and assignations)
+- automatically derive the `rscheck` parsers from those specified in the `rfsm` language ...
+- ... OR: rely on a full-fledged checker (with type checking !) integrated within the next `rfsm` distro (2.1)
 
 * DOC
 - document restrictions compared to the full RFSM language

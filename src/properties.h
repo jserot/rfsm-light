@@ -106,11 +106,12 @@ class PropertiesPanel : public QFrame
     void editIoName();
     void editIoType();
     void editIoStim();
-    void editTransitionGuard();
-    void editTransitionAction();
+    void updateTransitionGuards();
+    void updateTransitionActions();
 
     void setTransitionSrcState(int index);
     void setTransitionDstState(int index);
+    void _setTransitionEvent(QComboBox* selector, Transition* transition);
     void setTransitionEvent();
     void setTransitionGuards(QStringList& guards);
     void setTransitionActions(QStringList& actions);
@@ -156,6 +157,9 @@ class PropertiesPanel : public QFrame
     void hide_io_panels();
 
     void show_transition_base_panel(bool isInitial);
+
+    QRegularExpressionValidator *state_name_validator;
+    QRegularExpressionValidator *io_name_validator;
 };
 
 #endif

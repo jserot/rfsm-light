@@ -160,7 +160,6 @@ void Model::addTransition(Transition *transition)
   if ( dstState != srcState ) dstState->addTransition(transition); // Do _not_ add self-transitions twice !
   transition->setZValue(-1000.0);
   addItem(transition);
-  qDebug()<<"** added transition " << srcState->getId() << "->" << dstState->getId() << "[" << transition->getGuards() << "/" << transition->getActions() << "]";
 }
 
 Transition* Model::addTransition(State* srcState,

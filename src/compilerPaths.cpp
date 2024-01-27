@@ -19,6 +19,12 @@
 
 #include "compilerPaths.h"
 
+static const QString defaultCompiler = "rfsmc";  // Fall-back, default values
+static const QString defaultDotProgram = "dot";
+static const QString defaultDotViewer = "graphviz";
+static const QString defaultVcdViewer = "gtkwave";
+static const QString defaultSyntaxChecker = "rscheck";
+
 CompilerPaths::CompilerPaths(QString iniFile, QWidget *parent) : parent(parent)
 {
   setDefaults();
@@ -33,10 +39,11 @@ CompilerPaths::CompilerPaths(QString iniFile, QWidget *parent) : parent(parent)
 void CompilerPaths::setDefaults()
 {
   paths.clear();
-  paths.insert("COMPILER", "rfsmc"); // Default values ...
-  paths.insert("DOTPROGRAM", "dot");
-  paths.insert("DOTVIEWER", "graphviz");
-  paths.insert("VCDVIEWER", "gtkwave");
+  paths.insert("COMPILER", defaultCompiler);
+  paths.insert("DOTPROGRAM", defaultDotProgram);
+  paths.insert("DOTVIEWER", defaultDotViewer);
+  paths.insert("VCDVIEWER", defaultDotViewer);
+  paths.insert("SYNTAXCHECKER", defaultSyntaxChecker);
   paths.insert("INITDIR", "");
 }
 
@@ -56,7 +63,7 @@ void CompilerPaths::readFromFile(QString fname)
       QString key = items.at(0).trimmed();
       QString val = items.at(1).trimmed();
       if ( paths.keys().contains(key) ) {
-        qDebug() << "Path " << key << "<-" << val;
+        // qDebug() << "Path " << key << "<-" << val;
         paths.insert(key, val);
         }
       }
