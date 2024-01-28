@@ -137,11 +137,43 @@ State* Model::getState(QString id)
   return NULL;
 }
 
+QStringList Model::getInputs()
+{
+  QStringList r;
+  for ( const auto io : ios )
+    if ( io->kind == Iov::IoIn ) r.append(io->name);
+  return r;
+}
+
 QStringList Model::getInpEvents()
 {
   QStringList r;
   for ( const auto io : ios )
     if ( io->kind == Iov::IoIn && io->type == Iov::TyEvent ) r.append(io->name);
+  return r;
+}
+
+QStringList Model::getInpNonEvents()
+{
+  QStringList r;
+  for ( const auto io : ios )
+    if ( io->kind == Iov::IoIn && io->type != Iov::TyEvent ) r.append(io->name);
+  return r;
+}
+
+QStringList Model::getOutputs()
+{
+  QStringList r;
+  for ( const auto io : ios )
+    if ( io->kind == Iov::IoOut ) r.append(io->name);
+  return r;
+}
+
+QStringList Model::getVars()
+{
+  QStringList r;
+  for ( const auto io : ios )
+    if ( io->kind == Iov::IoVar ) r.append(io->name);
   return r;
 }
 

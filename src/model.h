@@ -55,7 +55,11 @@ public:
     Iov* addIo(const QString name, const Iov::IoKind kind, const Iov::IoType type, const Stimulus stim);
     void removeIo(Iov *io);
     QList<Iov*> getIos() { return ios; };
+    QStringList getInputs();
+    QStringList getOutputs();
+    QStringList getVars();
     QStringList getInpEvents();
+    QStringList getInpNonEvents();
 
     QList<State*> states();
     QList<Transition*> transitions();

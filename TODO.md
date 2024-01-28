@@ -1,5 +1,4 @@
 * GUI
-- add context (inp,outps,vars) to guard and action validation 
 - dynamic fields (as actions and guards) for state valuations
 - fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints

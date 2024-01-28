@@ -19,8 +19,8 @@ class SyntaxChecker
 {
  public:
   SyntaxChecker(CommandExec *executor, QString syntaxChecker);
-  bool check_guard(QString input);
-  bool check_action(QString input);
+  QString check_guard(QStringList inps, QStringList outps, QStringList vars, QString input);
+  QString check_action(QStringList inps, QStringList outps, QStringList vars, QString input);
 private:
   CommandExec *executor;
   QString checker;

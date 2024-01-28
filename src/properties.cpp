@@ -611,16 +611,19 @@ void PropertiesPanel::updateTransitionActions() // SLOT
 {
   QStringList actions;
   SyntaxChecker* syntaxChecker = main_window->getSyntaxChecker();
+  Model *model = main_window->getModel();
+  assert(model);
   for ( int i=1; i<transition_actions_layout->count(); i++ ) {
     QHBoxLayout *row_layout = static_cast<QHBoxLayout*>(transition_actions_layout->itemAt(i));
     QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
     assert(ledit);
     QString action = ledit->text().trimmed();
-    if ( syntaxChecker->check_action(action) )
+    QString msg = syntaxChecker->check_action(model->getInpNonEvents(), model->getOutputs(), model->getVars(), action);
+    if ( msg == "Ok" )
       actions << action;
     else {
       // ledit->clear();
-      QMessageBox::warning( this, "Error", "Invalid action: \"" + action + "\"");
+      QMessageBox::warning(this, "Error", msg);
       return;
       }
     }
@@ -728,6 +731,8 @@ void PropertiesPanel::updateTransitionGuards() // SLOT
 {
   SyntaxChecker* syntaxChecker = main_window->getSyntaxChecker();
   assert(syntaxChecker);
+  Model *model = main_window->getModel();
+  assert(model);
   QStringList guards;
   for ( int i=1; i<transition_guards_layout->count(); i++ ) {
     QHBoxLayout *row_layout = static_cast<QHBoxLayout*>(transition_guards_layout->itemAt(i));
@@ -735,11 +740,12 @@ void PropertiesPanel::updateTransitionGuards() // SLOT
     QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
     assert(ledit);
     QString guard = ledit->text().trimmed();
-    if ( syntaxChecker->check_guard(guard) )
+    QString msg = syntaxChecker->check_guard(model->getInpNonEvents(), model->getOutputs(), model->getVars(), guard);
+    if ( msg == "Ok" )
       guards << guard;
     else {
       // ledit->clear();
-      QMessageBox::warning( this, "Error", "Invalid guard: \"" + guard + "\"");
+      QMessageBox::warning(this, "Error", msg);
       return;
       }
     }
