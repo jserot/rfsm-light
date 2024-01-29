@@ -1,6 +1,5 @@
 * GUI
 - factorize out code for StateValuations, TransitionActions and TransitionGuards panels
-- when a transition defn is rejected because no input event is available, delete it from the scene
 - fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints
 - add type_coercions in accepted expressions

@@ -978,7 +978,11 @@ void PropertiesPanel::setSelectedItem(Transition* transition)
     Q_ASSERT(model);
     QStringList inpEvents = model->getInpEvents();
     if ( inpEvents.isEmpty() ) {
-      QMessageBox::warning( this, "Error", "No input event available to trigger this transition.\nPlease define one.");
+      QMessageBox::warning( this, "Error", "No input event available to trigger this transition. Please define one.");
+      // TODO: delete the concerned transition !
+      qDebug() << "Deleting transition" << transition->toString();
+      model->removeItem(transition);
+      delete transition;
       show_io_panels();
       return;
       }
