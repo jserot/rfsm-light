@@ -24,7 +24,7 @@ QColor State::selectedColor = Qt::darkCyan;
 QColor State::unSelectedColor = Qt::black;
 QString State::initPseudoId = "_init";
 
-void State::init(QString id, QString attr, QSize sz)
+void State::init(QString id, QStringList attrs, QSize sz)
 {
     QPainterPath path;
     myPolygon << QPointF(-sz.width()/2, -sz.height()/2) // P1-----P2
@@ -37,20 +37,20 @@ void State::init(QString id, QString attr, QSize sz)
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     this->id = id;
-    this->attr = attr;
+    this->attrs = attrs;
 }
 
-State::State(QString id, QString attr, QGraphicsItem *parent)
+State::State(QString id, QStringList attrs, QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
-  init(id, attr, boxSize);
+  init(id, attrs, boxSize);
   isPseudoState = false;
 }
 
-State::State(QString id, QString attr, QPointF pos, QGraphicsItem *parent)
+State::State(QString id, QStringList attrs, QPointF pos, QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
-  init(id, attr, boxSize);
+  init(id, attrs, boxSize);
   isPseudoState = false;
   setPos(pos);
 }
@@ -58,14 +58,14 @@ State::State(QString id, QString attr, QPointF pos, QGraphicsItem *parent)
 State::State(QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
-  init(initPseudoId, attr, dskSize);
+  init(initPseudoId, attrs, dskSize);
   isPseudoState = true;
 }
 
 State::State(QPointF pos, QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
-  init(initPseudoId, attr, dskSize);
+  init(initPseudoId, attrs, dskSize);
   isPseudoState = true;
   setPos(pos);
 }
@@ -111,7 +111,8 @@ void State::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
     painter->setBrush(boxBackground);
     painter->drawPolygon(myPolygon);
     QString lbl = id;
-    if ( attr != "" ) lbl += "\n" + attr;
+    foreach ( QString attr, attrs)
+      lbl += "\n" + attr;
     painter->drawText(boundingRect(), Qt::AlignHCenter | Qt::AlignVCenter, lbl);
     }
 }

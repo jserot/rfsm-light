@@ -55,9 +55,11 @@ class PropertiesPanel : public QFrame
     QStringListModel* ios_model;
     QListView* ios_view;
 
-    QGroupBox* state_panel;
+    QGroupBox* state_base_panel;
     QLineEdit* state_name_field;
-    QLineEdit* state_attr_field;
+
+    QGroupBox* state_valuations_panel;
+    QVBoxLayout* state_valuations_layout;
 
     QGroupBox* transition_base_panel;
     QLabel*    transition_start_state_label;
@@ -95,7 +97,6 @@ class PropertiesPanel : public QFrame
   public slots:
     void setModelName();
     void setStateName();
-    void setStateAttr(const QString& name);
 
     void addInput();
     void addOutput();
@@ -103,11 +104,13 @@ class PropertiesPanel : public QFrame
     void removeIo();
     void removeTransitionGuard();
     void removeTransitionAction();
+    void removeStateValuation();
     void editIoName();
     void editIoType();
     void editIoStim();
     void updateTransitionGuards();
     void updateTransitionActions();
+    void updateStateValuations();
 
     void setTransitionSrcState(int index);
     void setTransitionDstState(int index);
@@ -115,6 +118,7 @@ class PropertiesPanel : public QFrame
     void setTransitionEvent();
     void setTransitionGuards(QStringList& guards);
     void setTransitionActions(QStringList& actions);
+    void setStateValuations(QStringList& valuations);
 
     void update();
     void clear();
@@ -127,13 +131,15 @@ class PropertiesPanel : public QFrame
     void createInputPanel();
     void createOutputPanel();
     void createVarPanel();
-    void createStatePanel();
+    void createStateBasePanel();
+    void createStateValuationsPanel();
     void createTransitionPanels();
     void createTransitionBasePanel();
     void createTransitionGuardsPanel();
     void createTransitionActionsPanel();
     void clearTransitionActionsPanel(QVBoxLayout *layout);
     void clearTransitionGuardsPanel(QVBoxLayout *layout);
+    void clearStateValuationsPanel(QVBoxLayout *layout);
 
     void fillModelName();
     void fillIos();
@@ -142,6 +148,7 @@ class PropertiesPanel : public QFrame
     void delete_io_row(QLayout *layout);
     void delete_action_row(QHBoxLayout *row_layout);
     void delete_guard_row(QHBoxLayout *row_layout);
+    void delete_valuation_row(QHBoxLayout *row_layout);
     void _removeIo(Model* model, Iov* io);
 
     QGroupBox* io_panel_of(Iov::IoKind kind);
@@ -152,9 +159,13 @@ class PropertiesPanel : public QFrame
     void addTransitionGuard();
     void _addTransitionAction(QString action);
     void addTransitionAction();
+    void _addStateValuation(QString action);
+    void addStateValuation();
 
     void show_io_panels();
     void hide_io_panels();
+    void show_state_panels();
+    void hide_state_panels();
 
     void show_transition_base_panel(bool isInitial);
 

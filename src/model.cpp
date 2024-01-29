@@ -73,9 +73,9 @@ void Model::addState(State *state)
   addItem(state);
 }
 
-State* Model::addState(QPointF pos, QString id, QString attr)
+State* Model::addState(QPointF pos, QString id, QStringList attrs)
 {
-  State* state = new State(id, attr);
+  State* state = new State(id, attrs);
   state->setPos(pos);
   addState(state);
   return state;
@@ -233,7 +233,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsItem *item;
     switch ( mode ) {
         case InsertState:
-          state = addState(mouseEvent->scenePos(), statePrefix + QString::number(stateCounter++), "");
+            state = addState(mouseEvent->scenePos(), statePrefix + QString::number(stateCounter++), QStringList());
             emit stateInserted(state);
             emit fsmModified();
             break;
@@ -464,7 +464,7 @@ void Model::readFromFile(QString fname)
     QMap<std::string, State*> states;
     for ( const auto & json_state : json.at("states") ) {
       std::string id = json_state.at("id");
-      std::string attr = json_state.at("attr");
+      std::string attrs = json_state.at("attr");
       qreal x =  json_state.at("x");
       qreal y =  json_state.at("y");
       State* state;
@@ -472,7 +472,7 @@ void Model::readFromFile(QString fname)
         state = new State(QPointF(x,y));
       else 
         state = new State(QString::fromStdString(id),
-                          QString::fromStdString(attr),
+                          QString::fromStdString(attrs).split(","),
                           QPointF(x,y));
       states.insert(id, state);
       }   
@@ -561,7 +561,7 @@ void Model::saveToFile(QString fname)
         State* state = qgraphicsitem_cast<State *>(item);
         nlohmann::json json;
         json["id"] = state->getId().toStdString(); 
-        json["attr"] = state->getAttr().toStdString(); 
+        json["attr"] = state->getAttrs().join(",").toStdString(); // Use "," as separator for compatibility with existing .fsd files
         json["x"] = state->scenePos().x(); 
         json["y"] = state->scenePos().y(); 
         json_res["states"].push_back(json);
@@ -641,8 +641,10 @@ void Model::exportDot(QString fname, QStringList options)
           os << "_ios -> " << id << " [style=\"invis\"]\n";
         }
       else {
-        QString attr = state->getAttr();
-        os << id << " [label=\"" << id << "\\n" << attr <<  "\", shape=circle, style=solid]\n";
+        QStringList attrs = state->getAttrs();
+        QString lbl = id;
+        foreach ( QString attr, attrs) lbl += "\n" + attr;
+        os << id << " [label=\"" << lbl <<  "\", shape=circle, style=solid]\n";
         }
       }
     }
@@ -689,8 +691,9 @@ QString stringOfState(State *s)
 {
   QString ss;
   ss = s->getId();
-  if ( s->getAttr() != "" ) 
-    ss += " where " + s->getAttr();
+  QStringList attrs = s->getAttrs();
+  if ( ! attrs.isEmpty() ) 
+    ss += " where " + attrs.join(" and ");
   return ss;
 }
 

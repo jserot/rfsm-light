@@ -50,7 +50,8 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     createInputPanel();
     createOutputPanel();
     createVarPanel();
-    createStatePanel();
+    createStateBasePanel();
+    createStateValuationsPanel();
     createTransitionBasePanel();
     createTransitionGuardsPanel();
     createTransitionActionsPanel();
@@ -63,7 +64,8 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     layout->addWidget(inp_panel);
     layout->addWidget(outp_panel);
     layout->addWidget(var_panel);
-    layout->addWidget(state_panel);
+    layout->addWidget(state_base_panel);
+    layout->addWidget(state_valuations_panel);
     layout->addWidget(transition_base_panel);
     layout->addWidget(transition_guards_panel);
     layout->addWidget(transition_actions_panel);
@@ -72,7 +74,6 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 
     connect(model_name_field, &QLineEdit::editingFinished, this, &PropertiesPanel::setModelName);
     connect(state_name_field, &QLineEdit::editingFinished, this, &PropertiesPanel::setStateName);
-    connect(state_attr_field, &QLineEdit::textEdited, this, &PropertiesPanel::setStateAttr);
     connect(transition_start_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionSrcState);
     connect(transition_end_state_field, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::setTransitionDstState);
 #if QT_VERSION >= 0x060000
@@ -91,7 +92,7 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 
     name_panel->show();
     show_io_panels();
-    state_panel->hide();
+    hide_state_panels();
     transition_base_panel->hide();
     transition_guards_panel->hide();
     transition_actions_panel->hide();
@@ -442,13 +443,13 @@ void PropertiesPanel::clearIos()
     }
 }
 
-// [State] panel
+// [State] base panel
 
-void PropertiesPanel::createStatePanel()
+void PropertiesPanel::createStateBasePanel()
 {
-    state_panel = new QGroupBox("State properties");
+    state_base_panel = new QGroupBox("State");
     QGridLayout* statePanelLayout = new QGridLayout();
-    state_panel->setMaximumHeight(100);
+    state_base_panel->setMaximumHeight(100);
     //state_panel->setMinimumWidth(200);
 
     QLabel* nameLabel = new QLabel("Name");
@@ -459,13 +460,13 @@ void PropertiesPanel::createStatePanel()
     statePanelLayout->addWidget(nameLabel, 0, 0, 1, 1);
     statePanelLayout->addWidget(state_name_field, 0, 1, 1, 1);
 
-    QLabel* attrLabel = new QLabel("Output valuations");
-    state_attr_field = new QLineEdit();
-    state_attr_field->setPlaceholderText("<output>=<expr>");
-    statePanelLayout->addWidget(attrLabel, 1, 0, 1, 1);
-    statePanelLayout->addWidget(state_attr_field, 1, 1, 1, 1);
+    // QLabel* attrLabel = new QLabel("Output valuations");
+    // state_attr_field = new QLineEdit();
+    // state_attr_field->setPlaceholderText("<output>=<expr>");
+    // statePanelLayout->addWidget(attrLabel, 1, 0, 1, 1);
+    // statePanelLayout->addWidget(state_attr_field, 1, 1, 1, 1);
 
-    state_panel->setLayout(statePanelLayout);
+    state_base_panel->setLayout(statePanelLayout);
 }
 
 void PropertiesPanel::setStateName()
@@ -479,14 +480,131 @@ void PropertiesPanel::setStateName()
     }
 }
 
-void PropertiesPanel::setStateAttr(const QString& attr)
+// [State Valuations] panel
+// Note: again, this is largely redundant with the code in the [Transition Actions] and [Transition Guards] panels
+// TODO: factorize this !
+
+void PropertiesPanel::createStateValuationsPanel()
 {
-    State* state = qgraphicsitem_cast<State*>(selected_item);
-    if(state != nullptr) {
-        state->setAttr(attr);
-        main_window->getModel()->update();
-        main_window->setUnsavedChanges(true);
+  QGroupBox *panel = new QGroupBox("State valuations");
+  //panel->setMaximumHeight(200);
+  //panel->setMinimumWidth(200);
+  QVBoxLayout *layout = new QVBoxLayout();
+  layout->setSpacing(4);
+  layout->setContentsMargins(11, 11, 11, 11);
+  QHBoxLayout *rowLayout = new QHBoxLayout();
+  QPushButton* add_button = new QPushButton("Add");
+  rowLayout->addWidget(add_button);
+  layout->addLayout(rowLayout);
+  panel->setLayout(layout);
+  state_valuations_panel = panel;
+  state_valuations_layout = layout;
+  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addStateValuation);
+}
+
+void PropertiesPanel::addStateValuation()
+{
+  _addStateValuation("");
+}
+
+void PropertiesPanel::_addStateValuation(QString valuation)
+{
+  QHBoxLayout *rowLayout = new QHBoxLayout(state_valuations_panel);
+  rowLayout->setObjectName("valuationRowLayout");
+  QLineEdit *valuation_field = new QLineEdit();
+  valuation_field->setPlaceholderText("<output> = <value>");
+  valuation_field->setMinimumSize(80,valuation_field->minimumHeight());
+  valuation_field->setFrame(true);
+  valuation_field->setText(valuation);
+  valuation_field->setCursorPosition(0);
+  rowLayout->addWidget(valuation_field);
+  connect(valuation_field, &QLineEdit::editingFinished, this, &PropertiesPanel::updateStateValuations);
+
+  QPushButton *valuation_delete = new QPushButton();
+  valuation_delete->setIcon(QIcon(":/images/delete.png"));
+  rowLayout->addWidget(valuation_delete);
+  connect(valuation_delete, &QPushButton::clicked, this, &PropertiesPanel::removeStateValuation);
+  state_valuations_layout->insertLayout(-1,rowLayout);
+}
+
+void PropertiesPanel::updateStateValuations() // SLOT
+{
+  QStringList valuations;
+  //SyntaxChecker* syntaxChecker = main_window->getSyntaxChecker();
+  Model *model = main_window->getModel();
+  assert(model);
+  for ( int i=1; i<state_valuations_layout->count(); i++ ) {
+    QHBoxLayout *row_layout = static_cast<QHBoxLayout*>(state_valuations_layout->itemAt(i));
+    QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+    assert(ledit);
+    QString valuation = ledit->text().trimmed();
+    // QString msg = syntaxChecker->check_valuation(model->getInpNonEvents(), model->getOutputs(), model->getVars(), valuation);
+    valuations << valuation;
     }
+  qDebug () << "** Updating state with valuations=" << valuations;
+  setStateValuations(valuations);
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::removeStateValuation() // SLOT
+{
+  QPushButton* button = qobject_cast<QPushButton*>(sender());
+  QHBoxLayout *row_layout = NULL;
+  // Retrieve the row to delete in [state_valuations_layout] 
+  int row;
+  int nb_rows = state_valuations_layout->count();
+  for ( row=1; row<nb_rows; row++ ) {
+    row_layout = static_cast<QHBoxLayout*>(state_valuations_layout->itemAt(row));
+    if ( button == qobject_cast<QPushButton*>(row_layout->itemAt(1)->widget()) ) break;
+    }
+  assert(row >= 1 && row <nb_rows && row_layout );
+  qDebug() << "Deleting valuation #" << row;
+  delete_valuation_row(row_layout);
+  state_valuations_layout->takeAt(row);
+  updateStateValuations();
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::delete_valuation_row(QHBoxLayout *row_layout)
+{
+  QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+  assert(ledit);
+  QPushButton *button = qobject_cast<QPushButton*>(row_layout->itemAt(1)->widget());
+  assert(button);
+  delete ledit;
+  delete button;
+}
+
+void PropertiesPanel::clearStateValuationsPanel(QVBoxLayout *layout)
+{
+  QHBoxLayout *row_layout; 
+  qDebug() << "Clearing state valuations panel";
+  while ( layout->count() > 1 ) { // Do not delete the [Add] button !
+    row_layout = static_cast<QHBoxLayout*>(layout->itemAt(1));
+    delete_valuation_row(row_layout);
+    layout->takeAt(1);
+  }
+}
+
+void PropertiesPanel::setStateValuations(QStringList& valuations)
+{
+  State* state = qgraphicsitem_cast<State*>(selected_item);
+  if ( state == nullptr ) return;
+  state->setAttrs(valuations);
+  main_window->getModel()->update();
+  main_window->setUnsavedChanges(true);
+}
+
+void PropertiesPanel::show_state_panels()
+{
+    state_base_panel->show();
+    state_valuations_panel->show();
+}
+
+void PropertiesPanel::hide_state_panels()
+{
+    state_base_panel->hide();
+    state_valuations_panel->hide();
 }
 
 // [Transition] base panel (common to standard and initial transitions)
@@ -815,7 +933,7 @@ void PropertiesPanel::unselectItem()
 {
     qDebug() << "Unselect item";
     selected_item = nullptr;
-    state_panel->hide();
+    hide_state_panels();
     transition_base_panel->hide();
     transition_actions_panel->hide();
     transition_guards_panel->hide();
@@ -830,10 +948,13 @@ void PropertiesPanel::setSelectedItem(State* state)
     transition_guards_panel->hide();
     if ( ! state->isPseudo() ) {
       selected_item = state;
-      hide_io_panels();
-      state_panel->show();
       state_name_field->setText(state->getId());
-      state_attr_field->setText(state->getAttr());
+      clearStateValuationsPanel(state_valuations_layout);
+      foreach ( QString valuation, state->getAttrs() ) {
+        _addStateValuation(valuation);
+        }
+      hide_io_panels();
+      show_state_panels();
       }
 }
 
@@ -849,7 +970,7 @@ void PropertiesPanel::show_transition_base_panel(bool isInitial)
 void PropertiesPanel::setSelectedItem(Transition* transition)
 {
     selected_item = transition;
-    state_panel->hide();
+    hide_state_panels();
     hide_io_panels();
 
     Q_ASSERT(transition);
@@ -929,7 +1050,7 @@ void PropertiesPanel::clear()
   qDebug() << "Clearing properties panel";
   selected_item = nullptr;
 
-  state_panel->hide();
+  hide_state_panels();
   transition_base_panel->hide();
   transition_guards_panel->hide();
   transition_actions_panel->hide();

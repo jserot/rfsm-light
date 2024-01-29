@@ -116,7 +116,7 @@ protected:
 
 private:
     bool isItemChange(int type);
-    State* addState(QPointF pos, QString id, QString attr);
+    State* addState(QPointF pos, QString id, QStringList attrs);
     State* addPseudoState(QPointF pos);
     Transition* addTransition(State* srcState, State* dstState,
                               QString event, QStringList guards, QStringList actions,

@@ -36,8 +36,8 @@ public:
     enum { Type = UserType + 15 };
     enum Location { None=0, North=1, South=2, East=3, West=4 }; // for looping transitions;
 
-    State(QString id, QString attr, QGraphicsItem *parent = 0);
-    State(QString id, QString attr, QPointF pos, QGraphicsItem *parent = 0);
+    State(QString id, QStringList attrs, QGraphicsItem *parent = 0);
+    State(QString id, QStringList attrs, QPointF pos, QGraphicsItem *parent = 0);
     State(QGraphicsItem *parent = 0); // For initial pseudo-states
     State(QPointF pos, QGraphicsItem *parent = 0); 
 
@@ -48,8 +48,8 @@ public:
     int type() const override { return Type;}
     QString getId() const { return id; }
     void setId(QString id) { this->id = id; }
-    QString getAttr() const { return attr; }
-    void setAttr(QString attr) { this->attr = attr; }
+    QStringList getAttrs() const { return attrs; }
+    void setAttrs(QStringList attrs) { this->attrs = attrs; }
     QList<Transition *> getTransitionsTo(State *dstState);
     QList<Transition *> getTransitionsFrom(State *srcState);
     QList<Transition *> getTransitionsOut();
@@ -62,7 +62,7 @@ public:
     static QString initPseudoId;
 
 protected:
-    void init(QString id, QString attr, QSize sz);
+    void init(QString id, QStringList attrs, QSize sz);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
 
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
@@ -73,7 +73,7 @@ protected:
 
 private:
     QString id;
-    QString attr;
+    QStringList attrs;
     QPolygonF myPolygon;
     QList<Transition *> transitions;
     bool isPseudoState;
