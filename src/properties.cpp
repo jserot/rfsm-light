@@ -17,6 +17,7 @@
 #include "model.h"
 #include "stimuli.h"
 #include "compilerPaths.h"
+#include "stateValuationsPanel.h"
 
 #include <QComboBox>
 #include <QFrame>
@@ -460,12 +461,6 @@ void PropertiesPanel::createStateBasePanel()
     statePanelLayout->addWidget(nameLabel, 0, 0, 1, 1);
     statePanelLayout->addWidget(state_name_field, 0, 1, 1, 1);
 
-    // QLabel* attrLabel = new QLabel("Output valuations");
-    // state_attr_field = new QLineEdit();
-    // state_attr_field->setPlaceholderText("<output>=<expr>");
-    // statePanelLayout->addWidget(attrLabel, 1, 0, 1, 1);
-    // statePanelLayout->addWidget(state_attr_field, 1, 1, 1, 1);
-
     state_base_panel->setLayout(statePanelLayout);
 }
 
@@ -481,118 +476,24 @@ void PropertiesPanel::setStateName()
 }
 
 // [State Valuations] panel
-// Note: again, this is largely redundant with the code in the [Transition Actions] and [Transition Guards] panels
-// TODO: factorize this !
+// TODO: make this a modal dialog
 
 void PropertiesPanel::createStateValuationsPanel()
 {
-  QGroupBox *panel = new QGroupBox("State valuations");
-  //panel->setMaximumHeight(200);
-  //panel->setMinimumWidth(200);
-  QVBoxLayout *layout = new QVBoxLayout();
-  layout->setSpacing(4);
-  layout->setContentsMargins(11, 11, 11, 11);
-  QHBoxLayout *rowLayout = new QHBoxLayout();
-  QPushButton* add_button = new QPushButton("Add");
-  rowLayout->addWidget(add_button);
-  layout->addLayout(rowLayout);
-  panel->setLayout(layout);
-  state_valuations_panel = panel;
-  state_valuations_layout = layout;
-  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addStateValuation);
-}
-
-void PropertiesPanel::addStateValuation()
-{
-  _addStateValuation("");
-}
-
-void PropertiesPanel::_addStateValuation(QString valuation)
-{
-  QHBoxLayout *rowLayout = new QHBoxLayout(state_valuations_panel);
-  rowLayout->setObjectName("valuationRowLayout");
-  QLineEdit *valuation_field = new QLineEdit();
-  valuation_field->setPlaceholderText("<output> = <value>");
-  valuation_field->setMinimumSize(80,valuation_field->minimumHeight());
-  valuation_field->setFrame(true);
-  valuation_field->setText(valuation);
-  valuation_field->setCursorPosition(0);
-  rowLayout->addWidget(valuation_field);
-  connect(valuation_field, &QLineEdit::editingFinished, this, &PropertiesPanel::updateStateValuations);
-
-  QPushButton *valuation_delete = new QPushButton();
-  valuation_delete->setIcon(QIcon(":/images/delete.png"));
-  rowLayout->addWidget(valuation_delete);
-  connect(valuation_delete, &QPushButton::clicked, this, &PropertiesPanel::removeStateValuation);
-  state_valuations_layout->insertLayout(-1,rowLayout);
-}
-
-void PropertiesPanel::updateStateValuations() // SLOT
-{
-  QStringList valuations;
-  //SyntaxChecker* syntaxChecker = main_window->getSyntaxChecker();
-  Model *model = main_window->getModel();
-  assert(model);
-  for ( int i=1; i<state_valuations_layout->count(); i++ ) {
-    QHBoxLayout *row_layout = static_cast<QHBoxLayout*>(state_valuations_layout->itemAt(i));
-    QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-    assert(ledit);
-    QString valuation = ledit->text().trimmed();
-    // QString msg = syntaxChecker->check_valuation(model->getInpNonEvents(), model->getOutputs(), model->getVars(), valuation);
-    valuations << valuation;
-    }
-  qDebug () << "** Updating state with valuations=" << valuations;
-  setStateValuations(valuations);
-  main_window->setUnsavedChanges(true);
-}
-
-void PropertiesPanel::removeStateValuation() // SLOT
-{
-  QPushButton* button = qobject_cast<QPushButton*>(sender());
-  QHBoxLayout *row_layout = NULL;
-  // Retrieve the row to delete in [state_valuations_layout] 
-  int row;
-  int nb_rows = state_valuations_layout->count();
-  for ( row=1; row<nb_rows; row++ ) {
-    row_layout = static_cast<QHBoxLayout*>(state_valuations_layout->itemAt(row));
-    if ( button == qobject_cast<QPushButton*>(row_layout->itemAt(1)->widget()) ) break;
-    }
-  assert(row >= 1 && row <nb_rows && row_layout );
-  qDebug() << "Deleting valuation #" << row;
-  delete_valuation_row(row_layout);
-  state_valuations_layout->takeAt(row);
-  updateStateValuations();
-  main_window->setUnsavedChanges(true);
-}
-
-void PropertiesPanel::delete_valuation_row(QHBoxLayout *row_layout)
-{
-  QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-  assert(ledit);
-  QPushButton *button = qobject_cast<QPushButton*>(row_layout->itemAt(1)->widget());
-  assert(button);
-  delete ledit;
-  delete button;
-}
-
-void PropertiesPanel::clearStateValuationsPanel(QVBoxLayout *layout)
-{
-  QHBoxLayout *row_layout; 
-  qDebug() << "Clearing state valuations panel";
-  while ( layout->count() > 1 ) { // Do not delete the [Add] button !
-    row_layout = static_cast<QHBoxLayout*>(layout->itemAt(1));
-    delete_valuation_row(row_layout);
-    layout->takeAt(1);
-  }
+  state_valuations_panel = new StateValuationsPanel("State valuations");
+  connect(state_valuations_panel, SIGNAL(editingDone(QStringList&)), this, SLOT(setStateValuations(QStringList&)));
+  connect(model_name_field, &QLineEdit::editingFinished, this, &PropertiesPanel::setModelName);
 }
 
 void PropertiesPanel::setStateValuations(QStringList& valuations)
 {
+  qDebug() << "Properties: setStateValuations" << valuations;
   State* state = qgraphicsitem_cast<State*>(selected_item);
   if ( state == nullptr ) return;
   state->setAttrs(valuations);
   main_window->getModel()->update();
   main_window->setUnsavedChanges(true);
+  hide_state_panels();
 }
 
 void PropertiesPanel::show_state_panels()
@@ -681,6 +582,7 @@ void PropertiesPanel::setTransitionEvent()
 }
 
 // [Transition Actions] panel
+// TODO : use a subclass of DynamicPanel (as StateValuationsPanel)
 
 void PropertiesPanel::createTransitionActionsPanel()
 {
@@ -800,7 +702,7 @@ void PropertiesPanel::setTransitionActions(QStringList& actions)
 }
 
 // [Transition guards] panel 
-// Note: this is largely redundant with the [Transition actions] section ...
+// TODO : use a subclass of DynamicPanel (as StateValuationsPanel)
 
 void PropertiesPanel::createTransitionGuardsPanel()
 {
@@ -949,10 +851,8 @@ void PropertiesPanel::setSelectedItem(State* state)
     if ( ! state->isPseudo() ) {
       selected_item = state;
       state_name_field->setText(state->getId());
-      clearStateValuationsPanel(state_valuations_layout);
-      foreach ( QString valuation, state->getAttrs() ) {
-        _addStateValuation(valuation);
-        }
+      QStringList valuations = state->getAttrs();
+      state_valuations_panel->init(valuations);
       hide_io_panels();
       show_state_panels();
       }

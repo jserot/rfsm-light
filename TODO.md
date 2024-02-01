@@ -1,5 +1,6 @@
 * GUI
 - factorize out code for StateValuations, TransitionActions and TransitionGuards panels
+- show state\_valuations and transition\_{actions,guards} as pop-up panels instead of sub-panels in the properties area
 - fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints
 - add type_coercions in accepted expressions

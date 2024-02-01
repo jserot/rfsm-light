@@ -30,6 +30,7 @@ class MainWindow;
 class State;
 class Transition;
 class Model;
+class StateValuationsPanel;
 
 class PropertiesPanel : public QFrame
 {
@@ -58,7 +59,7 @@ class PropertiesPanel : public QFrame
     QGroupBox* state_base_panel;
     QLineEdit* state_name_field;
 
-    QGroupBox* state_valuations_panel;
+    StateValuationsPanel* state_valuations_panel;
     QVBoxLayout* state_valuations_layout;
 
     QGroupBox* transition_base_panel;
@@ -104,13 +105,13 @@ class PropertiesPanel : public QFrame
     void removeIo();
     void removeTransitionGuard();
     void removeTransitionAction();
-    void removeStateValuation();
+  //void removeStateValuation();
     void editIoName();
     void editIoType();
     void editIoStim();
     void updateTransitionGuards();
     void updateTransitionActions();
-    void updateStateValuations();
+  // void updateStateValuations();
 
     void setTransitionSrcState(int index);
     void setTransitionDstState(int index);
@@ -139,7 +140,7 @@ class PropertiesPanel : public QFrame
     void createTransitionActionsPanel();
     void clearTransitionActionsPanel(QVBoxLayout *layout);
     void clearTransitionGuardsPanel(QVBoxLayout *layout);
-    void clearStateValuationsPanel(QVBoxLayout *layout);
+  //void clearStateValuationsPanel(QVBoxLayout *layout);
 
     void fillModelName();
     void fillIos();
@@ -159,7 +160,7 @@ class PropertiesPanel : public QFrame
     void addTransitionGuard();
     void _addTransitionAction(QString action);
     void addTransitionAction();
-    void _addStateValuation(QString action);
+  //void _addStateValuation(QString action);
     void addStateValuation();
 
     void show_io_panels();
