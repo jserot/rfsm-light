@@ -17,7 +17,6 @@
 #include "model.h"
 #include "stimuli.h"
 #include "compilerPaths.h"
-#include "stateValuationsPanel.h"
 
 #include <QComboBox>
 #include <QFrame>
@@ -52,7 +51,6 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     createOutputPanel();
     createVarPanel();
     createStateBasePanel();
-    createStateValuationsPanel();
     createTransitionBasePanel();
     createTransitionGuardsPanel();
     createTransitionActionsPanel();
@@ -66,7 +64,6 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     layout->addWidget(outp_panel);
     layout->addWidget(var_panel);
     layout->addWidget(state_base_panel);
-    layout->addWidget(state_valuations_panel);
     layout->addWidget(transition_base_panel);
     layout->addWidget(transition_guards_panel);
     layout->addWidget(transition_actions_panel);
@@ -93,7 +90,7 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
 
     name_panel->show();
     show_io_panels();
-    hide_state_panels();
+      //hide_state_panels();
     transition_base_panel->hide();
     transition_guards_panel->hide();
     transition_actions_panel->hide();
@@ -475,41 +472,9 @@ void PropertiesPanel::setStateName()
     }
 }
 
-// [State Valuations] panel
-// TODO: make this a modal dialog
-
-void PropertiesPanel::createStateValuationsPanel()
-{
-  state_valuations_panel = new StateValuationsPanel("State valuations");
-  connect(state_valuations_panel, SIGNAL(editingDone(QStringList&)), this, SLOT(setStateValuations(QStringList&)));
-  connect(model_name_field, &QLineEdit::editingFinished, this, &PropertiesPanel::setModelName);
-}
-
-void PropertiesPanel::setStateValuations(QStringList& valuations)
-{
-  qDebug() << "Properties: setStateValuations" << valuations;
-  State* state = qgraphicsitem_cast<State*>(selected_item);
-  if ( state == nullptr ) return;
-  state->setAttrs(valuations);
-  main_window->getModel()->update();
-  main_window->setUnsavedChanges(true);
-  hide_state_panels();
-}
-
-void PropertiesPanel::show_state_panels()
-{
-    state_base_panel->show();
-    state_valuations_panel->show();
-}
-
-void PropertiesPanel::hide_state_panels()
-{
-    state_base_panel->hide();
-    state_valuations_panel->hide();
-}
-
 // [Transition] base panel (common to standard and initial transitions)
 // Note: for initial transitions, the [start_state] and [event] elements will be hidden
+// TODO: use a subclass of DynDialog for this !!
 
 void PropertiesPanel::createTransitionBasePanel()
 {
@@ -582,7 +547,7 @@ void PropertiesPanel::setTransitionEvent()
 }
 
 // [Transition Actions] panel
-// TODO : use a subclass of DynamicPanel (as StateValuationsPanel)
+// TODO: use a subclass of DynDialog for this !!
 
 void PropertiesPanel::createTransitionActionsPanel()
 {
@@ -835,7 +800,7 @@ void PropertiesPanel::unselectItem()
 {
     qDebug() << "Unselect item";
     selected_item = nullptr;
-    hide_state_panels();
+      //hide_state_panels();
     transition_base_panel->hide();
     transition_actions_panel->hide();
     transition_guards_panel->hide();
@@ -844,18 +809,20 @@ void PropertiesPanel::unselectItem()
 
 void PropertiesPanel::setSelectedItem(State* state)
 {
-    qDebug() << "State " << state->getId() << " selected";
-    transition_base_panel->hide();
-    transition_actions_panel->hide();
-    transition_guards_panel->hide();
-    if ( ! state->isPseudo() ) {
-      selected_item = state;
-      state_name_field->setText(state->getId());
-      QStringList valuations = state->getAttrs();
-      state_valuations_panel->init(valuations);
-      hide_io_panels();
-      show_state_panels();
-      }
+  Q_UNUSED(state);
+  // NOW handled by the State valuations panel
+    // qDebug() << "State " << state->getId() << " selected";
+    // transition_base_panel->hide();
+    // transition_actions_panel->hide();
+    // transition_guards_panel->hide();
+    // if ( ! state->isPseudo() ) {
+    //   selected_item = state;
+    //   state_name_field->setText(state->getId());
+    //   QStringList valuations = state->getAttrs();
+    //   hide_io_panels();
+    //   // state_valuations_panel->init(valuations);
+    //     //show_state_panels();
+    //   }
 }
 
 void PropertiesPanel::show_transition_base_panel(bool isInitial)
@@ -870,7 +837,7 @@ void PropertiesPanel::show_transition_base_panel(bool isInitial)
 void PropertiesPanel::setSelectedItem(Transition* transition)
 {
     selected_item = transition;
-    hide_state_panels();
+      //hide_state_panels();
     hide_io_panels();
 
     Q_ASSERT(transition);
@@ -954,7 +921,7 @@ void PropertiesPanel::clear()
   qDebug() << "Clearing properties panel";
   selected_item = nullptr;
 
-  hide_state_panels();
+    //hide_state_panels();
   transition_base_panel->hide();
   transition_guards_panel->hide();
   transition_actions_panel->hide();

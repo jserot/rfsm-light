@@ -24,6 +24,8 @@
 #include "commandExec.h"
 #include "syntaxChecker.h"
 #include "debug.h"
+#include "stimuli.h"
+#include "stateValuationsDialog.h"
 
 #include <QtWidgets>
 #include <QVariant>
@@ -152,7 +154,18 @@ void MainWindow::transitionDeleted(Transition *)
 
 void MainWindow::stateSelected(State *state)
 {
-  properties_panel->setSelectedItem(state);
+  QString id = state->getId();
+  // qDebug() << "** State"<< id << "selected";
+  QStringList valuations = state->getAttrs();
+  QString title = "Valuations for state " + id;
+  StateValuationsDialog* dialog = new StateValuationsDialog(title, &valuations, this);
+  if ( dialog->exec() == QDialog::Accepted ) {
+    qDebug() << "state" << state->getId() << "valuations set to" << valuations;
+    state->setAttrs(valuations);
+    getModel()->update();
+    setUnsavedChanges(true);
+    }
+  delete dialog;
 }
 
 void MainWindow::transitionSelected(Transition *transition)

@@ -119,7 +119,7 @@ class PropertiesPanel : public QFrame
     void setTransitionEvent();
     void setTransitionGuards(QStringList& guards);
     void setTransitionActions(QStringList& actions);
-    void setStateValuations(QStringList& valuations);
+  //void setStateValuations(QStringList& valuations);
 
     void update();
     void clear();
@@ -133,7 +133,7 @@ class PropertiesPanel : public QFrame
     void createOutputPanel();
     void createVarPanel();
     void createStateBasePanel();
-    void createStateValuationsPanel();
+  //void createStateValuationsPanel();
     void createTransitionPanels();
     void createTransitionBasePanel();
     void createTransitionGuardsPanel();
@@ -165,8 +165,8 @@ class PropertiesPanel : public QFrame
 
     void show_io_panels();
     void hide_io_panels();
-    void show_state_panels();
-    void hide_state_panels();
+  //void show_state_panels();
+      //void hide_state_panels();
 
     void show_transition_base_panel(bool isInitial);
 
