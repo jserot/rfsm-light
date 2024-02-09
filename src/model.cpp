@@ -227,17 +227,19 @@ bool Model::event(QEvent *event)
 
 void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (mouseEvent->button() != Qt::LeftButton) return;
     State *state;
     Transition *transition;
     QGraphicsItem *item;
+    Qt::MouseButton buttonPressed = mouseEvent->button();
     switch ( mode ) {
         case InsertState:
-            state = addState(mouseEvent->scenePos(), statePrefix + QString::number(stateCounter++), QStringList());
-            emit stateInserted(state);
-            emit fsmModified();
-            break;
+          if ( buttonPressed != Qt::LeftButton) return;
+          state = addState(mouseEvent->scenePos(), statePrefix + QString::number(stateCounter++), QStringList());
+          emit stateInserted(state);
+          emit fsmModified();
+          break;
         case InsertPseudoState:
+          if ( buttonPressed != Qt::LeftButton) return;
           if ( ! hasPseudoState() ) {
             startState = addPseudoState(mouseEvent->scenePos());
             line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
@@ -250,12 +252,14 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                                  "There's alreay one initial transition !\nDelete it first to add another one");
           break;
         case InsertTransition:
-            line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-            line->setPen(QPen(lineColor, 2));
-            addItem(line);
-            emit fsmModified();
-            break;
+          if ( buttonPressed != Qt::LeftButton) return;
+          line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
+          line->setPen(QPen(lineColor, 2));
+          addItem(line);
+          emit fsmModified();
+          break;
         case InsertLoopTransition:
+          if ( buttonPressed != Qt::LeftButton) return;
           item = itemAt(mouseEvent->scenePos(), QTransform());
           if ( item != NULL && item->type() == State::Type ) {
             state = qgraphicsitem_cast<State *>(item);
@@ -269,6 +273,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             }
             break;
         case DeleteItem:
+          if ( buttonPressed != Qt::LeftButton) return;
           item = itemAt(mouseEvent->scenePos(), QTransform());
           if ( item != NULL ) {
             switch ( item->type() ) {
@@ -310,7 +315,18 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
           if ( item != NULL ) {
             switch ( item->type() ) {
               case State::Type:
-                emit(stateSelected(qgraphicsitem_cast<State *>(item)));
+                switch ( buttonPressed ) {
+                case Qt::LeftButton:
+                  // qDebug() << "Left !";
+                  // emit(stateSelected(qgraphicsitem_cast<State *>(item)));
+                  break;
+                case Qt::RightButton:
+                  // qDebug() << "Right !";
+                  emit(editState(qgraphicsitem_cast<State *>(item)));
+                  break;
+                default:
+                  break;
+                }
                 break;
               case Transition::Type:
                 emit(transitionSelected(qgraphicsitem_cast<Transition *>(item)));

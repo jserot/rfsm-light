@@ -55,6 +55,7 @@ public:
 private slots:
     void stateInserted(State *);
     void stateSelected(State *);
+    void editState(State *);
     void transitionInserted(Transition *);
     void stateDeleted(State *);
     void transitionDeleted(Transition *);
@@ -94,7 +95,6 @@ private slots:
     void resetCursor();
 
 private:
-    void editState(State *);
     void createActions();
     void updateActions();
     void updateViewActions();

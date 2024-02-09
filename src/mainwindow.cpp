@@ -62,10 +62,11 @@ MainWindow::MainWindow()
     model = new Model(this);
     model->setSceneRect(QRectF(0, 0, canvas_width, canvas_height));
     connect(model, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
+    connect(model, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
+    connect(model, SIGNAL(editState(State*)), this, SLOT(editState(State*)));
     connect(model, SIGNAL(stateDeleted(State*)), this, SLOT(stateDeleted(State*)));
     connect(model, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
     connect(model, SIGNAL(transitionDeleted(Transition*)), this, SLOT(transitionDeleted(Transition*)));
-    connect(model, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
     connect(model, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
     connect(model, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
     //connect(model, SIGNAL(modelModified()), this, SLOT(modelModified()));
@@ -139,12 +140,14 @@ void MainWindow::stateInserted(State *state)
 
 void MainWindow::stateSelected(State *state)
 {
-  editState(state);
-  
+  Q_UNUSED(state);
+  qDebug() << "State selected !";
+  // Nothing
 }
 
 void MainWindow::editState(State *state)
 {
+  qDebug() << "Edit state !";
   StateProperties* dialog = new StateProperties(state, this);
   if ( dialog->exec() == QDialog::Accepted ) {
     qDebug() << "state" << state->getId() << "updated !";
