@@ -88,7 +88,7 @@ class PropertiesPanel : public QFrame
     ~PropertiesPanel();
 
     void unselectItem();
-    void setSelectedItem(State* state);
+  // void setSelectedItem(State* state);
     void setSelectedItem(Transition* transition);
 
     void toggleStimuliPanel();                                                    

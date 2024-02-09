@@ -33,8 +33,9 @@ HEADERS += include/nlohmann_json.h \
            model.h  \
            commandExec.h \
            syntaxChecker.h \
-           dynDialog.h \
-           stateValuationsDialog.h \
+           dynamicPanel.h \
+           stateValuations.h \
+           stateProperties.h \
            properties.h \
            stimulus.h \
            stimuli.h \
@@ -53,8 +54,9 @@ SOURCES += transition.cpp \
            model.cpp \
            commandExec.cpp \
            syntaxChecker.cpp \
-           dynDialog.cpp \
-           stateValuationsDialog.cpp \
+           dynamicPanel.cpp \
+           stateValuations.cpp \
+           stateProperties.cpp \
            properties.cpp \
            stimulus.cpp \
            stimuli.cpp \

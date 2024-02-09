@@ -807,10 +807,10 @@ void PropertiesPanel::unselectItem()
     show_io_panels();
 }
 
-void PropertiesPanel::setSelectedItem(State* state)
-{
-  Q_UNUSED(state);
-  // NOW handled by the State valuations panel
+// NOW handled by the State valuations panel
+// void PropertiesPanel::setSelectedItem(State* state)
+// {
+//   Q_UNUSED(state);
     // qDebug() << "State " << state->getId() << " selected";
     // transition_base_panel->hide();
     // transition_actions_panel->hide();
@@ -823,7 +823,7 @@ void PropertiesPanel::setSelectedItem(State* state)
     //   // state_valuations_panel->init(valuations);
     //     //show_state_panels();
     //   }
-}
+// }
 
 void PropertiesPanel::show_transition_base_panel(bool isInitial)
 {

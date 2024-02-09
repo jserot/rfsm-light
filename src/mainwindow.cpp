@@ -25,7 +25,7 @@
 #include "syntaxChecker.h"
 #include "debug.h"
 #include "stimuli.h"
-#include "stateValuationsDialog.h"
+#include "stateProperties.h"
 
 #include <QtWidgets>
 #include <QVariant>
@@ -134,7 +134,24 @@ MainWindow::MainWindow()
 
 void MainWindow::stateInserted(State *state)
 {
-  properties_panel->setSelectedItem(state);
+  editState(state);
+}
+
+void MainWindow::stateSelected(State *state)
+{
+  editState(state);
+  
+}
+
+void MainWindow::editState(State *state)
+{
+  StateProperties* dialog = new StateProperties(state, this);
+  if ( dialog->exec() == QDialog::Accepted ) {
+    qDebug() << "state" << state->getId() << "updated !";
+    getModel()->update();
+    setUnsavedChanges(true);
+    }
+  delete dialog;
 }
 
 void MainWindow::stateDeleted(State *)
@@ -152,21 +169,6 @@ void MainWindow::transitionDeleted(Transition *)
   properties_panel->unselectItem();
 }
 
-void MainWindow::stateSelected(State *state)
-{
-  QString id = state->getId();
-  // qDebug() << "** State"<< id << "selected";
-  QStringList valuations = state->getAttrs();
-  QString title = "Valuations for state " + id;
-  StateValuationsDialog* dialog = new StateValuationsDialog(title, &valuations, this);
-  if ( dialog->exec() == QDialog::Accepted ) {
-    qDebug() << "state" << state->getId() << "valuations set to" << valuations;
-    state->setAttrs(valuations);
-    getModel()->update();
-    setUnsavedChanges(true);
-    }
-  delete dialog;
-}
 
 void MainWindow::transitionSelected(Transition *transition)
 {

@@ -54,10 +54,10 @@ public:
 
 private slots:
     void stateInserted(State *);
+    void stateSelected(State *);
     void transitionInserted(Transition *);
     void stateDeleted(State *);
     void transitionDeleted(Transition *);
-    void stateSelected(State *);
     void transitionSelected(Transition *);
     void nothingSelected();
     void modelModified();
@@ -94,6 +94,7 @@ private slots:
     void resetCursor();
 
 private:
+    void editState(State *);
     void createActions();
     void updateActions();
     void updateViewActions();
