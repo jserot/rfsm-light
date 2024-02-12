@@ -1,6 +1,6 @@
 let usage = "usage: rfsmlint [options] text"
 
-type target = Nothing | CheckExpr | CheckAction
+type target = Nothing | CheckExpr | CheckAction | CheckStateValuation
 let target = ref Nothing
               
 let source_text = ref ""
@@ -10,6 +10,7 @@ let anonymous text = source_text := text
 let options = [
  "-guard", Arg.Unit (fun () -> target := CheckExpr), "check guard expression";
  "-action", Arg.Unit (fun () -> target := CheckAction), "check action";
+ "-sval", Arg.Unit (fun () -> target := CheckStateValuation), "check state valuation";
 ]
 
 let parse p s = 
@@ -17,6 +18,7 @@ let parse p s =
 
 let parse_guard s = parse Parsers.expr1 s 
 let parse_action s = parse Parsers.action1 s 
+let parse_state_valuation s = parse Parsers.state_valuation1 s 
 
 let print_result ok lhs_vars rhs_vars =
   let open Misc in
@@ -38,6 +40,9 @@ let main () =
     | CheckAction ->
       let r, lhs_vars, rhs_vars = parse_action !source_text in
       print_result r lhs_vars rhs_vars;
+    | CheckStateValuation ->
+      let r, lhs_var = parse_state_valuation !source_text in
+      print_result r (StringSet.singleton lhs_var) StringSet.empty;
     exit 0
   with
   | _ ->

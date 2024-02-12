@@ -4,6 +4,7 @@ CHECKER=../_build/default/rscheck.bc
 
 GUARD_TESTS="x x+1 x+y x+y*2-a[z+1]"
 ACTION_TESTS="x:=1 x:=y+1 t[i]:=i+1"
+SVAL_TESTS="x=1 x=1+1"
 
 for e in $GUARD_TESTS
 do
@@ -13,4 +14,9 @@ done
 for a in $ACTION_TESTS
 do
    echo "$a -> $($CHECKER -action $a)"
+done
+
+for a in $SVAL_TESTS
+do
+   echo "$a -> $($CHECKER -sval $a)"
 done

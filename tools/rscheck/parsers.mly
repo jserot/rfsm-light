@@ -54,6 +54,7 @@
 
 %start <expr_parse_result> expr1
 %start <action_parse_result> action1
+%start <state_valuation_parse_result> state_valuation1
 
 %{
 open Misc
@@ -134,3 +135,8 @@ action1:
   | a = action EOF { a }
 action:
   | l = lval COLEQ e = expr { l +++ to_lhs e }
+
+state_valuation1:
+  | v = state_valuation EOF { v }
+state_valuation:
+  | l=LID  EQUAL scalar_const { (true, l) }
