@@ -45,7 +45,7 @@ QString SyntaxChecker::check_guard(QStringList inps, QStringList outps, QStringL
   QStringList lhs_vars, rhs_vars;
   if ( ! check(QStringList("-guard"), guard, lhs_vars, rhs_vars) ) return "Invalid guard: \"" + guard + "\""; 
   foreach ( QString rhs, rhs_vars ) {
-    if ( ! inps.contains(rhs) || ! vars.contains(rhs) )
+    if ( ! inps.contains(rhs) && ! vars.contains(rhs) )
       return "The symbol \"" + rhs + "\" occuring in the guard \"" + guard + "\" is neither an input nor a variable";
     }
   return "Ok";
@@ -56,12 +56,23 @@ QString SyntaxChecker::check_action(QStringList inps, QStringList outps, QString
   QStringList lhs_vars, rhs_vars;
   if ( ! check(QStringList("-action"), action, lhs_vars, rhs_vars) ) return "Invalid action: \"" + action + "\""; 
   foreach ( QString rhs, rhs_vars ) {
-    if ( ! inps.contains(rhs) || ! vars.contains(rhs) )
+    if ( ! inps.contains(rhs) && ! vars.contains(rhs) )
       return "The symbol \"" + rhs + "\" occuring in the action \"" + action + "\" is neither an input nor a variable";
     }
   foreach ( QString lhs, lhs_vars ) {
-    if ( ! outps.contains(lhs) || ! vars.contains(lhs) ) 
+    if ( ! outps.contains(lhs) && ! vars.contains(lhs) ) 
       return "The symbol \"" + lhs + "\" modified in the action \"" + action + "\" is neither an output nor a variable";
+    }
+  return "Ok";
+}
+
+QString SyntaxChecker::check_valuation(QStringList outps, QString valuation)
+{
+  QStringList lhs_vars, rhs_vars;
+  if ( ! check(QStringList("-sval"), valuation, lhs_vars, rhs_vars) ) return "Invalid valuation: \"" + valuation + "\""; 
+  foreach ( QString lhs, lhs_vars ) {
+    if ( ! outps.contains(lhs) ) 
+      return "The symbol \"" + lhs + "\" set in the valuation \"" + valuation + "\" is not an output";
     }
   return "Ok";
 }

@@ -1,50 +1,50 @@
-#include "stateValuations.h"
+#include "transitionGuards.h"
 
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
 
-StateValuations::StateValuations(QString title, QStringList& valuations) : DynamicPanel(title)
+TransitionGuards::TransitionGuards(QString title, QStringList& guards) : DynamicPanel(title)
 {
-  foreach ( QString v, valuations )
+  foreach ( QString v, guards )
     addRow(v);
 }
 
-void StateValuations::addRowFields(QHBoxLayout *row_layout, QString& v)
+void TransitionGuards::addRowFields(QHBoxLayout *row_layout, QString& v)
 {
   int nb_rows = row_layout->count();
-  QString name(QString(tr("valuation #%1").arg(nb_rows)));
+  QString name(QString(tr("guard #%1").arg(nb_rows)));
   QLineEdit *valuation = new QLineEdit();
   valuation->setObjectName(name);
-  valuation->setPlaceholderText("<output>=<value>");
+  valuation->setPlaceholderText("<bool expr>");
   valuation->setMinimumSize(120,valuation->minimumHeight());
   valuation->setFrame(true);
   valuation->setText(v);
   valuation->setCursorPosition(0);
-  connect(valuation, &QLineEdit::editingFinished, this, &StateValuations::rowEdited);
+  connect(valuation, &QLineEdit::editingFinished, this, &TransitionGuards::rowEdited);
   row_layout->addWidget(valuation);
 }
 
-void StateValuations::rowEdited()
+void TransitionGuards::rowEdited()
 {
   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
   qDebug() << ledit->objectName() << "=" << ledit->text();
 }
 
-QStringList StateValuations::retrieve()
+QStringList TransitionGuards::retrieve()
 {
-  QStringList valuations;
+  QStringList guards;
   for ( int i=0; i<layout->count()-1; i++ ) { // Exclude last row, carrying panel buttons
     QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->itemAt(i));
     QLineEdit* ledit = qobject_cast<QLineEdit*>(row->itemAt(0)->widget());
-    QString valuation = ledit->text().trimmed();
-    valuations << valuation;
+    QString guard = ledit->text().trimmed();
+    guards << guard;
     }
-  qDebug () << "StateValuationPanel: valuations=" << valuations;
-  return valuations;
+  qDebug () << "TransitionGuards: guards=" << guards;
+  return guards;
 }
 
-StateValuations::~StateValuations()
+TransitionGuards::~TransitionGuards()
 {
 }

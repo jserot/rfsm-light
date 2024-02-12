@@ -169,6 +169,14 @@ QStringList Model::getOutputs()
   return r;
 }
 
+QStringList Model::getOutpNonEvents()
+{
+  QStringList r;
+  for ( const auto io : ios )
+    if ( io->kind == Iov::IoOut && io->type != Iov::TyEvent ) r.append(io->name);
+  return r;
+}
+
 QStringList Model::getVars()
 {
   QStringList r;
@@ -292,7 +300,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 removeItem(item);
                 delete item;
                 }
-              emit transitionDeleted(transition);
+              //emit transitionDeleted(transition);
               emit fsmModified();
               }
               break;
@@ -301,7 +309,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
               qDebug() << "Deleting state" << state->getId();
               state->removeTransitions();
               removeItem(item);
-              emit stateDeleted(state);
+              // emit stateDeleted(state);
               emit fsmModified();
               delete item;
               break;
@@ -315,29 +323,26 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
           if ( item != NULL ) {
             switch ( item->type() ) {
               case State::Type:
-                switch ( buttonPressed ) {
-                case Qt::LeftButton:
-                  // qDebug() << "Left !";
-                  // emit(stateSelected(qgraphicsitem_cast<State *>(item)));
-                  break;
-                case Qt::RightButton:
-                  // qDebug() << "Right !";
+                if ( buttonPressed == Qt::RightButton ) // Right click
                   emit(editState(qgraphicsitem_cast<State *>(item)));
-                  break;
-                default:
-                  break;
-                }
+                // else
+                  // Nothing. Default behavior
+                  // emit(stateSelected(qgraphicsitem_cast<State *>(item)));
                 break;
               case Transition::Type:
-                emit(transitionSelected(qgraphicsitem_cast<Transition *>(item)));
+                if ( buttonPressed == Qt::RightButton ) // Right click
+                  emit(editTransition(qgraphicsitem_cast<Transition *>(item)));
+                // else
+                  // Nothing. Default behavior
+                  // emit(transitionSelected(qgraphicsitem_cast<State *>(item)));
                 break;
               default:
                 break;
               }
             }
-          else {
-            emit(nothingSelected());
-            }
+          // else {
+          //   emit(nothingSelected());
+          //   }
           QGraphicsScene::mousePressEvent(mouseEvent);
           break;
        }

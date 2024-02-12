@@ -36,6 +36,9 @@ HEADERS += include/nlohmann_json.h \
            dynamicPanel.h \
            stateValuations.h \
            stateProperties.h \
+           transitionGuards.h \
+           transitionActions.h \
+           transitionProperties.h \
            properties.h \
            stimulus.h \
            stimuli.h \
@@ -57,6 +60,9 @@ SOURCES += transition.cpp \
            dynamicPanel.cpp \
            stateValuations.cpp \
            stateProperties.cpp \
+           transitionGuards.cpp \
+           transitionActions.cpp \
+           transitionProperties.cpp \
            properties.cpp \
            stimulus.cpp \
            stimuli.cpp \

@@ -5,13 +5,16 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QRegularExpressionValidator>
+#include <QMessageBox>
 
 #include "state.h"
+#include "model.h"
 #include "stateValuations.h"
+#include "syntaxChecker.h"
 
 const QRegularExpression StateProperties::re_uid("[A-Z][A-Za-z0-9_]*");
 
-StateProperties::StateProperties(State *state, QWidget *parent)
+StateProperties::StateProperties(State *state, Model *model, SyntaxChecker *syntaxChecker, QWidget *parent)
   : QDialog(parent)
 {
   QString id = state->getId();
@@ -36,6 +39,8 @@ StateProperties::StateProperties(State *state, QWidget *parent)
   QHBoxLayout *row_layout2 = new QHBoxLayout();
   QPushButton *cancel_button = new QPushButton("Cancel");
   QPushButton *accept_button = new QPushButton("Done");
+  cancel_button->setDefault(false);
+  accept_button->setDefault(true);
   row_layout2->addWidget(cancel_button);
   row_layout2->addWidget(accept_button);
   layout->addLayout(row_layout2);
@@ -44,7 +49,10 @@ StateProperties::StateProperties(State *state, QWidget *parent)
 
   connect(cancel_button, &QPushButton::clicked, this, &StateProperties::cancel);
   connect(accept_button, &QPushButton::clicked, this, &StateProperties::accept);
+
   this->state = state;
+  this->model = model;
+  this->syntaxChecker = syntaxChecker;
 }
 
 void StateProperties::accept()
@@ -52,8 +60,22 @@ void StateProperties::accept()
   QString id = state_name_field->text();
   state->setId(id);
   QStringList valuations = valuations_panel->retrieve();
-  state->setAttrs(valuations);
-  QDialog::accept();
+  bool ok = true;
+  foreach ( QString valuation, valuations) {
+    qDebug() << "Syntax checking valuation" << valuation << "with outputs=" << model->getOutpNonEvents();
+    QString msg = syntaxChecker->check_valuation(model->getOutpNonEvents(), valuation);
+    if ( msg != "Ok" ) {
+      QMessageBox::warning(this, "Error", msg);
+      ok = false;
+      }
+    }
+  if ( ok ) {
+    state->setAttrs(valuations);
+    QDialog::accept();
+    }
+  else {
+    // Do not accept and leave dialog opened
+  }
 }
 
 void StateProperties::cancel()

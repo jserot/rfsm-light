@@ -4,8 +4,10 @@
 #include <QRegularExpression>
 
 class State;
+class Model;
 class QLineEdit;
 class StateValuations;
+class SyntaxChecker;
 
 class StateProperties : public QDialog
 {
@@ -14,11 +16,14 @@ class StateProperties : public QDialog
   static const QRegularExpression re_uid;
 
 public:
-  StateProperties(State* state, QWidget *parent);
+  StateProperties(State *state, Model *model, SyntaxChecker *syntaxChecker, QWidget *parent);
   ~StateProperties();
 
 private:
   State *state;
+  Model *model;
+  SyntaxChecker *syntaxChecker;
+
   QLineEdit* state_name_field;
   StateValuations *valuations_panel;
     

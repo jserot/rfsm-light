@@ -1,50 +1,50 @@
-#include "stateValuations.h"
+#include "transitionActions.h"
 
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
 
-StateValuations::StateValuations(QString title, QStringList& valuations) : DynamicPanel(title)
+TransitionActions::TransitionActions(QString title, QStringList& actions) : DynamicPanel(title)
 {
-  foreach ( QString v, valuations )
+  foreach ( QString v, actions )
     addRow(v);
 }
 
-void StateValuations::addRowFields(QHBoxLayout *row_layout, QString& v)
+void TransitionActions::addRowFields(QHBoxLayout *row_layout, QString& v)
 {
   int nb_rows = row_layout->count();
-  QString name(QString(tr("valuation #%1").arg(nb_rows)));
+  QString name(QString(tr("action #%1").arg(nb_rows)));
   QLineEdit *valuation = new QLineEdit();
   valuation->setObjectName(name);
-  valuation->setPlaceholderText("<output>=<value>");
+  valuation->setPlaceholderText("<output or variable> := <expr>");
   valuation->setMinimumSize(120,valuation->minimumHeight());
   valuation->setFrame(true);
   valuation->setText(v);
   valuation->setCursorPosition(0);
-  connect(valuation, &QLineEdit::editingFinished, this, &StateValuations::rowEdited);
+  connect(valuation, &QLineEdit::editingFinished, this, &TransitionActions::rowEdited);
   row_layout->addWidget(valuation);
 }
 
-void StateValuations::rowEdited()
+void TransitionActions::rowEdited()
 {
   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
   qDebug() << ledit->objectName() << "=" << ledit->text();
 }
 
-QStringList StateValuations::retrieve()
+QStringList TransitionActions::retrieve()
 {
-  QStringList valuations;
+  QStringList actions;
   for ( int i=0; i<layout->count()-1; i++ ) { // Exclude last row, carrying panel buttons
     QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->itemAt(i));
     QLineEdit* ledit = qobject_cast<QLineEdit*>(row->itemAt(0)->widget());
-    QString valuation = ledit->text().trimmed();
-    valuations << valuation;
+    QString action = ledit->text().trimmed();
+    actions << action;
     }
-  qDebug () << "StateValuationPanel: valuations=" << valuations;
-  return valuations;
+  qDebug () << "TransitionActions: actions=" << actions;
+  return actions;
 }
 
-StateValuations::~StateValuations()
+TransitionActions::~TransitionActions()
 {
 }

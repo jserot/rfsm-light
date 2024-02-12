@@ -18,6 +18,8 @@ DynamicPanel::DynamicPanel(QString title) : QGroupBox(title)
   setLayout(layout);
   connect(add_button, &QPushButton::clicked, this, &DynamicPanel::addNewRow);
   connect(clear_button, &QPushButton::clicked, this, &DynamicPanel::clear);
+  add_button->setDefault(false);
+  clear_button->setDefault(false);
 }
 
 void DynamicPanel::addRow(QString v) {

@@ -1,6 +1,7 @@
 * GUI
-- factorize out code for StateValuations, TransitionActions and TransitionGuards panels
-- show state\_valuations and transition\_{actions,guards} as pop-up panels instead of sub-panels in the properties area
+- handle event notification in actions
+- reject multiple state valuations (ex: `o=1 o=2`) 
+- reject actions when the dst state has a valuation for an output modified by the action (ex: `cond / o:=1 -> S[o=2]`)
 - fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints
 - add type_coercions in accepted expressions

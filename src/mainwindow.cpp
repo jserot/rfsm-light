@@ -26,6 +26,7 @@
 #include "debug.h"
 #include "stimuli.h"
 #include "stateProperties.h"
+#include "transitionProperties.h"
 
 #include <QtWidgets>
 #include <QVariant>
@@ -62,13 +63,14 @@ MainWindow::MainWindow()
     model = new Model(this);
     model->setSceneRect(QRectF(0, 0, canvas_width, canvas_height));
     connect(model, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
-    connect(model, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
     connect(model, SIGNAL(editState(State*)), this, SLOT(editState(State*)));
-    connect(model, SIGNAL(stateDeleted(State*)), this, SLOT(stateDeleted(State*)));
+    //connect(model, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
+    //connect(model, SIGNAL(stateDeleted(State*)), this, SLOT(stateDeleted(State*)));
     connect(model, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
-    connect(model, SIGNAL(transitionDeleted(Transition*)), this, SLOT(transitionDeleted(Transition*)));
-    connect(model, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
-    connect(model, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
+    connect(model, SIGNAL(editTransition(Transition*)), this, SLOT(editTransition(Transition*)));
+    // connect(model, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
+    // connect(model, SIGNAL(transitionDeleted(Transition*)), this, SLOT(transitionDeleted(Transition*)));
+    // connect(model, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
     //connect(model, SIGNAL(modelModified()), this, SLOT(modelModified()));
     connect(model, SIGNAL(mouseEnter()), this, SLOT(updateCursor()));
     connect(model, SIGNAL(mouseLeave()), this, SLOT(resetCursor()));
@@ -138,50 +140,63 @@ void MainWindow::stateInserted(State *state)
   editState(state);
 }
 
-void MainWindow::stateSelected(State *state)
-{
-  Q_UNUSED(state);
-  qDebug() << "State selected !";
-  // Nothing
-}
-
 void MainWindow::editState(State *state)
 {
-  qDebug() << "Edit state !";
-  StateProperties* dialog = new StateProperties(state, this);
+  StateProperties* dialog = new StateProperties(state, model, syntaxChecker, this);
   if ( dialog->exec() == QDialog::Accepted ) {
-    qDebug() << "state" << state->getId() << "updated !";
+    qDebug() << "state" << state->getId() << "updated";
     getModel()->update();
     setUnsavedChanges(true);
     }
   delete dialog;
 }
 
-void MainWindow::stateDeleted(State *)
-{
-  properties_panel->unselectItem();
-}
+// void MainWindow::stateSelected(State *state)
+// {
+// }
+
+
+// void MainWindow::stateDeleted(State *)
+// {
+// }
 
 void MainWindow::transitionInserted(Transition *transition)
 {
-  properties_panel->setSelectedItem(transition);
+  editTransition(transition);
 }
 
-void MainWindow::transitionDeleted(Transition *)
+void MainWindow::editTransition(Transition *transition)
 {
-  properties_panel->unselectItem();
+  // TODO : distinguish init transitions
+  bool isInitial = transition->isInitial();
+  QStringList inpEvents = model->getInpEvents();
+  if ( !isInitial && inpEvents.isEmpty() ) {
+      QMessageBox::warning( this, "Error", "No input event available to trigger this transition. Please define one.");
+      qDebug() << "Deleting transition" << transition->toString();
+      model->removeItem(transition);
+      delete transition;
+      return;
+      }
+  TransitionProperties* dialog = new TransitionProperties(transition,model,isInitial,syntaxChecker,this);
+  if ( dialog->exec() == QDialog::Accepted ) {
+    qDebug() << "Transition" << transition->toString() << "updated";
+    getModel()->update();
+    setUnsavedChanges(true);
+    }
+  delete dialog;
 }
 
+// void MainWindow::transitionDeleted(Transition *)
+// {
+// }
 
-void MainWindow::transitionSelected(Transition *transition)
-{
-  properties_panel->setSelectedItem(transition);
-}
+// void MainWindow::transitionSelected(Transition *transition)
+// {
+// }
 
-void MainWindow::nothingSelected()
-{
-  properties_panel->unselectItem();
-}
+// void MainWindow::nothingSelected()
+// {
+// }
 
 void MainWindow::modelModified()
 {
