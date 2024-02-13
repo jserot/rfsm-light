@@ -15,6 +15,7 @@
 #include "state.h"
 #include "transition.h"
 #include "model.h"
+#include "modelVars.h"
 #include "stimuli.h"
 #include "compilerPaths.h"
 
@@ -41,22 +42,25 @@
 //const QRegularExpression PropertiesPanel::re_uid("[A-Z][A-Za-z0-9_]*");
 const QRegularExpression PropertiesPanel::re_lid("[a-z][a-z0-9_]*");
 
-PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
+PropertiesPanel::PropertiesPanel(Model *model, MainWindow* parent) : QFrame(parent)
 {
     main_window = parent;
 
     createNamePanel();
-    createInputPanel();
-    createOutputPanel();
-    createVarPanel();
+    // createInputPanel();
+    // createOutputPanel();
+    // createVarPanel();
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setAlignment(Qt::AlignTop);
     //layout->setMinimumWidth(200);
 
     layout->addWidget(name_panel);
-    layout->addWidget(inp_panel);
-    layout->addWidget(outp_panel);
+    // layout->addWidget(inp_panel);
+    // layout->addWidget(outp_panel);
+
+    var_panel = new ModelVars("Variables", model);
+     
     layout->addWidget(var_panel);
 
     this->setLayout(layout);
@@ -69,8 +73,8 @@ PropertiesPanel::PropertiesPanel(MainWindow* parent) : QFrame(parent)
     CommandExec* executor = main_window->getExecutor();
     assert(executor);
 
-    name_panel->show();
-    show_io_panels();
+    // name_panel->show();
+    // show_io_panels();
 }
 
 PropertiesPanel::~PropertiesPanel()
@@ -119,305 +123,305 @@ void PropertiesPanel::clearModelName()
 // [IO] Panels
 // TODO : use subclasses of [DynamicPanel] here
 
-QPushButton* PropertiesPanel::createIoPanel(QString title, QGroupBox **io_panel, QVBoxLayout **io_layout)
-{
-  QHBoxLayout *rowLayout;
-  QGroupBox *panel = new QGroupBox(title);
+// QPushButton* PropertiesPanel::createIoPanel(QString title, QGroupBox **io_panel, QVBoxLayout **io_layout)
+// {
+//   QHBoxLayout *rowLayout;
+//   QGroupBox *panel = new QGroupBox(title);
   //panel->setObjectName(title);
   //io_panel->setMaximumHeight(200);
-  //io_panel->setMinimumWidth(200);
-  QVBoxLayout *layout = new QVBoxLayout();
-  layout->setSpacing(4);
-  layout->setContentsMargins(11, 11, 11, 11);
+//   //io_panel->setMinimumWidth(200);
+//   QVBoxLayout *layout = new QVBoxLayout();
+//   layout->setSpacing(4);
+//   layout->setContentsMargins(11, 11, 11, 11);
 
-  rowLayout = new QHBoxLayout();
-  QPushButton* add_button = new QPushButton("Add");
-  rowLayout->addWidget(add_button);
-  layout->addLayout(rowLayout);
-  panel->setLayout(layout);
+//   rowLayout = new QHBoxLayout();
+//   QPushButton* add_button = new QPushButton("Add");
+//   rowLayout->addWidget(add_button);
+//   layout->addLayout(rowLayout);
+//   panel->setLayout(layout);
 
-  *io_panel = panel;
-  *io_layout = layout;
-  return add_button;
-}
+//   *io_panel = panel;
+//   *io_layout = layout;
+//   return add_button;
+// }
 
-void PropertiesPanel::show_io_panels()
-{
-    inp_panel->show();
-    outp_panel->show();
-    var_panel->show();
-}
+// void PropertiesPanel::show_io_panels()
+// {
+//     inp_panel->show();
+//     outp_panel->show();
+//     var_panel->show();
+// }
 
-void PropertiesPanel::hide_io_panels()
-{
-    inp_panel->hide();
-    outp_panel->hide();
-    var_panel->hide();
-}
+// void PropertiesPanel::hide_io_panels()
+// {
+//     inp_panel->hide();
+//     outp_panel->hide();
+//     var_panel->hide();
+// }
 
 
-void PropertiesPanel::createInputPanel()
-{
-  QPushButton* add_button = createIoPanel("Inputs", &inp_panel, &inp_layout);
-  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addInput);
-}
+// void PropertiesPanel::createInputPanel()
+// {
+//   QPushButton* add_button = createIoPanel("Inputs", &inp_panel, &inp_layout);
+//   connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addInput);
+// }
 
-void PropertiesPanel::createOutputPanel()
-{
-  QPushButton* add_button = createIoPanel("Outputs", &outp_panel, &outp_layout);
-  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addOutput);
-}
+// void PropertiesPanel::createOutputPanel()
+// {
+//   QPushButton* add_button = createIoPanel("Outputs", &outp_panel, &outp_layout);
+//   connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addOutput);
+// }
 
-void PropertiesPanel::createVarPanel()
-{
-  QPushButton* add_button = createIoPanel("Variables", &var_panel, &var_layout);
-  connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addVar);
-}
+// void PropertiesPanel::createVarPanel()
+// {
+//   QPushButton* add_button = createIoPanel("Variables", &var_panel, &var_layout);
+//   connect(add_button, &QPushButton::clicked, this, &PropertiesPanel::addVar);
+// }
 
-void enableComboBoxItem(QComboBox* box, int i, bool enabled)
-{
-  QStandardItemModel *model = qobject_cast<QStandardItemModel*>(box->model());
-  Q_ASSERT(model);
-  QStandardItem *item = model->item(i);
-  Q_ASSERT(item);
-  item->setEnabled(enabled);
-}
+// void enableComboBoxItem(QComboBox* box, int i, bool enabled)
+// {
+//   QStandardItemModel *model = qobject_cast<QStandardItemModel*>(box->model());
+//   Q_ASSERT(model);
+//   QStandardItem *item = model->item(i);
+//   Q_ASSERT(item);
+//   item->setEnabled(enabled);
+// }
 
-QGroupBox* PropertiesPanel::io_panel_of(Iov::IoKind kind)
-{
-  switch ( kind ) {
-  case Iov::IoIn: return inp_panel;
-  case Iov::IoOut: return outp_panel;
-  case Iov::IoVar: return var_panel;
-  }
-}
+// QGroupBox* PropertiesPanel::io_panel_of(Iov::IoKind kind)
+// {
+//   switch ( kind ) {
+//   case Iov::IoIn: return inp_panel;
+//   case Iov::IoOut: return outp_panel;
+//   case Iov::IoVar: return var_panel;
+//   }
+// }
 
-QVBoxLayout* PropertiesPanel::io_layout_of(Iov::IoKind kind)
-{
-  switch ( kind ) {
-  case Iov::IoIn: return inp_layout;
-  case Iov::IoOut: return outp_layout;
-  case Iov::IoVar: return var_layout;
-  }
-}
+// QVBoxLayout* PropertiesPanel::io_layout_of(Iov::IoKind kind)
+// {
+//   switch ( kind ) {
+//   case Iov::IoIn: return inp_layout;
+//   case Iov::IoOut: return outp_layout;
+//   case Iov::IoVar: return var_layout;
+//   }
+// }
 
-void PropertiesPanel::_addIo(Model* model, Iov* io)
-{
-  qDebug () << "Adding" << io->kind << io->name << "to panel";
-  Q_ASSERT(model);
-  Q_ASSERT(io);
-  QGroupBox *io_panel = io_panel_of(io->kind);
-  QVBoxLayout *io_layout = io_layout_of(io->kind);
-  QHBoxLayout *rowLayout = new QHBoxLayout(io_panel);
-  rowLayout->setObjectName("ioRowLayout");
+// void PropertiesPanel::_addIo(Model* model, Iov* io)
+// {
+//   qDebug () << "Adding" << io->kind << io->name << "to panel";
+//   Q_ASSERT(model);
+//   Q_ASSERT(io);
+//   QGroupBox *io_panel = io_panel_of(io->kind);
+//   QVBoxLayout *io_layout = io_layout_of(io->kind);
+//   QHBoxLayout *rowLayout = new QHBoxLayout(io_panel);
+//   rowLayout->setObjectName("ioRowLayout");
 
-  QLineEdit *io_name = new QLineEdit();
-  io_name->setMinimumSize(80,io_name->minimumHeight());
-  io_name->setPlaceholderText("IO name");
-  io_name->setFrame(true);
-  io_name->setText(io->name);
-  io_name->setCursorPosition(0);
-  rowLayout->addWidget(io_name);
-  widgetToIo.insert((QWidget*)io_name, io);
-  widgetToLayout.insert((QWidget*)io_name, rowLayout);
-  io_name->setValidator(io_name_validator);
-  connect(io_name, &QLineEdit::editingFinished, this, &PropertiesPanel::editIoName);
+//   QLineEdit *io_name = new QLineEdit();
+//   io_name->setMinimumSize(80,io_name->minimumHeight());
+//   io_name->setPlaceholderText("IO name");
+//   io_name->setFrame(true);
+//   io_name->setText(io->name);
+//   io_name->setCursorPosition(0);
+//   rowLayout->addWidget(io_name);
+//   widgetToIo.insert((QWidget*)io_name, io);
+//   widgetToLayout.insert((QWidget*)io_name, rowLayout);
+//   io_name->setValidator(io_name_validator);
+//   connect(io_name, &QLineEdit::editingFinished, this, &PropertiesPanel::editIoName);
 
-  QComboBox *io_type = new QComboBox();
-  io_type->addItem("event", QVariant(Iov::TyEvent));
-  io_type->addItem("int", QVariant(Iov::TyInt));
-  io_type->addItem("bool", QVariant(Iov::TyBool));
-  io_type->setCurrentIndex(io->type);
-  rowLayout->addWidget(io_type);
-  widgetToIo.insert((QWidget*)io_type, io);
-  widgetToLayout.insert((QWidget*)io_type, rowLayout);
-#if QT_VERSION >= 0x060000
-  connect(io_type, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoType);
-#else
-  connect(io_type, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PropertiesPanel::editIoType);
-#endif
+//   QComboBox *io_type = new QComboBox();
+//   io_type->addItem("event", QVariant(Iov::TyEvent));
+//   io_type->addItem("int", QVariant(Iov::TyInt));
+//   io_type->addItem("bool", QVariant(Iov::TyBool));
+//   io_type->setCurrentIndex(io->type);
+//   rowLayout->addWidget(io_type);
+//   widgetToIo.insert((QWidget*)io_type, io);
+//   widgetToLayout.insert((QWidget*)io_type, rowLayout);
+// #if QT_VERSION >= 0x060000
+//   connect(io_type, &QComboBox::currentIndexChanged, this, &PropertiesPanel::editIoType);
+// #else
+//   connect(io_type, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PropertiesPanel::editIoType);
+// #endif
 
-  if ( io->kind == Iov::IoIn ) {
-    QComboBox *io_stim = new QComboBox();
-    io_stim->addItem("None", QVariant(Stimulus::None));
-    io_stim->addItem("Periodic", QVariant(Stimulus::Periodic));
-    io_stim->addItem("Sporadic", QVariant(Stimulus::Sporadic));
-    io_stim->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
-    io_stim->setCurrentIndex(io->stim.kind);
-    setStimChoices(io_stim, io);
-    rowLayout->addWidget(io_stim);
-#if QT_VERSION >= 0x060000
-    connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
-#else
-    connect(io_stim, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::editIoStim);
-#endif
-    widgetToLayout.insert((QWidget*)io_stim, rowLayout);
-    widgetToIo.insert((QWidget*)io_stim, io);
-  }
+//   if ( io->kind == Iov::IoIn ) {
+//     QComboBox *io_stim = new QComboBox();
+//     io_stim->addItem("None", QVariant(Stimulus::None));
+//     io_stim->addItem("Periodic", QVariant(Stimulus::Periodic));
+//     io_stim->addItem("Sporadic", QVariant(Stimulus::Sporadic));
+//     io_stim->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
+//     io_stim->setCurrentIndex(io->stim.kind);
+//     setStimChoices(io_stim, io);
+//     rowLayout->addWidget(io_stim);
+// #if QT_VERSION >= 0x060000
+//     connect(io_stim, &QComboBox::activated, this, &PropertiesPanel::editIoStim);
+// #else
+//     connect(io_stim, QOverload<int>::of(&QComboBox::activated), this, &PropertiesPanel::editIoStim);
+// #endif
+//     widgetToLayout.insert((QWidget*)io_stim, rowLayout);
+//     widgetToIo.insert((QWidget*)io_stim, io);
+//   }
 
-  QPushButton *io_delete = new QPushButton();
-  io_delete->setIcon(QIcon(":/images/delete.png"));
-  rowLayout->addWidget(io_delete);
-  connect(io_delete, &QPushButton::clicked, this, &PropertiesPanel::removeIo);
-  widgetToLayout.insert((QWidget*)io_delete, rowLayout);
-  widgetToIo.insert((QWidget*)io_delete, io);
-  io_layout->insertLayout(-1,rowLayout);
-  ioToLayout.insert(io,rowLayout);
-}
+//   QPushButton *io_delete = new QPushButton();
+//   io_delete->setIcon(QIcon(":/images/delete.png"));
+//   rowLayout->addWidget(io_delete);
+//   connect(io_delete, &QPushButton::clicked, this, &PropertiesPanel::removeIo);
+//   widgetToLayout.insert((QWidget*)io_delete, rowLayout);
+//   widgetToIo.insert((QWidget*)io_delete, io);
+//   io_layout->insertLayout(-1,rowLayout);
+//   ioToLayout.insert(io,rowLayout);
+// }
 
-void PropertiesPanel::addInput() { addIo(Iov::IoIn); }
-void PropertiesPanel::addOutput() { addIo(Iov::IoOut); }
-void PropertiesPanel::addVar() { addIo(Iov::IoVar); }
+// void PropertiesPanel::addInput() { addIo(Iov::IoIn); }
+// void PropertiesPanel::addOutput() { addIo(Iov::IoOut); }
+// void PropertiesPanel::addVar() { addIo(Iov::IoVar); }
 
-void PropertiesPanel::addIo(Iov::IoKind kind)
-{
-  Model* model = main_window->getModel();
-  Q_ASSERT(model != 0);
-  Iov* io = model->addIo("", kind, Iov::TyEvent, Stimulus(Stimulus::None));
-  _addIo(model, io);
-}
+// void PropertiesPanel::addIo(Iov::IoKind kind)
+// {
+//   Model* model = main_window->getModel();
+//   Q_ASSERT(model != 0);
+//   Iov* io = model->addIo("", kind, Iov::TyEvent, Stimulus(Stimulus::None));
+//   _addIo(model, io);
+// }
 
-void PropertiesPanel::setStimChoices(QComboBox* box, Iov *io)
-{
-  switch ( io->type ) {
-  case Iov::TyEvent:
-    enableComboBoxItem(box, 0, true); // TO FIX: we should not use hardcoded index here 
-    enableComboBoxItem(box, 1, true);
-    enableComboBoxItem(box, 2, true);
-    enableComboBoxItem(box, 3, false);
-    break;
-  case Iov::TyInt:
-  case Iov::TyBool:
-    enableComboBoxItem(box, 0, true); // TO FIX: we should not use hardcoded index here 
-    enableComboBoxItem(box, 1, false);
-    enableComboBoxItem(box, 2, false);
-    enableComboBoxItem(box, 3, true);
-    break;
-    }
-}
+// void PropertiesPanel::setStimChoices(QComboBox* box, Iov *io)
+// {
+//   switch ( io->type ) {
+//   case Iov::TyEvent:
+//     enableComboBoxItem(box, 0, true); // TO FIX: we should not use hardcoded index here 
+//     enableComboBoxItem(box, 1, true);
+//     enableComboBoxItem(box, 2, true);
+//     enableComboBoxItem(box, 3, false);
+//     break;
+//   case Iov::TyInt:
+//   case Iov::TyBool:
+//     enableComboBoxItem(box, 0, true); // TO FIX: we should not use hardcoded index here 
+//     enableComboBoxItem(box, 1, false);
+//     enableComboBoxItem(box, 2, false);
+//     enableComboBoxItem(box, 3, true);
+//     break;
+//     }
+// }
 
-void PropertiesPanel::delete_io_row(QLayout *layout)
-{
-  while (layout->count() != 0) {
-    QLayoutItem* item = layout->takeAt(0);
-    QWidget* widget = item->widget();
-    widgetToLayout.remove(widget);
-    widgetToIo.remove(widget);
-    delete item->widget();
-    delete item;
-  }
-  delete layout;
-}
+// void PropertiesPanel::delete_io_row(QLayout *layout)
+// {
+//   while (layout->count() != 0) {
+//     QLayoutItem* item = layout->takeAt(0);
+//     QWidget* widget = item->widget();
+//     widgetToLayout.remove(widget);
+//     widgetToIo.remove(widget);
+//     delete item->widget();
+//     delete item;
+//   }
+//   delete layout;
+// }
 
-void PropertiesPanel::_removeIo(Model* model, Iov* io)
-{
-  Q_ASSERT(model);
-  Q_ASSERT(io);
-  QHBoxLayout* row_layout = ioToLayout.take(io);
-  Q_ASSERT(row_layout);
-  QLineEdit *io_name = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-  Q_ASSERT(io_name);
-  QString name = io_name->text().trimmed();
-  qDebug() << "Removing IO" << name;
-  delete_io_row(row_layout);
-  model->removeIo(io);
-  main_window->setUnsavedChanges(true);
-}
+// void PropertiesPanel::_removeIo(Model* model, Iov* io)
+// {
+//   Q_ASSERT(model);
+//   Q_ASSERT(io);
+//   QHBoxLayout* row_layout = ioToLayout.take(io);
+//   Q_ASSERT(row_layout);
+//   QLineEdit *io_name = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+//   Q_ASSERT(io_name);
+//   QString name = io_name->text().trimmed();
+//   qDebug() << "Removing IO" << name;
+//   delete_io_row(row_layout);
+//   model->removeIo(io);
+//   main_window->setUnsavedChanges(true);
+// }
 
-void PropertiesPanel::removeIo()
-{
-  QPushButton* button = qobject_cast<QPushButton*>(sender());
-  Iov* io = widgetToIo.take(button);
-  Model* model = main_window->getModel();
-  _removeIo(model, io);
-}
+// void PropertiesPanel::removeIo()
+// {
+//   QPushButton* button = qobject_cast<QPushButton*>(sender());
+//   Iov* io = widgetToIo.take(button);
+//   Model* model = main_window->getModel();
+//   _removeIo(model, io);
+// }
 
-void PropertiesPanel::editIoName()
-{
-  QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
-  Iov* io = widgetToIo.value(ledit);
-  Q_ASSERT(io);
-  QString name = ledit->text().trimmed();
-  // Model* model = main_window->getModel();
-  // if ( model->getIo(name) != NULL ) {
-  //     QMessageBox::warning( this, "Error", "IO or variable " + name + " is already defined");
-  //     return;
-  //     }
-  qDebug () << "Setting IO name: " << name;
-  io->name = name;
-  main_window->setUnsavedChanges(true);
-}
+// void PropertiesPanel::editIoName()
+// {
+//   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
+//   Iov* io = widgetToIo.value(ledit);
+//   Q_ASSERT(io);
+//   QString name = ledit->text().trimmed();
+//   // Model* model = main_window->getModel();
+//   // if ( model->getIo(name) != NULL ) {
+//   //     QMessageBox::warning( this, "Error", "IO or variable " + name + " is already defined");
+//   //     return;
+//   //     }
+//   qDebug () << "Setting IO name: " << name;
+//   io->name = name;
+//   main_window->setUnsavedChanges(true);
+// }
 
-void setComboBoxItemEnabled(QComboBox* comboBox, int index, bool enabled)
-{
-    auto * model = qobject_cast<QStandardItemModel*>(comboBox->model());
-    Q_ASSERT(model);
-    if(!model) return;
+// void setComboBoxItemEnabled(QComboBox* comboBox, int index, bool enabled)
+// {
+//     auto * model = qobject_cast<QStandardItemModel*>(comboBox->model());
+//     Q_ASSERT(model);
+//     if(!model) return;
 
-    auto * item = model->item(index);
-    Q_ASSERT(item);
-    if(!item) return;
-    item->setEnabled(enabled);
-}
+//     auto * item = model->item(index);
+//     Q_ASSERT(item);
+//     if(!item) return;
+//     item->setEnabled(enabled);
+// }
 
-void PropertiesPanel::editIoType()
-{
-  QComboBox* box = qobject_cast<QComboBox*>(sender());
-  Iov* io = widgetToIo.value(box);
-  Q_ASSERT(io);
-  io->type = (Iov::IoType)(box->currentIndex());
-  qDebug () << "Setting IO type: " << io->type;
-  QHBoxLayout* row_layout = widgetToLayout.value(box);
-  Q_ASSERT(row_layout);
-  // QComboBox *stim_box = qobject_cast<QComboBox*>(row_layout->itemAt(2)->widget());
-  // Q_ASSERT(stim_box);
-  // setStimChoices(stim_box, io);
-  main_window->setUnsavedChanges(true);
-}
+// void PropertiesPanel::editIoType()
+// {
+//   QComboBox* box = qobject_cast<QComboBox*>(sender());
+//   Iov* io = widgetToIo.value(box);
+//   Q_ASSERT(io);
+//   io->type = (Iov::IoType)(box->currentIndex());
+//   qDebug () << "Setting IO type: " << io->type;
+//   QHBoxLayout* row_layout = widgetToLayout.value(box);
+//   Q_ASSERT(row_layout);
+//   // QComboBox *stim_box = qobject_cast<QComboBox*>(row_layout->itemAt(2)->widget());
+//   // Q_ASSERT(stim_box);
+//   // setStimChoices(stim_box, io);
+//   main_window->setUnsavedChanges(true);
+// }
 
-void PropertiesPanel::editIoStim()
-{
-  QComboBox* selector = qobject_cast<QComboBox*>(sender());
-  Iov* io = widgetToIo.value(selector);
-  Q_ASSERT(io);
-  QString io_name = io->name;
-  if ( io_name == "" ) {
-    QMessageBox::warning( this, "Error", "Please give a name to this IO before editing it");
-    selector->setCurrentIndex(Stimulus::None);
-    return;
-    }
-  Stimulus::Kind kind = (Stimulus::Kind)(selector->currentIndex()); 
-  switch ( kind ) {
-  case Stimulus::None:
-    io->stim = Stimulus(Stimulus::None);
-    break;
-  default:
-    Stimuli* stimDialog = new Stimuli(kind,io,main_window);
-    stimDialog->exec();
-    //fillIoList();
-    delete stimDialog;
-    break;
-    }
-  main_window->setUnsavedChanges(true);
-}
+// void PropertiesPanel::editIoStim()
+// {
+//   QComboBox* selector = qobject_cast<QComboBox*>(sender());
+//   Iov* io = widgetToIo.value(selector);
+//   Q_ASSERT(io);
+//   QString io_name = io->name;
+//   if ( io_name == "" ) {
+//     QMessageBox::warning( this, "Error", "Please give a name to this IO before editing it");
+//     selector->setCurrentIndex(Stimulus::None);
+//     return;
+//     }
+//   Stimulus::Kind kind = (Stimulus::Kind)(selector->currentIndex()); 
+//   switch ( kind ) {
+//   case Stimulus::None:
+//     io->stim = Stimulus(Stimulus::None);
+//     break;
+//   default:
+//     Stimuli* stimDialog = new Stimuli(kind,io,main_window);
+//     stimDialog->exec();
+//     //fillIoList();
+//     delete stimDialog;
+//     break;
+//     }
+//   main_window->setUnsavedChanges(true);
+// }
 
-void PropertiesPanel::fillIos()
-{
-  Model* model = main_window->getModel();
-  Q_ASSERT(model);
-  if ( model == NULL ) return;
-  for (auto io: model->getIos())
-    _addIo(model, io);
-}
+// void PropertiesPanel::fillIos()
+// {
+//   Model* model = main_window->getModel();
+//   Q_ASSERT(model);
+//   if ( model == NULL ) return;
+//   for (auto io: model->getIos())
+//     _addIo(model, io);
+// }
 
-void PropertiesPanel::clearIos()
-{
-  foreach ( Iov* io, ioToLayout.keys() ) {
-    qDebug() << "Removing IO " << io->name << " from panel";
-    QHBoxLayout *row_layout = ioToLayout.take(io);
-    delete_io_row(row_layout);
-    }
-}
+// void PropertiesPanel::clearIos()
+// {
+//   foreach ( Iov* io, ioToLayout.keys() ) {
+//     qDebug() << "Removing IO " << io->name << " from panel";
+//     QHBoxLayout *row_layout = ioToLayout.take(io);
+//     delete_io_row(row_layout);
+//     }
+// }
 
 // [Transition] base panel (common to standard and initial transitions)
 // Note: for initial transitions, the [start_state] and [event] elements will be hidden
@@ -859,8 +863,8 @@ void PropertiesPanel::clearIos()
 
 void PropertiesPanel::update()
 {
-    clearIos();
-    fillIos();
+    // clearIos();
+    // fillIos();
     fillModelName();
 }
 
@@ -868,7 +872,7 @@ void PropertiesPanel::clear()
 {
   qDebug() << "Clearing properties panel";
   selected_item = nullptr;
-  clearIos();
+  // clearIos();
   clearModelName();
 }
 

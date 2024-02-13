@@ -39,7 +39,8 @@ HEADERS += include/nlohmann_json.h \
            transitionGuards.h \
            transitionActions.h \
            transitionProperties.h \
-           properties.h \
+           modelVars.h \
+           modelProperties.h \
            stimulus.h \
            stimuli.h \
            command.h \
@@ -63,7 +64,8 @@ SOURCES += transition.cpp \
            transitionGuards.cpp \
            transitionActions.cpp \
            transitionProperties.cpp \
-           properties.cpp \
+           modelVars.cpp \
+           modelProperties.cpp \
            stimulus.cpp \
            stimuli.cpp \
            command.cpp \

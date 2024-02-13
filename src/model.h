@@ -78,6 +78,8 @@ public:
 
     bool check_model(bool withStimuli);
 
+    void dump(); // for debug only
+
 #ifdef USE_QGV
     void renderDot(QGVScene *scene);
 #endif
@@ -98,7 +100,7 @@ signals:
     // void transitionSelected(Transition *item);
     // void transitionDeleted(Transition *item);
     // void nothingSelected();
-    void fsmModified();
+    // void fsmModified();
     void mouseEnter(void);
     void mouseLeave(void);
 

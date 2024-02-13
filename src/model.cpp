@@ -244,7 +244,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
           if ( buttonPressed != Qt::LeftButton) return;
           state = addState(mouseEvent->scenePos(), statePrefix + QString::number(stateCounter++), QStringList());
           emit stateInserted(state);
-          emit fsmModified();
+          // emit fsmModified();
           break;
         case InsertPseudoState:
           if ( buttonPressed != Qt::LeftButton) return;
@@ -253,7 +253,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
             line->setPen(QPen(lineColor, 2));
             addItem(line);
-            emit fsmModified();
+            // emit fsmModified();
             }
           else
             QMessageBox::warning(mainWindow, "Error",
@@ -264,7 +264,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
           line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
           line->setPen(QPen(lineColor, 2));
           addItem(line);
-          emit fsmModified();
+          // emit fsmModified();
           break;
         case InsertLoopTransition:
           if ( buttonPressed != Qt::LeftButton) return;
@@ -275,7 +275,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
               State::Location location = state->locateEvent(mouseEvent);
               Transition *transition = addTransition(state, state, "", QStringList(), QStringList(), location);
               transition->updatePosition();
-              emit fsmModified();
+              // emit fsmModified();
               emit transitionInserted(transition);
               }
             }
@@ -290,14 +290,14 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
               assert(transition);
               removeTransition(transition);
               //emit transitionDeleted(transition);
-              emit fsmModified();
+              // emit fsmModified();
               break;
             case State::Type:
               state = qgraphicsitem_cast<State *>(item);
               assert(state);
               removeState(state);
               // emit stateDeleted(state);
-              emit fsmModified();
+              // emit fsmModified();
               break;
             default:
               break;
@@ -389,7 +389,7 @@ void Model::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         Transition *transition = addTransition(srcState, dstState, "", QStringList(), QStringList(), location);
         transition->updatePosition();
         emit transitionInserted(transition);
-        emit fsmModified();
+        // emit fsmModified();
         }
       }
     else if ( mode == InsertPseudoState && startState != NULL ) {
@@ -916,3 +916,11 @@ void Model::renderDot(QGVScene *dotScene)
   }
 }
 #endif
+
+void Model::dump() // For debug only
+{
+  qDebug() << "Model name =" << name;
+  qDebug() << "Model ios =";
+  foreach ( Iov* io, ios )
+    qDebug() << "  " <<  io->toString();
+}

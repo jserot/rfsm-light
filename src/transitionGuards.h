@@ -14,5 +14,6 @@ public:
 
 protected slots:
   void addRowFields(QHBoxLayout *row_layout, QString &v);
-  void rowEdited();
+  void deleteRowFields(QHBoxLayout *row_layout);
+  // void rowEdited();
 };

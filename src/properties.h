@@ -30,6 +30,7 @@ class MainWindow;
 class State;
 class Transition;
 class Model;
+class ModelVars;
 
 class PropertiesPanel : public QFrame
 {
@@ -48,7 +49,7 @@ class PropertiesPanel : public QFrame
 
     QGroupBox* inp_panel;
     QGroupBox* outp_panel;
-    QGroupBox* var_panel;
+    ModelVars* var_panel;
     QLineEdit* io_name;
     QComboBox* io_kind;
     QLineEdit* io_type;
@@ -98,16 +99,16 @@ class PropertiesPanel : public QFrame
     void setModelName();
   //void setStateName();
 
-    void addInput();
-    void addOutput();
-    void addVar();
-    void removeIo();
+    // void addInput();
+    // void addOutput();
+    // void addVar();
+    // void removeIo();
     // void removeTransitionGuard();
     // void removeTransitionAction();
   //void removeStateValuation();
-    void editIoName();
-    void editIoType();
-    void editIoStim();
+    // void editIoName();
+    // void editIoType();
+    // void editIoStim();
     // void updateTransitionGuards();
     // void updateTransitionActions();
   // void updateStateValuations();
@@ -123,7 +124,7 @@ class PropertiesPanel : public QFrame
     void update();
     void clear();
     void clearModelName();
-    void clearIos();
+  //void clearIos();
 
   private:
     void createNamePanel();

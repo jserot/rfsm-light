@@ -14,7 +14,7 @@
 #define MAINWINDOW_H
 
 #include "state.h"
-#include "properties.h"
+#include "modelProperties.h"
 
 #include <QMainWindow>
 #include <QFileInfo>
@@ -117,7 +117,7 @@ private:
     QFrame *toolbar;
     QButtonGroup *buttons;
     QGraphicsView *view;
-    PropertiesPanel* properties_panel;
+    ModelProperties* properties_panel;
     QTabWidget *results;
     CompilerPaths *compilerPaths;
     CompilerOptions *compilerOptions;

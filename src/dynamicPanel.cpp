@@ -41,8 +41,9 @@ void DynamicPanel::addNewRow()
   addRow(QString(""));
 }
 
-void DynamicPanel::delete_row(QLayout *row_layout)
+void DynamicPanel::delete_row(QHBoxLayout *row_layout)
 {
+  deleteRowFields(row_layout);
   while (row_layout->count() != 0) {
     QLayoutItem* item = row_layout->takeAt(0);
     delete item->widget();
@@ -60,7 +61,6 @@ void DynamicPanel::deleteRow()
 
 void DynamicPanel::clear()
 {
-  //qDebug() << "StateValuationsPanel: clearing:" << layout->count();
   while ( layout->count() > 1 ) { // Do not erase last row !
     QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->takeAt(0));
     assert(row);

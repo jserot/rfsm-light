@@ -27,6 +27,7 @@
 #include "stimuli.h"
 #include "stateProperties.h"
 #include "transitionProperties.h"
+#include "modelProperties.h"
 
 #include <QtWidgets>
 #include <QVariant>
@@ -86,7 +87,8 @@ MainWindow::MainWindow()
     QString syntaxCheckerPgm = getCompilerPaths()->getPath("SYNTAXCHECKER");
     syntaxChecker = new SyntaxChecker(executor, syntaxCheckerPgm);
 
-    properties_panel = new PropertiesPanel(this); // Warning: the model must be created before 
+    assert(model);
+    properties_panel = new ModelProperties(model,this); 
     properties_panel->setMinimumWidth(280);
     properties_panel->setMaximumWidth(360);
 
@@ -463,9 +465,9 @@ void MainWindow::createToolbars()
 
 void MainWindow::createPropertiesPanel()
 {
-    properties_panel = new PropertiesPanel(this);
-    properties_panel->setMinimumWidth(180);
-    properties_panel->setMaximumWidth(360);
+  properties_panel = new ModelProperties(model,this);
+  properties_panel->setMinimumWidth(180);
+  properties_panel->setMaximumWidth(360);
 }
 
 // File IO

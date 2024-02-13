@@ -22,14 +22,20 @@ void StateValuations::addRowFields(QHBoxLayout *row_layout, QString& v)
   valuation->setFrame(true);
   valuation->setText(v);
   valuation->setCursorPosition(0);
-  connect(valuation, &QLineEdit::editingFinished, this, &StateValuations::rowEdited);
+  // connect(valuation, &QLineEdit::editingFinished, this, &StateValuations::rowEdited);
   row_layout->addWidget(valuation);
 }
 
-void StateValuations::rowEdited()
+// void StateValuations::rowEdited()
+// {
+//   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
+//   qDebug() << ledit->objectName() << "=" << ledit->text();
+// }
+
+void StateValuations::deleteRowFields(QHBoxLayout *row_layout)
 {
-  QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
-  qDebug() << ledit->objectName() << "=" << ledit->text();
+  Q_UNUSED(row_layout);
+  // Nothing
 }
 
 QStringList StateValuations::retrieve()

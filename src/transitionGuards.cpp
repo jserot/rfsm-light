@@ -22,14 +22,20 @@ void TransitionGuards::addRowFields(QHBoxLayout *row_layout, QString& v)
   valuation->setFrame(true);
   valuation->setText(v);
   valuation->setCursorPosition(0);
-  connect(valuation, &QLineEdit::editingFinished, this, &TransitionGuards::rowEdited);
+  // connect(valuation, &QLineEdit::editingFinished, this, &TransitionGuards::rowEdited);
   row_layout->addWidget(valuation);
 }
 
-void TransitionGuards::rowEdited()
+// void TransitionGuards::rowEdited()
+// {
+//   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
+//   qDebug() << ledit->objectName() << "=" << ledit->text();
+// }
+
+void TransitionGuards::deleteRowFields(QHBoxLayout *row_layout)
 {
-  QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
-  qDebug() << ledit->objectName() << "=" << ledit->text();
+  Q_UNUSED(row_layout);
+  // Nothing
 }
 
 QStringList TransitionGuards::retrieve()
