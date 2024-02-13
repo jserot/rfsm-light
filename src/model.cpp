@@ -285,33 +285,19 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
           item = itemAt(mouseEvent->scenePos(), QTransform());
           if ( item != NULL ) {
             switch ( item->type() ) {
-            case Transition::Type: {
+            case Transition::Type:
               transition = qgraphicsitem_cast<Transition *>(item);
-              qDebug() << "Deleting transition" << transition->toString();
-              State *srcState = transition->getSrcState();
-              State *dstState = transition->getDstState();
-              if ( transition->isInitial() ) {
-                srcState->removeTransitions();
-                removeItem(srcState);
-                }
-              else {
-                srcState->removeTransition(transition);
-                dstState->removeTransition(transition);
-                removeItem(item);
-                delete item;
-                }
+              assert(transition);
+              removeTransition(transition);
               //emit transitionDeleted(transition);
               emit fsmModified();
-              }
               break;
             case State::Type:
               state = qgraphicsitem_cast<State *>(item);
-              qDebug() << "Deleting state" << state->getId();
-              state->removeTransitions();
-              removeItem(item);
+              assert(state);
+              removeState(state);
               // emit stateDeleted(state);
               emit fsmModified();
-              delete item;
               break;
             default:
               break;
@@ -346,6 +332,31 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
           QGraphicsScene::mousePressEvent(mouseEvent);
           break;
        }
+}
+
+void Model::removeState(State *state)
+{
+  qDebug() << "Removing state" << state->getId();
+  state->removeTransitions();
+  removeItem(state);
+  delete state;
+}
+
+void Model::removeTransition(Transition *transition)
+{
+  qDebug() << "Removing transition" << transition->toString();
+  State *srcState = transition->getSrcState();
+  State *dstState = transition->getDstState();
+  if ( transition->isInitial() ) {
+    srcState->removeTransitions();
+    removeState(srcState);
+    }
+  else {
+    srcState->removeTransition(transition);
+    dstState->removeTransition(transition);
+    }
+  removeItem(transition);
+  delete transition;
 }
 
 void Model::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)

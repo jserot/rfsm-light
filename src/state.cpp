@@ -80,14 +80,13 @@ void State::removeTransition(Transition *transition)
 
 void State::removeTransitions()
 {
+    qDebug() << "Removing" << transitions.length() <<  "transition(s) to/from state" << getId();
     foreach (Transition *transition, transitions) {
       State *srcState = transition->getSrcState();
       State *dstState = transition->getDstState();
+      assert(srcState);
+      assert(dstState);
       srcState->removeTransition(transition);
-      if ( transition->isInitial() ) {
-        scene()->removeItem(srcState);
-        delete srcState;
-        }
       dstState->removeTransition(transition);
       scene()->removeItem(transition);
       delete transition;

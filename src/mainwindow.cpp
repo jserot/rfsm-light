@@ -167,14 +167,13 @@ void MainWindow::transitionInserted(Transition *transition)
 
 void MainWindow::editTransition(Transition *transition)
 {
-  // TODO : distinguish init transitions
   bool isInitial = transition->isInitial();
   QStringList inpEvents = model->getInpEvents();
   if ( !isInitial && inpEvents.isEmpty() ) {
       QMessageBox::warning( this, "Error", "No input event available to trigger this transition. Please define one.");
       qDebug() << "Deleting transition" << transition->toString();
-      model->removeItem(transition);
-      delete transition;
+      model->removeTransition(transition);
+      //delete transition;
       return;
       }
   TransitionProperties* dialog = new TransitionProperties(transition,model,isInitial,syntaxChecker,this);

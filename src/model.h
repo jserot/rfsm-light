@@ -70,6 +70,9 @@ public:
     State* getState(QString id);
     bool hasPseudoState();
 
+    void removeState(State *state);
+    void removeTransition(Transition *transition);
+
     void readFromFile(QString fname);
     void saveToFile(QString fname);
 
