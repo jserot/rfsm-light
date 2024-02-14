@@ -6,23 +6,23 @@ class Model;
 class Iov;
 class QRegularExpressionValidator;
 
-class ModelVars : public DynamicPanel
+class ModelOutps : public DynamicPanel
 {
   Q_OBJECT
 
 public:
-  ModelVars(QString title, Model *model, QRegularExpressionValidator *name_validator);
-  ~ModelVars();
+  ModelOutps(QString title, Model *model, QRegularExpressionValidator *name_validator);
+  ~ModelOutps();
 
   QStringList retrieve(); // Not used here
 
+signals:
+  void modelModified();
+  
 private:
   Model *model;
   QRegularExpressionValidator *name_validator;
   QHash<QWidget*, Iov*> widgetToIo; 
-
-signals:
-  void modelModified();
 
 protected slots:
   void addRowFields(QHBoxLayout *row_layout, QString &v);

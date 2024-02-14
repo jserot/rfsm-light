@@ -37,7 +37,6 @@ protected slots:
 protected:
   virtual void addRowFields(QHBoxLayout *row_layout, QString& v) = 0; // Fields shown _before_ the [Delete] button on the row
   virtual void deleteRowFields(QHBoxLayout *row_layout) = 0; 
-  // virtual void rowEdited() = 0; 
 public:
   virtual QStringList retrieve() = 0;
 };

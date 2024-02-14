@@ -13,38 +13,32 @@
 #include "modelProperties.h"
 #include "mainwindow.h"
 #include "model.h"
+#include "modelInps.h"
+#include "modelOutps.h"
 #include "modelVars.h"
 #include "stimuli.h"
 #include "compilerPaths.h"
 
-#include <QComboBox>
 #include <QFrame>
 #include <QGroupBox>
-#include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
-#include <QListView>
 #include <QString>
 #include <QStringList>
-#include <QStringListModel>
-#include <QTextEdit>
 #include <QVBoxLayout>
-#include <stdexcept>
+// #include <stdexcept>
 #include <QMessageBox>
-#include <QStandardItemModel>
 #include <QRegularExpression>
 #include <QDebug>
 
-//const QRegularExpression ModelProperties::re_uid("[A-Z][A-Za-z0-9_]*");
 const QRegularExpression ModelProperties::re_lid("[a-z][a-z0-9_]*");
 
 ModelProperties::ModelProperties(Model *model, MainWindow* parent) : QFrame(parent)
 {
-    main_window = parent;
-    // TODO: we shouldn't need this. Instead, emit a "Modified" signal, caught by MainWindow,
-    // when appropriate (just as State and TransitionProperties dialogs do)
     this->model = model;
+
+    QRegularExpressionValidator *io_name_validator = new QRegularExpressionValidator(re_lid);
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setAlignment(Qt::AlignTop);
@@ -56,36 +50,36 @@ ModelProperties::ModelProperties(Model *model, MainWindow* parent) : QFrame(pare
     model_name_field->setPlaceholderText("Model name");
     layout->addWidget(model_name_field);
     name_panel->setLayout(layout);
-
-    // createInputPanel();
-    // createOutputPanel();
-    // createVarPanel();
-
     layout->addWidget(name_panel);
-    // layout->addWidget(inp_panel);
-    // layout->addWidget(outp_panel);
 
-    vars_panel = new ModelVars("Variables", model);
-     
+    inps_panel = new ModelInps("Inputs", model, io_name_validator);
+    layout->addWidget(inps_panel);
+
+    outps_panel = new ModelOutps("Outputs", model, io_name_validator);
+    layout->addWidget(outps_panel);
+
+    vars_panel = new ModelVars("Variables", model, io_name_validator);
     layout->addWidget(vars_panel);
 
-    QPushButton *dump_button = new QPushButton("dump");
+    QPushButton *dump_button = new QPushButton("dump");  // For debug only
     layout->addWidget(dump_button);
     
     this->setLayout(layout);
 
     connect(model_name_field, &QLineEdit::editingFinished, this, &ModelProperties::setModelName);
     connect(dump_button, &QPushButton::clicked, this, &ModelProperties::dumpModel);
-
-    io_name_validator = new QRegularExpressionValidator(re_lid);
-    assert(main_window);
-    assert(main_window->getCompilerPaths());
-    CommandExec* executor = main_window->getExecutor();
-    assert(executor);
+    connect(inps_panel, SIGNAL(modelModified()), this, SLOT(modelUpdated()));
+    connect(outps_panel, SIGNAL(modelModified()), this, SLOT(modelUpdated()));
+    connect(vars_panel, SIGNAL(modelModified()), this, SLOT(modelUpdated()));
 }
 
 ModelProperties::~ModelProperties()
 {
+}
+
+void ModelProperties::modelUpdated()
+{
+  emit modelModified(); // To main window
 }
 
 // [Name] panel
@@ -95,7 +89,7 @@ void ModelProperties::setModelName()
   assert(model);
   QString name = model_name_field->text().trimmed();
   model->setName(name);
-  // main_window->setUnsavedChanges(true);
+  emit modelModified();
 }
 
 void ModelProperties::fillModelName()

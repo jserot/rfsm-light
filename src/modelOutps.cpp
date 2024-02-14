@@ -1,4 +1,4 @@
-#include "modelVars.h"
+#include "modelOutps.h"
 
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -9,31 +9,20 @@
 #include "model.h"
 #include "iov.h"
 
-ModelVars::ModelVars(QString title, Model *model, QRegularExpressionValidator *name_validator) : DynamicPanel(title)
+ModelOutps::ModelOutps(QString title, Model *model, QRegularExpressionValidator *name_validator) : DynamicPanel(title)
 {
   this->model = model;
   this->name_validator = name_validator;
 }
 
-void setComboBoxItemEnabled(QComboBox * comboBox, int index, bool enabled)
-{
-    auto * model = qobject_cast<QStandardItemModel*>(comboBox->model());
-    assert(model);
-    if(!model) return;
-    auto * item = model->item(index);
-    assert(item);
-    if(!item) return;
-    item->setEnabled(enabled);
-}
-
-void ModelVars::addRowFields(QHBoxLayout *row_layout, QString& v)
+void ModelOutps::addRowFields(QHBoxLayout *row_layout, QString& v)
 {
   Q_UNUSED(v); // Here
   int nb_rows = row_layout->count();
-  QString row_name(QString(tr("var #%1").arg(nb_rows)));
+  QString row_name(QString(tr("outp #%1").arg(nb_rows)));
 
   assert(model);
-  Iov* io = model->addIo("", Iov::IoVar, Iov::TyInt, Stimulus(Stimulus::None));
+  Iov* io = model->addIo("", Iov::IoOut, Iov::TyInt, Stimulus(Stimulus::None));
 
   QLineEdit *name = new QLineEdit();
   name->setObjectName(row_name);
@@ -44,24 +33,23 @@ void ModelVars::addRowFields(QHBoxLayout *row_layout, QString& v)
   name->setValidator(name_validator);
   row_layout->addWidget(name);
   widgetToIo.insert((QWidget*)name, io);
-  connect(name, &QLineEdit::editingFinished, this, &ModelVars::nameEdited);
+  connect(name, &QLineEdit::editingFinished, this, &ModelOutps::nameEdited);
 
   QComboBox *typ = new QComboBox();
   typ->addItem("event", QVariant(Iov::TyEvent));
   typ->addItem("int", QVariant(Iov::TyInt));
   typ->addItem("bool", QVariant(Iov::TyBool));
-  setComboBoxItemEnabled(typ, 0, false); // No event type for variables
   typ->setCurrentIndex(1);
   row_layout->addWidget(typ);
   widgetToIo.insert((QWidget*)typ, io);
 #if QT_VERSION >= 0x060000
-  connect(typ, &QComboBox::currentIndexChanged, this, &ModelVars::typeEdited);
+  connect(typ, &QComboBox::currentIndexChanged, this, &ModelOutps::typeEdited);
 #else
-  connect(typ, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelVars::typeEdited);
+  connect(typ, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelOutps::typeEdited);
 #endif
 }
 
-void ModelVars::deleteRowFields(QHBoxLayout *row_layout)
+void ModelOutps::deleteRowFields(QHBoxLayout *row_layout)
 {
   QLineEdit *ledit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
   assert(ledit);
@@ -71,19 +59,19 @@ void ModelVars::deleteRowFields(QHBoxLayout *row_layout)
   emit modelModified();
 }
 
-void ModelVars::nameEdited()
+void ModelOutps::nameEdited()
 {
   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
   assert(ledit);
   QString name = ledit->text().trimmed();
-  Iov* var = widgetToIo.value(ledit);
-  assert(var);
-  qDebug() << "Setting variable name to" << name;
-  var->name = name;
+  Iov* io = widgetToIo.value(ledit);
+  assert(io);
+  qDebug() << "Setting output name to" << name;
+  io->name = name;
   emit modelModified();
 }
 
-void ModelVars::typeEdited()
+void ModelOutps::typeEdited()
 {
   QComboBox* box = qobject_cast<QComboBox*>(sender());
   Iov* io = widgetToIo.value(box);
@@ -93,11 +81,11 @@ void ModelVars::typeEdited()
   emit modelModified();
 }
 
-QStringList ModelVars::retrieve()
+QStringList ModelOutps::retrieve()
 {
   return QStringList();
 }
 
-ModelVars::~ModelVars()
+ModelOutps::~ModelOutps()
 {
 }

@@ -72,7 +72,6 @@ MainWindow::MainWindow()
     // connect(model, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
     // connect(model, SIGNAL(transitionDeleted(Transition*)), this, SLOT(transitionDeleted(Transition*)));
     // connect(model, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
-    //connect(model, SIGNAL(modelModified()), this, SLOT(modelModified()));
     connect(model, SIGNAL(mouseEnter()), this, SLOT(updateCursor()));
     connect(model, SIGNAL(mouseLeave()), this, SLOT(resetCursor()));
 
@@ -130,6 +129,8 @@ MainWindow::MainWindow()
 
     unsaved_changes = false;
     updateActions();
+    
+    connect(properties_panel, SIGNAL(modelModified()), this, SLOT(modelModified()));
 
     splitter->setSizes(splitterSizes); 
 
@@ -201,6 +202,7 @@ void MainWindow::editTransition(Transition *transition)
 
 void MainWindow::modelModified()
 {
+  qDebug() << "Model modified !";
   setUnsavedChanges(true);
 }
 

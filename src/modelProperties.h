@@ -14,28 +14,22 @@
 
 #include <QComboBox>
 #include <QFrame>
-#include <QGraphicsItem>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QListView>
-#include <QString>
-#include <QStringListModel>
-#include <QVBoxLayout>
-#include <QPushButton>
 #include "iov.h"
 
 class MainWindow;
 class State;
 class Transition;
 class Model;
+class ModelInps;
+class ModelOutps;
 class ModelVars;
+class QLineEdit;
+class QGroupBox;
 
 class ModelProperties : public QFrame
 {
   Q_OBJECT
 
-  static const QRegularExpression re_uid;
   static const QRegularExpression re_lid;
 
 private:
@@ -44,7 +38,8 @@ private:
 
   QGroupBox* name_panel;
   QLineEdit* model_name_field;
-
+  ModelInps *inps_panel;
+  ModelOutps *outps_panel;
   ModelVars *vars_panel;
   
   QHash<QWidget*,Iov*> widgetToIo; 
@@ -55,6 +50,9 @@ public:
 
   QSize sizeHint() const { return QSize(275,300); }; 
 
+signals:
+  void modelModified();
+  
 public slots:
   void setModelName();
   void fillModelName();
@@ -63,12 +61,9 @@ public slots:
   void update();
   void clear();
   //void clearIos();
-  void dumpModel();
+  void modelUpdated();
+  void dumpModel(); // for debug only
 
 private:
-  // void _addIo(Model* model, Iov* io);
-  // void addIo(Iov::IoKind kind);
-  // void _removeIo(Model* model, Iov* io);
-
   QRegularExpressionValidator *io_name_validator;
 };

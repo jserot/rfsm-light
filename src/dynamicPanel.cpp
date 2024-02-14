@@ -28,7 +28,7 @@ void DynamicPanel::addRow(QString v) {
   row_layout->setObjectName("row" + QString::number(nb_rows));
   QString name(QString(tr("#%1:").arg(nb_rows)));
   addRowFields(row_layout, v); // DynamicPanel specific items added here 
-  QPushButton *delButton = new QPushButton("Delete");
+  QPushButton *delButton = new QPushButton();
   row_layout->addWidget(delButton);
   delButton->setIcon(QIcon(":/images/delete.png"));
   connect(delButton, &QPushButton::clicked, this, &DynamicPanel::deleteRow);

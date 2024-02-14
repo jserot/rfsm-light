@@ -24,14 +24,14 @@ Stimuli::Stimuli(Stimulus::Kind kind, Iov* inp, QWidget *parent)
   selectedInp = inp;
   selectedKind = kind;
   QRect r = parent->geometry();
-  this->setGeometry(QRect(r.x()+r.width()/2,r.y()+r.height()/2,250,40));
+  setGeometry(QRect(r.x()+r.width()/2,r.y()+r.height()/2,250,40));
   centralWidget = new QWidget(parent);
   verticalLayout = new QVBoxLayout(centralWidget);
   verticalLayout->setSpacing(6);
   verticalLayout->setContentsMargins(11, 11, 11, 11);
 
   form = new QFrame(centralWidget);
-  form->setObjectName("form");
+  //form->setObjectName("form");
   form->setFrameShape(QFrame::StyledPanel);
   form->setFrameShadow(QFrame::Raised);
   verticalLayout_2 = new QVBoxLayout(form);
@@ -44,7 +44,7 @@ Stimuli::Stimuli(Stimulus::Kind kind, Iov* inp, QWidget *parent)
   verticalLayout->addWidget(form);
 
   formLayout = qobject_cast<QVBoxLayout*>(form->layout());
-  formLayout->setObjectName("formLayout");
+  //formLayout->setObjectName("formLayout");
 
   QHBoxLayout *rowLayout;
   QPushButton* addButton;
@@ -102,7 +102,7 @@ Stimuli::Stimuli(Stimulus::Kind kind, Iov* inp, QWidget *parent)
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(acceptChanges()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelChanges()));
   setLayout(verticalLayout);
-  setWindowTitle(tr("Input stimuli for input %1").arg(inp->name));
+  setWindowTitle(tr("Stimuli for input %1").arg(inp->name));
 
 }
 

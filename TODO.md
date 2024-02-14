@@ -1,4 +1,6 @@
 * GUI
+- invalidate iov type and stim selectors as long as name is not specified
+- merge Model{Inps,Outps,Vars} into ModelIo
 - handle event notification in actions
 - reject multiple state valuations (ex: `o=1 o=2`) 
 - reject actions when the dst state has a valuation for an output modified by the action (ex: `cond / o:=1 -> S[o=2]`)
