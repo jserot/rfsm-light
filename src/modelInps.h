@@ -1,10 +1,13 @@
 #pragma once
 
 #include "dynamicPanel.h"
+#include "iov.h"
+#include "rowDesc.h"
 
 class Model;
 class Iov;
 class QRegularExpressionValidator;
+class QLineEdit;
 class QComboBox;
 
 class ModelInps : public DynamicPanel
@@ -22,16 +25,16 @@ signals:
   
 private:
   Model *model;
-  QComboBox *stim;
-
   QRegularExpressionValidator *name_validator;
-  QHash<QWidget*, Iov*> widgetToIo; 
+  QHash<QWidget*,RowDesc*> widgetToRow; 
 
-  void setStimChoices(Iov *io);
+  void updateTypeChoices(RowDesc *row_desc);
+  void updateStimChoices(RowDesc *row_desc);
 
 protected slots:
   void addRowFields(QHBoxLayout *row_layout, QString &v);
   void deleteRowFields(QHBoxLayout *row_layout);
+  void nameChanged();
   void nameEdited();
   void typeEdited();
   void stimEdited();
