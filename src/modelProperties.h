@@ -53,10 +53,12 @@ public slots:
   void setModelName();
   void fillModelName();
   void clearModelName();
-
-  void update();
+  void fillModelIovs();
+  void clearModelIovs();
   void clear();
-  //void clearIos();
+  void fill();
+  void update();
+
   void modelUpdated();
   void dumpModel(); // for debug only
 

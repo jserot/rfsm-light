@@ -30,18 +30,77 @@ static void setComboBoxItemEnabled(QComboBox * comboBox, int index, bool enabled
     item->setEnabled(enabled);
 }
 
-void ModelIovs::addRowFields(QHBoxLayout *row_layout, QString& v)
+void setTypeSelector(QComboBox *type_selector, Iov* io)
 {
-  Q_UNUSED(v); // Here
+  if ( io->name != "" ) {
+    switch ( io->kind ) {
+      case Iov::IoIn: 
+      case Iov::IoOut: 
+        setComboBoxItemEnabled(type_selector, 0, true); // event
+        setComboBoxItemEnabled(type_selector, 1, true); // int
+        setComboBoxItemEnabled(type_selector, 2, true); // bool
+        break;
+      case Iov::IoVar: 
+        setComboBoxItemEnabled(type_selector, 0, false); // No event type for variables
+        setComboBoxItemEnabled(type_selector, 1, true); // int
+        setComboBoxItemEnabled(type_selector, 2, true); // bool
+        break;
+      }
+    type_selector->setCurrentIndex(io->type);
+    }
+  else {
+    setComboBoxItemEnabled(type_selector, 0, false); // event
+    setComboBoxItemEnabled(type_selector, 1, false); // int
+    setComboBoxItemEnabled(type_selector, 2, false); // int
+    type_selector->setCurrentIndex(-1);
+  }
+}
+
+void setStimSelector(QComboBox *stim_selector, Iov* io)
+{
+  if ( io->name != "" ) {
+    switch ( io->type ) {
+      case Iov::TyEvent: 
+        setComboBoxItemEnabled(stim_selector, 0, true); // None
+        setComboBoxItemEnabled(stim_selector, 1, true); // Periodic
+        setComboBoxItemEnabled(stim_selector, 2, true); // Sporadic
+        setComboBoxItemEnabled(stim_selector, 3, false); // ValueChanges
+        break;
+      case Iov::TyInt: 
+      case Iov::TyBool: 
+        setComboBoxItemEnabled(stim_selector, 0, true); // None
+        setComboBoxItemEnabled(stim_selector, 1, false); // Periodic
+        setComboBoxItemEnabled(stim_selector, 2, false); // Sporadic
+        setComboBoxItemEnabled(stim_selector, 3, true); // ValueChanges
+        break;
+      }
+    stim_selector->setCurrentIndex(io->stim.kind);
+    }
+  else {
+    setComboBoxItemEnabled(stim_selector, 0, false); // None
+    setComboBoxItemEnabled(stim_selector, 1, false); // Periodic
+    setComboBoxItemEnabled(stim_selector, 2, false); // Sporadic
+    setComboBoxItemEnabled(stim_selector, 3, false); // ValueChanges
+    stim_selector->setCurrentIndex(-1);
+  }
+}
+
+void ModelIovs::addRowFields(QHBoxLayout *row_layout, void *row_data)
+{
+  assert(model);
+
+  Iov *io =
+    row_data ?
+    (Iov*)(row_data)
+    : model->addIo("", kind, Iov::TyEvent, Stimulus(Stimulus::None));
+
   int nb_rows = row_layout->count();
   QString row_name(QString(tr("iov #%1").arg(nb_rows)));
-
-  assert(model);
-  Iov* io = model->addIo("", kind, Iov::TyEvent, Stimulus(Stimulus::None));
 
   QLineEdit *name_selector = new QLineEdit();
   name_selector->setObjectName(row_name);
   name_selector->setMinimumSize(80,name_selector->minimumHeight());
+  name_selector->setText(io->name);
   name_selector->setPlaceholderText("<name>");
   name_selector->setFrame(true);
   name_selector->setCursorPosition(0);
@@ -54,9 +113,7 @@ void ModelIovs::addRowFields(QHBoxLayout *row_layout, QString& v)
   type_selector->addItem("event", QVariant(Iov::TyEvent));
   type_selector->addItem("int", QVariant(Iov::TyInt));
   type_selector->addItem("bool", QVariant(Iov::TyBool));
-  for ( int i=0; i<type_selector->count(); i++ ) 
-    setComboBoxItemEnabled(type_selector, i, false); // Nothing enabled 
-  type_selector->setCurrentIndex(-1);
+  setTypeSelector(type_selector, io);
   row_layout->addWidget(type_selector);
 #if QT_VERSION >= 0x060000
   connect(type_selector, &QComboBox::currentIndexChanged, this, &ModelIovs::typeEdited);
@@ -71,9 +128,7 @@ void ModelIovs::addRowFields(QHBoxLayout *row_layout, QString& v)
     stim_selector->addItem("Periodic", QVariant(Stimulus::Periodic));
     stim_selector->addItem("Sporadic", QVariant(Stimulus::Sporadic));
     stim_selector->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
-    for ( int i=0; i<stim_selector->count(); i++ ) 
-      setComboBoxItemEnabled(stim_selector, i, false); // Nothing enabled 
-    stim_selector->setCurrentIndex(-1);
+    setStimSelector(stim_selector,io);
     row_layout->addWidget(stim_selector);
 #if QT_VERSION >= 0x060000
     connect(stim_selector, &QComboBox::activated, this, &ModelIovs::stimEdited);

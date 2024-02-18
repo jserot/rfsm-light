@@ -97,22 +97,50 @@ void ModelProperties::fillModelName()
 
 void ModelProperties::clearModelName()
 {
-  assert(model);
   model_name_field->setText("");
 }
 
-void ModelProperties::update()
+// [Inputs], [Outputs] and [Variables] panels
+
+void ModelProperties::fillModelIovs()
 {
-    fillModelName();
+  assert(model);
+  QList ios = model->getIos();
+  foreach (Iov *io, ios) {
+    switch ( io->kind ) {
+    case Iov::IoIn: inps_panel->addRow((void *)(io)); break;
+    case Iov::IoOut: outps_panel->addRow((void *)(io)); break;
+    case Iov::IoVar: vars_panel->addRow((void *)(io)); break;
+    }
+  }
+}
+
+void ModelProperties::clearModelIovs()
+{
+  inps_panel->clear();
+  outps_panel->clear();
+  vars_panel->clear();
+}
+
+void ModelProperties::fill()
+{
+  fillModelName();
+  fillModelIovs();
 }
 
 void ModelProperties::clear()
 {
   clearModelName();
-  // clearIos();
+  clearModelIovs();
 }
 
-void ModelProperties::dumpModel()
+void ModelProperties::update()
+{
+  clear();
+  fill();
+}
+
+void ModelProperties::dumpModel() // For debug only
 {
   assert(model);
   model->dump();

@@ -22,12 +22,12 @@ DynamicPanel::DynamicPanel(QString title) : QGroupBox(title)
   clear_button->setDefault(false);
 }
 
-void DynamicPanel::addRow(QString v) {
+void DynamicPanel::addRow(void *row_data) {
   QHBoxLayout* row_layout = new QHBoxLayout();
   int nb_rows = layout->count();
   row_layout->setObjectName("row" + QString::number(nb_rows));
   QString name(QString(tr("#%1:").arg(nb_rows)));
-  addRowFields(row_layout, v); // DynamicPanel specific items added here 
+  addRowFields(row_layout, row_data); // DynamicPanel specific items added here 
   QPushButton *delButton = new QPushButton();
   row_layout->addWidget(delButton);
   delButton->setIcon(QIcon(":/images/delete.png"));
@@ -38,7 +38,7 @@ void DynamicPanel::addRow(QString v) {
 
 void DynamicPanel::addNewRow()
 {
-  addRow(QString(""));
+  addRow(nullptr);
 }
 
 void DynamicPanel::delete_row(QHBoxLayout *row_layout)

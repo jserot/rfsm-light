@@ -8,19 +8,20 @@
 TransitionGuards::TransitionGuards(QString title, QStringList& guards) : DynamicPanel(title)
 {
   foreach ( QString v, guards )
-    addRow(v);
+    addRow((QObject *)(&v));
 }
 
-void TransitionGuards::addRowFields(QHBoxLayout *row_layout, QString& v)
+void TransitionGuards::addRowFields(QHBoxLayout *row_layout, void *row_data)
 {
   int nb_rows = row_layout->count();
   QString name(QString(tr("guard #%1").arg(nb_rows)));
+  QString *v = (QString*)(row_data);
   QLineEdit *valuation = new QLineEdit();
   valuation->setObjectName(name);
   valuation->setPlaceholderText("<bool expr>");
   valuation->setMinimumSize(120,valuation->minimumHeight());
   valuation->setFrame(true);
-  valuation->setText(v);
+  valuation->setText(*v);
   valuation->setCursorPosition(0);
   // connect(valuation, &QLineEdit::editingFinished, this, &TransitionGuards::rowEdited);
   row_layout->addWidget(valuation);

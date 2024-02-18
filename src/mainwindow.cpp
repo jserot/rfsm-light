@@ -511,7 +511,6 @@ void MainWindow::openFile()
     //QRectF bb = view->scene()->itemsBoundingRect();
     //view->centerOn(bb.center());
     currentFileName = fname;
-    //properties_panel->clear(); 
     properties_panel->update();
     setUnsavedChanges(false);
 }

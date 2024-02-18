@@ -8,19 +8,20 @@
 StateValuations::StateValuations(QString title, QStringList& valuations) : DynamicPanel(title)
 {
   foreach ( QString v, valuations )
-    addRow(v);
+    addRow((QObject *)(&v));
 }
 
-void StateValuations::addRowFields(QHBoxLayout *row_layout, QString& v)
+void StateValuations::addRowFields(QHBoxLayout *row_layout, void *row_data)
 {
   int nb_rows = row_layout->count();
   QString name(QString(tr("valuation #%1").arg(nb_rows)));
+  QString *v = (QString*)(row_data);
   QLineEdit *valuation = new QLineEdit();
   valuation->setObjectName(name);
   valuation->setPlaceholderText("<output>=<value>");
   valuation->setMinimumSize(120,valuation->minimumHeight());
   valuation->setFrame(true);
-  valuation->setText(v);
+  valuation->setText(*v);
   valuation->setCursorPosition(0);
   // connect(valuation, &QLineEdit::editingFinished, this, &StateValuations::rowEdited);
   row_layout->addWidget(valuation);

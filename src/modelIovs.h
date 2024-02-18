@@ -30,7 +30,7 @@ private:
   void updateStimChoices(RowDesc *row_desc);  // For inputs only
 
 protected slots:
-  void addRowFields(QHBoxLayout *row_layout, QString &v);
+  void addRowFields(QHBoxLayout *row_layout, void *data);
   void deleteRowFields(QHBoxLayout *row_layout);
   void nameChanged();
   void nameEdited();

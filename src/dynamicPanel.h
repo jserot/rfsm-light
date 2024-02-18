@@ -26,7 +26,7 @@ public:
 
 public slots:
   void clear();
-  void addRow(QString value);
+  void addRow(void *row_data);
 
 signals:
     
@@ -35,7 +35,7 @@ protected slots:
   void deleteRow();
   // The following methods must be defined in the derived classes 
 protected:
-  virtual void addRowFields(QHBoxLayout *row_layout, QString& v) = 0; // Fields shown _before_ the [Delete] button on the row
+  virtual void addRowFields(QHBoxLayout *row_layout, void *row_data) = 0; // Fields shown _before_ the [Delete] button on the row
   virtual void deleteRowFields(QHBoxLayout *row_layout) = 0; 
 public:
   virtual QStringList retrieve() = 0;
