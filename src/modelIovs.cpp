@@ -180,9 +180,17 @@ void ModelIovs::nameEdited()
   RowDesc *row_desc = widgetToRow.value(name_selector);
   assert(row_desc);
   QString name = name_selector->text().trimmed();
-  Iov* io = row_desc->io;
-  // qDebug() << "Setting input name to" << name;
-  io->name = name;
+  if ( model->getInputs().contains(name) 
+       || model->getOutputs().contains(name) 
+       || model->getVars().contains(name) ) {
+    QMessageBox::warning( this, "Error", "The name " + name + " is already used. Please choose another none");
+    name_selector->setText("");
+    }
+  else {
+    Iov* io = row_desc->io;
+    qDebug() << "Setting input name to" << name;
+    io->name = name;
+    }
   emit modelModified();
 }
 

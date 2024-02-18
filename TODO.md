@@ -1,8 +1,5 @@
 * GUI
 - handle event notification in actions
-- reject multiple state valuations (ex: `o=1 o=2`) 
-- reject duplicate names in iovs
-- reject actions when the dst state has a valuation for an output modified by the action (ex: `cond / o:=1 -> S[o=2]`)
 - fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints
 - add type_coercions in accepted expressions
@@ -12,12 +9,16 @@
 - Draw state boxes with round corners
 - Allow resizing of state boxes
 - Export to SCXML ?
+- reject multiple state valuations (ex: `o=1 o=2`) ?
+- reject actions when the dst state has a valuation for an output modified by the action (ex: `cond / o:=1 -> S[o=2]`) ?
+- Note: ... the two latter should probably be handled by an external, _semantic aware_ checker, the
+  internal check focusing on _syntactic_ checking
 
 * BUILD
 
 * TOOLS
 - automatically derive the `rscheck` parsers from those specified in the `rfsm` language ...
-- ... OR: rely on a full-fledged checker (with type checking !) integrated within the next `rfsm` distro (2.1)
+  ... OR: rely on a full-fledged checker (with type checking !) integrated within the next `rfsm` distro (2.1)
 
 * DOC
 - document restrictions compared to the full RFSM language
