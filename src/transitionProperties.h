@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDialog>
-//#include <QRegularExpression>
 
 class Transition;
 class State;
@@ -14,8 +13,6 @@ class SyntaxChecker;
 class TransitionProperties : public QDialog
 {
   Q_OBJECT
-
-  // static const QRegularExpression re_uid;
 
 public:
   TransitionProperties(Transition *transition, Model *model, bool isInitial, SyntaxChecker *syntaxChecker, QWidget *parent);

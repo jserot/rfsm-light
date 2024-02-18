@@ -35,7 +35,9 @@ protected slots:
   void deleteRow();
   // The following methods must be defined in the derived classes 
 protected:
-  virtual void addRowFields(QHBoxLayout *row_layout, void *row_data) = 0; // Fields shown _before_ the [Delete] button on the row
+  virtual void addRowFields(QHBoxLayout *row_layout, void *row_data) = 0;
+    // Fields shown _before_ the [Delete] button on the row
+    // [row_data] must point to the data used to populate the added row fields
   virtual void deleteRowFields(QHBoxLayout *row_layout) = 0; 
 public:
   virtual QStringList retrieve() = 0;

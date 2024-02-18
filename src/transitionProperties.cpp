@@ -5,7 +5,6 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QMessageBox>
-//#include <QRegularExpressionValidator>
 
 #include "transition.h"
 #include "state.h"
@@ -13,8 +12,6 @@
 #include "transitionGuards.h"
 #include "transitionActions.h"
 #include "syntaxChecker.h"
-
-// const QRegularExpression TransitionProperties::re_uid("[A-Z][A-Za-z0-9_]*");
 
 TransitionProperties::TransitionProperties(
   Transition *transition, Model *model, bool isInitial, SyntaxChecker *syntaxChecker, QWidget *parent)

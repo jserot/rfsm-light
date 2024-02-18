@@ -93,14 +93,8 @@ public slots:
 signals:
     void stateInserted(State *item);
     void editState(State *item);
-    // void stateSelected(State *item);
-    // void stateDeleted(State *item);
     void transitionInserted(Transition *item);
     void editTransition(Transition *item);
-    // void transitionSelected(Transition *item);
-    // void transitionDeleted(Transition *item);
-    // void nothingSelected();
-    // void fsmModified();
     void mouseEnter(void);
     void mouseLeave(void);
 

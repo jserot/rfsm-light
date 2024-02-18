@@ -55,13 +55,8 @@ public:
 private slots:
     void stateInserted(State *);
     void editState(State *);
-    // void stateSelected(State *);
-    // void stateDeleted(State *);
     void transitionInserted(Transition *);
     void editTransition(Transition *);
-    // void transitionSelected(Transition *);
-    // void transitionDeleted(Transition *);
-    // void nothingSelected();
     void modelModified();
     void save();
     void saveAs();

@@ -65,13 +65,8 @@ MainWindow::MainWindow()
     model->setSceneRect(QRectF(0, 0, canvas_width, canvas_height));
     connect(model, SIGNAL(stateInserted(State*)), this, SLOT(stateInserted(State*)));
     connect(model, SIGNAL(editState(State*)), this, SLOT(editState(State*)));
-    //connect(model, SIGNAL(stateSelected(State*)), this, SLOT(stateSelected(State*)));
-    //connect(model, SIGNAL(stateDeleted(State*)), this, SLOT(stateDeleted(State*)));
     connect(model, SIGNAL(transitionInserted(Transition*)), this, SLOT(transitionInserted(Transition*)));
     connect(model, SIGNAL(editTransition(Transition*)), this, SLOT(editTransition(Transition*)));
-    // connect(model, SIGNAL(transitionSelected(Transition*)), this, SLOT(transitionSelected(Transition*)));
-    // connect(model, SIGNAL(transitionDeleted(Transition*)), this, SLOT(transitionDeleted(Transition*)));
-    // connect(model, SIGNAL(nothingSelected()), this, SLOT(nothingSelected()));
     connect(model, SIGNAL(mouseEnter()), this, SLOT(updateCursor()));
     connect(model, SIGNAL(mouseLeave()), this, SLOT(resetCursor()));
 
@@ -154,15 +149,6 @@ void MainWindow::editState(State *state)
   delete dialog;
 }
 
-// void MainWindow::stateSelected(State *state)
-// {
-// }
-
-
-// void MainWindow::stateDeleted(State *)
-// {
-// }
-
 void MainWindow::transitionInserted(Transition *transition)
 {
   editTransition(transition);
@@ -187,18 +173,6 @@ void MainWindow::editTransition(Transition *transition)
     }
   delete dialog;
 }
-
-// void MainWindow::transitionDeleted(Transition *)
-// {
-// }
-
-// void MainWindow::transitionSelected(Transition *transition)
-// {
-// }
-
-// void MainWindow::nothingSelected()
-// {
-// }
 
 void MainWindow::modelModified()
 {

@@ -23,15 +23,8 @@ void StateValuations::addRowFields(QHBoxLayout *row_layout, void *row_data)
   valuation->setFrame(true);
   valuation->setText(*v);
   valuation->setCursorPosition(0);
-  // connect(valuation, &QLineEdit::editingFinished, this, &StateValuations::rowEdited);
   row_layout->addWidget(valuation);
 }
-
-// void StateValuations::rowEdited()
-// {
-//   QLineEdit* ledit = qobject_cast<QLineEdit*>(sender());
-//   qDebug() << ledit->objectName() << "=" << ledit->text();
-// }
 
 void StateValuations::deleteRowFields(QHBoxLayout *row_layout)
 {
