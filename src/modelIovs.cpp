@@ -30,9 +30,9 @@ static void setComboBoxItemEnabled(QComboBox * comboBox, int index, bool enabled
     item->setEnabled(enabled);
 }
 
-void setTypeSelector(QComboBox *type_selector, Iov* io)
+void setTypeSelector(QComboBox *type_selector, bool enabled, Iov* io)
 {
-  if ( io->name != "" ) {
+  if ( enabled ) {
     switch ( io->kind ) {
       case Iov::IoIn: 
       case Iov::IoOut: 
@@ -56,9 +56,9 @@ void setTypeSelector(QComboBox *type_selector, Iov* io)
   }
 }
 
-void setStimSelector(QComboBox *stim_selector, Iov* io)
+void setStimSelector(QComboBox *stim_selector, bool enabled, Iov* io)
 {
-  if ( io->name != "" ) {
+  if ( enabled ) {
     switch ( io->type ) {
       case Iov::TyEvent: 
         setComboBoxItemEnabled(stim_selector, 0, true); // None
@@ -113,7 +113,7 @@ void ModelIovs::addRowFields(QHBoxLayout *row_layout, void *row_data)
   type_selector->addItem("event", QVariant(Iov::TyEvent));
   type_selector->addItem("int", QVariant(Iov::TyInt));
   type_selector->addItem("bool", QVariant(Iov::TyBool));
-  setTypeSelector(type_selector, io);
+  setTypeSelector(type_selector, io->name != "", io);
   row_layout->addWidget(type_selector);
 #if QT_VERSION >= 0x060000
   connect(type_selector, &QComboBox::currentIndexChanged, this, &ModelIovs::typeEdited);
@@ -128,7 +128,7 @@ void ModelIovs::addRowFields(QHBoxLayout *row_layout, void *row_data)
     stim_selector->addItem("Periodic", QVariant(Stimulus::Periodic));
     stim_selector->addItem("Sporadic", QVariant(Stimulus::Sporadic));
     stim_selector->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
-    setStimSelector(stim_selector,io);
+    setStimSelector(stim_selector, io->name != "", io);
     row_layout->addWidget(stim_selector);
 #if QT_VERSION >= 0x060000
     connect(stim_selector, &QComboBox::activated, this, &ModelIovs::stimEdited);
@@ -169,56 +169,18 @@ void ModelIovs::deleteRowFields(QHBoxLayout *row_layout)
 
 void ModelIovs::updateTypeChoices(RowDesc *row_desc)
 {
-  // qDebug() << "** updateTypeChoices";
-  QString name = row_desc->name_selector->text().trimmed();
-  bool enabled = name != "";
-  QComboBox *type_selector = row_desc->type_selector;
-  setComboBoxItemEnabled(type_selector, 0, row_desc->io->kind == Iov::IoVar ? false : enabled); // Event type always disabled for variables
-  setComboBoxItemEnabled(type_selector, 1, enabled); 
-  setComboBoxItemEnabled(type_selector, 2, enabled);
-  type_selector->setCurrentIndex(enabled ? 1 : -1);
+  bool enabled = row_desc->name_selector->text().trimmed() != "";
+  setTypeSelector(row_desc->type_selector, enabled, row_desc->io);
 }
 
 void ModelIovs::updateStimChoices(RowDesc *row_desc) // For inputs only
 {
-  // qDebug() << "** updateStimChoices";
-  QComboBox *stim_selector = row_desc->stim_selector;
-  assert(stim_selector);
-  QString name = row_desc->name_selector->text().trimmed();
-  bool enabled = name != "";
-  if ( enabled ) {
-    Iov* io = row_desc->io;
-    assert(io);
-    QComboBox *stim_selector = row_desc->stim_selector;
-    qDebug() << "Setting stim choices for io" << io->toString();
-    switch ( io->type ) {
-    case Iov::TyEvent:
-      setComboBoxItemEnabled(stim_selector, 0, true); // TO FIX: we should not use hardcoded index here 
-      setComboBoxItemEnabled(stim_selector, 1, true);
-      setComboBoxItemEnabled(stim_selector, 2, true);
-      setComboBoxItemEnabled(stim_selector, 3, false);
-      break;
-    case Iov::TyInt:
-    case Iov::TyBool:
-      setComboBoxItemEnabled(stim_selector, 0, true);
-      setComboBoxItemEnabled(stim_selector, 1, false);
-      setComboBoxItemEnabled(stim_selector, 2, false);
-      setComboBoxItemEnabled(stim_selector, 3, true);
-      break;
-    }
-    stim_selector->setCurrentIndex(0); // None. 
-  } else {
-  setComboBoxItemEnabled(stim_selector, 0, false); 
-  setComboBoxItemEnabled(stim_selector, 1, false);
-  setComboBoxItemEnabled(stim_selector, 2, false);
-  setComboBoxItemEnabled(stim_selector, 2, false);
-  stim_selector->setCurrentIndex(-1);
-  }
+  bool enabled = row_desc->name_selector->text().trimmed() != "";
+  setStimSelector(row_desc->stim_selector, enabled, row_desc->io);
 }
 
 void ModelIovs::nameChanged()
 {
-  // qDebug() << "** Name changed !";
   QLineEdit* name_selector = qobject_cast<QLineEdit*>(sender());
   assert(name_selector);
   RowDesc *row_desc = widgetToRow.value(name_selector);
