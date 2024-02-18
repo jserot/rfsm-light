@@ -20,9 +20,7 @@ class MainWindow;
 class State;
 class Transition;
 class Model;
-class ModelInps;
-class ModelOutps;
-class ModelVars;
+class ModelIovs;
 class QLineEdit;
 class QGroupBox;
 
@@ -38,12 +36,10 @@ private:
 
   QGroupBox* name_panel;
   QLineEdit* model_name_field;
-  ModelInps *inps_panel;
-  ModelOutps *outps_panel;
-  ModelVars *vars_panel;
+  ModelIovs *inps_panel;
+  ModelIovs *outps_panel;
+  ModelIovs *vars_panel;
   
-  QHash<QWidget*,Iov*> widgetToIo; 
-
 public:
   explicit ModelProperties(Model *model, MainWindow* parent);
   ~ModelProperties();

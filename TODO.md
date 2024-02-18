@@ -1,7 +1,7 @@
 * GUI
-- merge Model{Inps,Outps,Vars} into ModelIo
 - handle event notification in actions
 - reject multiple state valuations (ex: `o=1 o=2`) 
+- reject duplicate names in iovs
 - reject actions when the dst state has a valuation for an output modified by the action (ex: `cond / o:=1 -> S[o=2]`)
 - fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
 - add sized ints

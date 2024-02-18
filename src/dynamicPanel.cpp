@@ -64,7 +64,7 @@ void DynamicPanel::clear()
   while ( layout->count() > 1 ) { // Do not erase last row !
     QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->takeAt(0));
     assert(row);
-    qDebug() << "StateValuationsPanel: deleting row" << row->objectName();
+    qDebug() << "DynamicPanel: deleting row" << row->objectName();
     delete_row(row);
   }
 }

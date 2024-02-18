@@ -13,9 +13,7 @@
 #include "modelProperties.h"
 #include "mainwindow.h"
 #include "model.h"
-#include "modelInps.h"
-#include "modelOutps.h"
-#include "modelVars.h"
+#include "modelIovs.h"
 #include "stimuli.h"
 #include "compilerPaths.h"
 
@@ -27,7 +25,6 @@
 #include <QString>
 #include <QStringList>
 #include <QVBoxLayout>
-// #include <stdexcept>
 #include <QMessageBox>
 #include <QRegularExpression>
 #include <QDebug>
@@ -52,13 +49,13 @@ ModelProperties::ModelProperties(Model *model, MainWindow* parent) : QFrame(pare
     name_panel->setLayout(layout);
     layout->addWidget(name_panel);
 
-    inps_panel = new ModelInps("Inputs", model, io_name_validator);
+    inps_panel = new ModelIovs(Iov::IoIn, "Inputs", model, io_name_validator);
     layout->addWidget(inps_panel);
 
-    outps_panel = new ModelOutps("Outputs", model, io_name_validator);
+    outps_panel = new ModelIovs(Iov::IoOut, "Outputs", model, io_name_validator);
     layout->addWidget(outps_panel);
 
-    vars_panel = new ModelVars("Variables", model, io_name_validator);
+    vars_panel = new ModelIovs(Iov::IoVar, "Variables", model, io_name_validator);
     layout->addWidget(vars_panel);
 
     QPushButton *dump_button = new QPushButton("dump");  // For debug only
