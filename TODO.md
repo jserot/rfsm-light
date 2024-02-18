@@ -1,6 +1,5 @@
 * GUI
-- handle event notification in actions
-- fix bug occuting sometimes (not always) when the src or dst state of a transition is modified in the transition edit panel
+- fill model name and properties when reading from file
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions

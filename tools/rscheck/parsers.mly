@@ -134,7 +134,8 @@ subtractive:
 action1:
   | a = action EOF { a }
 action:
-  | l = lval COLEQ e = expr { l +++ to_lhs e }
+  | l = lval { l } (* Emit l *)
+  | l = lval COLEQ e = expr { l +++ to_lhs e } (* l := expr *)
 
 state_valuation1:
   | v = state_valuation EOF { v }

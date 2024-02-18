@@ -17,7 +17,7 @@ void TransitionActions::addRowFields(QHBoxLayout *row_layout, QString& v)
   QString name(QString(tr("action #%1").arg(nb_rows)));
   QLineEdit *valuation = new QLineEdit();
   valuation->setObjectName(name);
-  valuation->setPlaceholderText("<output or variable> := <expr>");
+  valuation->setPlaceholderText("<o/v>:=<expr> | o");
   valuation->setMinimumSize(120,valuation->minimumHeight());
   valuation->setFrame(true);
   valuation->setText(v);
