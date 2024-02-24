@@ -60,6 +60,8 @@ public:
     static QColor unSelectedColor;
     static double arrowSize;
 
+    friend QDebug operator<<(QDebug d, Transition& t);
+
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
 

@@ -504,7 +504,7 @@ void Model::readFromFile(QString fname)
         state = new State(QPointF(x,y));
       else 
         state = new State(QString::fromStdString(id),
-                          QString::fromStdString(attrs).split(","),
+                          QString::fromStdString(attrs).split(",",Qt::SkipEmptyParts),
                           QPointF(x,y));
       states.insert(id, state);
       }   
@@ -531,8 +531,8 @@ void Model::readFromFile(QString fname)
       Transition *transition = new Transition(srcState,
                                               dstState,
                                               QString::fromStdString(event),
-                                              QString::fromStdString(guards).split(","),
-                                              QString::fromStdString(actions).split(","),
+                                              QString::fromStdString(guards).split(",",Qt::SkipEmptyParts),
+                                              QString::fromStdString(actions).split(",",Qt::SkipEmptyParts),
                                               location);
       transitions.append(transition);
       }
@@ -624,7 +624,7 @@ void Model::saveToFile(QString fname)
 
 QString dotTransitionLabel(QString label, QString lrpad="")
 {
-  QStringList l = label.split("/");
+  QStringList l = label.split("/",Qt::SkipEmptyParts);
   if ( l.length() != 2 ) return label;
   int n = std::max(l.at(0).length(), l.at(1).length());
   return lrpad + l.at(0) + lrpad
@@ -789,6 +789,7 @@ void Model::export_rfsm_model(QTextStream& os)
     if ( iTransition == NULL ) throw std::invalid_argument("Initial transition undefined");
     os << indent << "itrans: " << "\n";
     os << indent << "| -> " << iState->getId();
+    qDebug() << "iTacts=" << iTransition->getActions();
     if ( ! iTransition->getActions().isEmpty() ) os << " with " << iTransition->getActions().join(";");
     os << ";" << "\n";
     os << "}";
@@ -919,8 +920,16 @@ void Model::renderDot(QGVScene *dotScene)
 
 void Model::dump() // For debug only
 {
-  qDebug() << "Model name =" << name;
-  qDebug() << "Model ios =";
+  qDebug() << "Model " << name;
+  qDebug() << "  ios =";
   foreach ( Iov* io, ios )
-    qDebug() << "  " <<  io->toString();
+    qDebug() << "    " <<  io->toString();
+  qDebug() << "  states =";
+  foreach ( State* s, states() )
+    qDebug() << "    " << *s;
+  qDebug() << "  transitions =";
+  foreach ( Transition* t, transitions() )
+    qDebug() << "    " << *t;
+  qDebug() << "  initial state =" << *initState();
+  qDebug() << "  initial transition =" << *initTransition();
 }

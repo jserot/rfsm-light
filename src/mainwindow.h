@@ -194,8 +194,8 @@ private:
     static const double maxScaleFactor;
     static QStringList guiOnlyOpts;
 
-    QString compileMsgs;
-    QString compileErrors;
+    // QString compileMsgs;
+    // QString compileErrors;
 
     void logMessage(QString msg);
 

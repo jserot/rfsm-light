@@ -174,3 +174,9 @@ State::Location State::locateEvent(QGraphicsSceneMouseEvent *event)
   else if ( west.containsPoint(p,Qt::OddEvenFill) ) return State::West;
   return State::None;
 }
+
+QDebug operator<<(QDebug d, const State& s)
+{
+  d << s.id << ", " << s.attrs;
+  return d;
+}

@@ -236,3 +236,9 @@ QString Transition::toString()
 {
   return srcState->getId() + "->" + dstState->getId() + " [" + getLabel() + "]";
 }
+
+QDebug operator<<(QDebug d, Transition& t)
+{
+  d << t.srcState->getId() << "->" + t.dstState->getId() << "[" << t.guards << "/" << t.actions << "]";
+  return d;
+}

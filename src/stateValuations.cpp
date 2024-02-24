@@ -7,21 +7,22 @@
 
 StateValuations::StateValuations(QString title, QStringList& valuations) : DynamicPanel(title)
 {
+  qDebug() << "StateValuations::StateValuations: valuations=" << valuations;
   foreach ( QString v, valuations )
-    addRow((QObject *)(&v));
+    addRow((void *)(&v));
 }
 
 void StateValuations::addRowFields(QHBoxLayout *row_layout, void *row_data)
 {
   int nb_rows = row_layout->count();
   QString name(QString(tr("valuation #%1").arg(nb_rows)));
-  QString *v = (QString*)(row_data);
+  //QString *v = (QString*)(row_data);
   QLineEdit *valuation = new QLineEdit();
   valuation->setObjectName(name);
   valuation->setPlaceholderText("<output>=<value>");
   valuation->setMinimumSize(120,valuation->minimumHeight());
   valuation->setFrame(true);
-  valuation->setText(*v);
+  valuation->setText(row_data ? *(QString *)row_data : "");
   valuation->setCursorPosition(0);
   row_layout->addWidget(valuation);
 }

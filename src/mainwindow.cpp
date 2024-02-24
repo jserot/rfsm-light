@@ -700,14 +700,14 @@ QStringList MainWindow::compile(QString target, QString wDir, QString sFname, QS
   // if ( targetDir != "" ) dir.mkdir(targetDir);
   // Clean target directory
   // removeFiles(wDir + "/" + targetDir, eraseFirst);
-  compileErrors.clear();
   if ( executor->execute(wDir, compiler, args << "-gui" << sFname) )
     return getOutputFiles(target, wDir);
   else {
-    QMessageBox::warning(this, "", "Error when compiling model\n" + compileErrors);
+    QStringList compileErrors = executor->getErrors();
+    QMessageBox::warning(this, "", "Error when compiling model\n" + compileErrors.join("\n"));
     return QStringList();
     }
-   return QStringList();
+  return QStringList();
 }
 
 QStringList MainWindow::getOutputFiles(QString target, QString wDir)
