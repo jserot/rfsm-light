@@ -1,5 +1,6 @@
 #include "dynamicPanel.h"
 
+#include <QApplication>
 #include <QGroupBox>
 #include <QPushButton>
 #include <QBoxLayout>
@@ -34,6 +35,10 @@ void DynamicPanel::addRow(void *row_data) {
   connect(delButton, &QPushButton::clicked, this, &DynamicPanel::deleteRow);
   mButtonToLayoutMap.insert(delButton, row_layout);
   layout->insertLayout(layout->count(), row_layout); // Add to bottom
+  // qDebug() << "** Active window=" << QApplication::activeWindow();
+  QWidget* first = qobject_cast<QWidget*>(row_layout->itemAt(0)->widget());
+  assert(first);
+  first->setFocus();
 }
 
 void DynamicPanel::addNewRow()

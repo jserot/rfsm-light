@@ -35,9 +35,11 @@ void StateValuations::deleteRowFields(QHBoxLayout *row_layout)
 QStringList StateValuations::retrieve()
 {
   QStringList valuations;
-  for ( int i=0; i<layout->count()-1; i++ ) { // Exclude last row, carrying panel buttons
+  for ( int i=1; i<layout->count(); i++ ) { // Exclude first row, carrying panel buttons
     QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->itemAt(i));
+    assert(row);
     QLineEdit* ledit = qobject_cast<QLineEdit*>(row->itemAt(0)->widget());
+    assert(ledit);
     QString valuation = ledit->text().trimmed();
     valuations << valuation;
     }

@@ -1,5 +1,4 @@
 * GUI
-- after clicking Add in a a dynamic panel, set focus on the first row item (ledit generally)
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions

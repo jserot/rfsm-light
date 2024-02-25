@@ -105,6 +105,7 @@ void ModelIovs::addRowFields(QHBoxLayout *row_layout, void *row_data)
   name_selector->setFrame(true);
   name_selector->setCursorPosition(0);
   name_selector->setValidator(name_validator);
+  name_selector->setFocus();
   row_layout->addWidget(name_selector);
   connect(name_selector, &QLineEdit::editingFinished, this, &ModelIovs::nameEdited);
   connect(name_selector, &QLineEdit::textEdited, this, &ModelIovs::nameChanged);
