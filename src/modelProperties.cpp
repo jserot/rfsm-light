@@ -29,7 +29,7 @@
 #include <QRegularExpression>
 #include <QDebug>
 
-const QRegularExpression ModelProperties::re_lid("[a-z][a-z0-9_]*");
+const QRegularExpression ModelProperties::re_lid("[a-z][A-Za-z0-9_]*");
 
 ModelProperties::ModelProperties(Model *model, MainWindow* parent) : QFrame(parent)
 {
