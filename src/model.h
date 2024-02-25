@@ -104,8 +104,9 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-// void contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) override;
-   void editItem(QGraphicsItem *item);
+    void editItem(QGraphicsItem *item);
+//  void contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) override;
+
 
     void addState(State *state);
     void addTransition(Transition *transition);

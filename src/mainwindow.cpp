@@ -140,15 +140,8 @@ void MainWindow::stateInserted(State *state)
 
 void MainWindow::editState(State *state)
 {
-  qDebug() << "MainWindow::editState:";
-  // bool ok;
-  // QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-  //                                        tr("User name:"), QLineEdit::Normal,
-  //                                        QDir::home().dirName(), &ok);
-  // qDebug() << "MainWindow::editState: " << ok << ", got" << text;
   StateProperties dialog(state, model, syntaxChecker, view);
   int r = dialog.exec();
-  qDebug() << "MainWindow::editState: dialog returned:" << r;
   switch ( r ) {
     case QDialog::Accepted:
       qDebug() << "state" << state->getId() << "updated" << "mode=" << model->getMode();
@@ -310,7 +303,6 @@ void MainWindow::createActions()
     addTransitionAction = new QAction(QIcon(":/images/transition.png")," Add transition", diagramActions);
     addSelfTransitionAction = new QAction(QIcon(":/images/loop.png")," Add self transition", diagramActions);
     deleteItemAction = new QAction(QIcon(":/images/delete.png")," Delete item", diagramActions);
-    // editItemAction = new QAction(QIcon(":/images/select.png")," Edit item", diagramActions);
 
     selectItemAction->setData(QVariant::fromValue((int)Model::SelectItem));
     addStateAction->setData(QVariant::fromValue((int)Model::InsertState));
@@ -318,7 +310,6 @@ void MainWindow::createActions()
     addTransitionAction->setData(QVariant::fromValue((int)Model::InsertTransition));
     addSelfTransitionAction->setData(QVariant::fromValue((int)Model::InsertLoopTransition));
     deleteItemAction->setData(QVariant::fromValue((int)Model::DeleteItem));
-    // editItemAction->setData(QVariant::fromValue((int)Model::EditItem));
 
     selectItemAction->setCheckable(true);
     addStateAction->setCheckable(true);
@@ -326,7 +317,6 @@ void MainWindow::createActions()
     addTransitionAction->setCheckable(true);
     addSelfTransitionAction->setCheckable(true);
     deleteItemAction->setCheckable(true);
-    // editItemAction->setCheckable(true);
 
     selectItemAction->setChecked(true);
     addStateAction->setChecked(false);
@@ -334,7 +324,6 @@ void MainWindow::createActions()
     addTransitionAction->setChecked(false);
     addSelfTransitionAction->setChecked(false);
     deleteItemAction->setChecked(false);
-    // editItemAction->setChecked(false);
 
     connect(diagramActions, SIGNAL(triggered(QAction*)), this, SLOT(editDiagram(QAction*)));
 }
@@ -445,7 +434,6 @@ void MainWindow::createToolbars()
      editToolBar->addAction(addTransitionAction);
      editToolBar->addAction(addSelfTransitionAction);
      editToolBar->addAction(deleteItemAction);
-     // editToolBar->addAction(editItemAction);
 
      compileToolBar = addToolBar(tr("Compile"));
      compileToolBar->addWidget(spacer2);

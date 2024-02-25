@@ -16,7 +16,6 @@ void StateValuations::addRowFields(QHBoxLayout *row_layout, void *row_data)
 {
   int nb_rows = row_layout->count();
   QString name(QString(tr("valuation #%1").arg(nb_rows)));
-  //QString *v = (QString*)(row_data);
   QLineEdit *valuation = new QLineEdit();
   valuation->setObjectName(name);
   valuation->setPlaceholderText("<output>=<value>");

@@ -340,28 +340,10 @@ void Model::editItem(QGraphicsItem *item)
 
 // void Model::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent)
 // {
-//   qDebug() << "Model::contextMenuEvent !";
 //   QGraphicsItem *item = itemAt(contextMenuEvent->scenePos(), QTransform());
 //   if ( item ) {
 //     item->setSelected(true);
-//     bool ok;
-//     QString text;
-//     switch ( item->type() ) {
-//       case State::Type:
-//         qDebug() << "Model::editing state" << *qgraphicsitem_cast<State *>(item);
-//         text = QInputDialog::getText(mainWindow, tr("QInputDialog::getText()"),
-//                                          tr("User name:"), QLineEdit::Normal,
-//                                          QDir::home().dirName(), &ok);
-//         qDebug() << "Model::editing state: " << ok << ", got" << text;
-//         //emit(editState(qgraphicsitem_cast<State *>(item)));
-//         break;
-//       case Transition::Type:
-//         qDebug() << "Model::editing transition" << *qgraphicsitem_cast<Transition *>(item);
-//         //emit(editTransition(qgraphicsitem_cast<Transition *>(item)));
-//         break;
-//       default:
-//         break;
-//       }
+//     editItem(item);
 //     }
 //   QGraphicsScene::contextMenuEvent(contextMenuEvent);
 // }
@@ -405,8 +387,8 @@ void Model::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void Model::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
   Qt::MouseButton buttonPressed = mouseEvent->button();
-  qDebug() << "Model::mouseReleaseEvent: " << buttonPressed;
- if ( buttonPressed != Qt::LeftButton ) return;
+  // qDebug() << "Model::mouseReleaseEvent: " << buttonPressed;
+  if ( buttonPressed != Qt::LeftButton ) return;
   if ( line != 0 && (mode == InsertTransition || mode == InsertPseudoState) ) {
     QList<QGraphicsItem *> srcStates = items(line->line().p1());
     if (srcStates.count() && srcStates.first() == line) srcStates.removeFirst();

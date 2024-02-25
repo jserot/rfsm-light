@@ -8,20 +8,19 @@
 TransitionActions::TransitionActions(QString title, QStringList& actions) : DynamicPanel(title)
 {
   foreach ( QString v, actions )
-    addRow((QObject *)(&v));
+    addRow((void *)(&v));
 }
 
 void TransitionActions::addRowFields(QHBoxLayout *row_layout, void *row_data)
 {
   int nb_rows = row_layout->count();
   QString name(QString(tr("action #%1").arg(nb_rows)));
-  QString *v = (QString*)(row_data);
   QLineEdit *valuation = new QLineEdit();
   valuation->setObjectName(name);
   valuation->setPlaceholderText("<o/v>:=<expr> | o");
   valuation->setMinimumSize(120,valuation->minimumHeight());
   valuation->setFrame(true);
-  valuation->setText(*v);
+  valuation->setText(row_data ? *(QString *)row_data : "");
   valuation->setCursorPosition(0);
   row_layout->addWidget(valuation);
 }

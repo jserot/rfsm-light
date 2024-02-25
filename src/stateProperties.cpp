@@ -65,8 +65,9 @@ void StateProperties::accept()
   state->setId(id);
   QStringList valuations = valuations_panel->retrieve();
   bool ok = true;
+  QStringList outps = model->getOutpNonEvents();
+  qDebug() << "Syntax checking valuations" << valuations << "with outputs=" << outps;
   foreach ( QString valuation, valuations) {
-    qDebug() << "Syntax checking valuation" << valuation << "with outputs=" << model->getOutpNonEvents();
     QString msg = syntaxChecker->check_valuation(model->getOutpNonEvents(), valuation);
     if ( msg != "Ok" ) {
       QMessageBox::warning(this, "Error", msg);
