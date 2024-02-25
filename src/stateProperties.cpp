@@ -47,12 +47,16 @@ StateProperties::StateProperties(State *state, Model *model, SyntaxChecker *synt
 
   setLayout(layout);
 
+  // connect(cancel_button, &QPushButton::clicked, this, &QDialog::reject);
+  // connect(accept_button, &QPushButton::clicked, this, &QDialog::accept);
   connect(cancel_button, &QPushButton::clicked, this, &StateProperties::cancel);
   connect(accept_button, &QPushButton::clicked, this, &StateProperties::accept);
 
   this->state = state;
   this->model = model;
   this->syntaxChecker = syntaxChecker;
+
+  setModal(true);
 }
 
 void StateProperties::accept()
@@ -71,16 +75,19 @@ void StateProperties::accept()
     }
   if ( ok ) {
     state->setAttrs(valuations);
-    QDialog::accept();
+    qDebug() << "StateProperties::accept(ok)";
+    QDialog::done(Accepted);
     }
   else {
+    qDebug() << "StateProperties::accept(nok)";
     // Do not accept and leave dialog opened
   }
 }
 
 void StateProperties::cancel()
 {
-  QDialog::reject();
+  qDebug() << "StateProperties::cancel";
+  QDialog::done(Rejected);
 }
 
 StateProperties::~StateProperties()

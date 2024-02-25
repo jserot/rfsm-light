@@ -175,7 +175,7 @@ void TransitionProperties::accept()
       transition->setEvent(event);
       transition->setGuards(guards);
     }
-    QDialog::accept();
+    QDialog::done(Accepted);
     }
   else {
     // Do not accept and leave dialog opened
@@ -184,7 +184,7 @@ void TransitionProperties::accept()
 
 void TransitionProperties::cancel()
 {
-  QDialog::reject();
+  QDialog::done(Rejected);
 }
 
 TransitionProperties::~TransitionProperties()

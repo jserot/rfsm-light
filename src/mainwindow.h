@@ -147,6 +147,7 @@ private:
     QAction *fontConfigAction;
     QActionGroup *diagramActions;
     QAction* selectItemAction;
+    // QAction* editItemAction;
     QAction* addStateAction;
     QAction* addInitStateAction;
     QAction* addTransitionAction;
