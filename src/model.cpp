@@ -947,6 +947,6 @@ void Model::dump() // For debug only
   qDebug() << "  transitions =";
   foreach ( Transition* t, transitions() )
     qDebug() << "    " << *t;
-  qDebug() << "  initial state =" << *initState();
-  qDebug() << "  initial transition =" << *initTransition();
+  if ( initState() ) qDebug() << "  initial state =" << *initState();
+  if ( initTransition() ) qDebug() << "  initial transition =" << *initTransition();
 }

@@ -198,6 +198,7 @@ void ModelIovs::nameEdited()
   RowDesc *row_desc = widgetToRow.value(name_selector);
   assert(row_desc);
   QString name = name_selector->text().trimmed();
+  qDebug() << "** Name edited: " << name << model->getInputs() << model->getOutputs() << model->getVars();
   if ( model->getInputs().contains(name) 
        || model->getOutputs().contains(name) 
        || model->getVars().contains(name) ) {

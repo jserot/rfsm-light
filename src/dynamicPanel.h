@@ -26,7 +26,7 @@ public:
 
 public slots:
   void clear();
-  void addRow(void *row_data);
+  QHBoxLayout *addRow(void *row_data);
 
 signals:
     

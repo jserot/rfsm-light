@@ -23,7 +23,7 @@ DynamicPanel::DynamicPanel(QString title) : QGroupBox(title)
   clear_button->setDefault(false);
 }
 
-void DynamicPanel::addRow(void *row_data) {
+QHBoxLayout* DynamicPanel::addRow(void *row_data) {
   QHBoxLayout* row_layout = new QHBoxLayout();
   int nb_rows = layout->count();
   row_layout->setObjectName("row" + QString::number(nb_rows));
@@ -35,15 +35,15 @@ void DynamicPanel::addRow(void *row_data) {
   connect(delButton, &QPushButton::clicked, this, &DynamicPanel::deleteRow);
   mButtonToLayoutMap.insert(delButton, row_layout);
   layout->insertLayout(layout->count(), row_layout); // Add to bottom
-  // qDebug() << "** Active window=" << QApplication::activeWindow();
-  QWidget* first = qobject_cast<QWidget*>(row_layout->itemAt(0)->widget());
-  assert(first);
-  first->setFocus();
+  return row_layout;
 }
 
 void DynamicPanel::addNewRow()
 {
-  addRow(nullptr);
+  QHBoxLayout *row_layout = addRow(nullptr);
+  QWidget* first = qobject_cast<QWidget*>(row_layout->itemAt(0)->widget());
+  assert(first);
+  first->setFocus();
 }
 
 void DynamicPanel::delete_row(QHBoxLayout *row_layout)
