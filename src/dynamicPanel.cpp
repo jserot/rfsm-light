@@ -33,7 +33,7 @@ void DynamicPanel::addRow(void *row_data) {
   delButton->setIcon(QIcon(":/images/delete.png"));
   connect(delButton, &QPushButton::clicked, this, &DynamicPanel::deleteRow);
   mButtonToLayoutMap.insert(delButton, row_layout);
-  layout->insertLayout(0, row_layout); // Add to top
+  layout->insertLayout(layout->count(), row_layout); // Add to bottom
 }
 
 void DynamicPanel::addNewRow()
@@ -61,8 +61,8 @@ void DynamicPanel::deleteRow()
 
 void DynamicPanel::clear()
 {
-  while ( layout->count() > 1 ) { // Do not erase last row !
-    QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->takeAt(0));
+  while ( layout->count() > 1 ) { // Do not erase first row !
+    QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->takeAt(1));
     assert(row);
     qDebug() << "DynamicPanel: deleting row" << row->objectName();
     delete_row(row);
