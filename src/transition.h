@@ -36,7 +36,7 @@ public:
                State::Location location, QGraphicsItem *parent=0);
 
     int type() const override { return Type; }
-    QRectF boundingRect() const override;
+    //QRectF boundingRect() const override;
     QPainterPath shape() const override;
     State *getSrcState() const { return srcState; }
     State *getDstState() const { return dstState; }

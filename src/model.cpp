@@ -305,7 +305,12 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
           }
           break;
         case SelectItem:
+            qDebug() << "** SelectItem at" << mouseEvent->scenePos();
+            qDebug() << "** Existing items:";
+            foreach (QGraphicsItem* item, items()) 
+              qDebug() << "     " << item << item->scenePos() << item->boundingRect();
             item = itemAt(mouseEvent->scenePos(), QTransform());
+            qDebug() << "** SelectItem got" << item;
             if ( item != NULL ) {
               if ( QGuiApplication::keyboardModifiers().testFlag(Qt::ControlModifier) ) // LeftClick+Ctl
                 editItem(item);

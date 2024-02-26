@@ -57,23 +57,23 @@ bool Transition::isInitial()
   return srcState ? srcState->isPseudo() : false;
 }
 
-QRectF Transition::boundingRect() const
-{
-    qreal extra = (pen().width() + 20) / 2.0;
+// QRectF Transition::boundingRect() const
+// {
+//     qreal extra = (pen().width() + 20) / 2.0;
 
-    if ( srcState == dstState )
-      return
-        QRectF(polygon().at(0), polygon().at(2))
-        .normalized()
-        .adjusted(-extra, -extra, extra, extra);
-    else
-      return
-        QRectF(polygon().at(0),
-               QSizeF(polygon().at(1).x() - polygon().at(0).x(),
-                      polygon().at(1).y() - polygon().at(0).y()))
-        .normalized()
-        .adjusted(-extra, -extra, extra, extra);
-}
+//     if ( srcState == dstState )
+//       return
+//         QRectF(polygon().at(0), polygon().at(2))
+//         .normalized()
+//         .adjusted(-extra, -extra, extra, extra);
+//     else
+//       return
+//         QRectF(polygon().at(0),
+//                QSizeF(polygon().at(1).x() - polygon().at(0).x(),
+//                       polygon().at(1).y() - polygon().at(0).y()))
+//         .normalized()
+//         .adjusted(-extra, -extra, extra, extra);
+// }
 
 QPainterPath Transition::shape() const
 {
@@ -214,7 +214,7 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
       midPoint = (line.p1() + line.p2())/2;
     }
 
-    setPolygon(points);  // The recorded polygon does not include the arrow head
+    // setPolygon(points);  
     
     // Build arrow head  
 
@@ -222,6 +222,16 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
     QPointF arrowP2 = endPoint + QPointF(sin(angle + Pi - Pi/3) * arrowSize, cos(angle + Pi - Pi/3) * arrowSize);
     arrowHead.clear();
     arrowHead << endPoint << arrowP1 << arrowP2;
+
+    setPolygon(points + arrowHead); // The recorded polygon now includes the arrow head
+    // QRectF box = boundingRect();
+    // QPen pen = painter->pen();
+    // QBrush brush = painter->brush();
+    // painter->setPen(QPen(Qt::blue));
+    // painter->setBrush(Qt::NoBrush);
+    // painter->drawRect(box);
+    // painter->setPen(pen);
+    // painter->setBrush(brush);
 
     // Draw all
     
