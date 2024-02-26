@@ -6,10 +6,6 @@
 - Allow multi-FSM models (use SCC-based partitionning of the graph)
 - Allow resizing of state boxes
 - Export to SCXML ?
-- reject multiple state valuations (ex: `o=1 o=2`) ?
-- reject actions when the dst state has a valuation for an output modified by the action (ex: `cond / o:=1 -> S[o=2]`) ?
-- Note: ... the two latter should probably be handled by an external, _semantic aware_ checker, the
-  internal check focusing on _syntactic_ checking
 
 * BUILD
 

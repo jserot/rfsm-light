@@ -15,16 +15,27 @@
 
 #include "commandExec.h"
 
+struct SyntaxCheckerResult
+{
+  bool ok;
+  QStringList lhs_vars;
+  QStringList rhs_vars;
+  QString msg;
+  SyntaxCheckerResult(bool ok) : ok(ok) { }
+  SyntaxCheckerResult(bool ok, QStringList& lhs_vars, QStringList& rhs_vars)
+    : ok(ok), lhs_vars(lhs_vars), rhs_vars(rhs_vars) { }
+};
+
 class SyntaxChecker
 {
  public:
   SyntaxChecker(CommandExec *executor, QString syntaxChecker);
-  QString check_valuation(QStringList outps, QString valuation);
-  QString check_guard(QStringList inps, QStringList outps, QStringList vars, QString guard);
-  QString check_action(QStringList inps, QStringList outps, QStringList vars, QString action);
+  SyntaxCheckerResult check_valuation(QStringList outps, QString valuation);
+  SyntaxCheckerResult check_guard(QStringList inps, QStringList outps, QStringList vars, QString guard);
+  SyntaxCheckerResult check_action(QStringList inps, QStringList outps, QStringList vars, QString action);
 private:
   CommandExec *executor;
   QString checker;
-  bool check(QStringList args, QString input, QStringList& lhs_vars, QStringList& rhs_vars);
+  SyntaxCheckerResult check(QStringList args, QString input);
 };
 #endif

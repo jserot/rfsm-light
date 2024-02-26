@@ -142,9 +142,9 @@ void TransitionProperties::accept()
     guards = guards_panel->retrieve();
     foreach ( QString guard, guards) {
       qDebug() << "Syntax checking guard" << guard << "with NEInputs=" << model->getInpNonEvents() << "and vars=" << model->getVars();
-      QString msg = syntaxChecker->check_guard(model->getInpNonEvents(), model->getOutputs(), model->getVars(), guard);
-      if ( msg != "Ok" ) {
-        QMessageBox::warning(this, "Error", msg);
+      SyntaxCheckerResult r = syntaxChecker->check_guard(model->getInpNonEvents(), model->getOutputs(), model->getVars(), guard);
+      if ( ! r.ok ) {
+        QMessageBox::warning(this, "Error", r.msg);
         guards_ok = false;
         }
       }
@@ -157,13 +157,22 @@ void TransitionProperties::accept()
     }
 
   bool actions_ok = true;
+  QSet<QString> lhss;
   actions = actions_panel->retrieve();
   foreach ( QString action, actions) {
     qDebug() << "Syntax checking action" << action << "with NEInputs=" << model->getInpNonEvents() << "and vars=" << model->getVars();
-    QString msg = syntaxChecker->check_action(model->getInpNonEvents(), model->getOutputs(), model->getVars(), action);
-    if ( msg != "Ok" ) {
-      QMessageBox::warning(this, "Error", msg);
+    SyntaxCheckerResult r = syntaxChecker->check_action(model->getInpNonEvents(), model->getOutputs(), model->getVars(), action);
+    if ( ! r.ok ) {
+      QMessageBox::warning(this, "Error", r.msg);
       actions_ok = false;
+      }
+    foreach ( QString v, r.lhs_vars ) {
+      if ( lhss.contains(v) ) { // Assignation of an already assigned output/var 
+        QMessageBox::warning(this, "Error", "The output/variable " + v + " is assigned several times by the actions");
+        actions_ok = false;
+        }
+      else
+        lhss.insert(v);
       }
     }
 

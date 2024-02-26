@@ -65,13 +65,22 @@ void StateProperties::accept()
   state->setId(id);
   QStringList valuations = valuations_panel->retrieve();
   bool ok = true;
+  QSet<QString> lhss;
   QStringList outps = model->getOutpNonEvents();
   qDebug() << "Syntax checking valuations" << valuations << "with outputs=" << outps;
   foreach ( QString valuation, valuations) {
-    QString msg = syntaxChecker->check_valuation(model->getOutpNonEvents(), valuation);
-    if ( msg != "Ok" ) {
-      QMessageBox::warning(this, "Error", msg);
+    SyntaxCheckerResult r = syntaxChecker->check_valuation(model->getOutpNonEvents(), valuation);
+    if ( ! r.ok ) {
+      QMessageBox::warning(this, "Error", r.msg);
       ok = false;
+      }
+    foreach ( QString o, r.lhs_vars ) {
+      if ( lhss.contains(o) ) { // Assignation of an already assigned output
+        QMessageBox::warning(this, "Error", "The output " + o + " is assigned several times by the valuations");
+        ok = false;
+        }
+      else
+        lhss.insert(o);
       }
     }
   if ( ok ) {

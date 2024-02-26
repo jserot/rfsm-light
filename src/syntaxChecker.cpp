@@ -20,7 +20,7 @@ SyntaxChecker::SyntaxChecker(CommandExec *executor, QString checker)
   this->checker = checker;
 }
 
-bool SyntaxChecker::check(QStringList args, QString input, QStringList& lhs_vars, QStringList& rhs_vars)
+SyntaxCheckerResult SyntaxChecker::check(QStringList args, QString input)
 {
   QString wDir = ".";
   args.append(input);
@@ -29,50 +29,59 @@ bool SyntaxChecker::check(QStringList args, QString input, QStringList& lhs_vars
   QStringList outps = executor->getOutputs();
   qDebug() << "Checker output=" << outps; 
   // TODO: use regexp to parse output
-  if ( outps.length() < 1 ) return false;
+  if ( outps.length() < 1 ) return SyntaxCheckerResult(false);
   QStringList res = outps.at(0).split(";", Qt::KeepEmptyParts);
   if ( res.length() != 3 ) return false;
   if ( res.at(0) != "1" ) return false;
-  lhs_vars = res.at(1).split(",",Qt::SkipEmptyParts);
-  rhs_vars = res.at(2).split(",",Qt::SkipEmptyParts);
+  QStringList lhs_vars = res.at(1).split(",",Qt::SkipEmptyParts);
+  QStringList rhs_vars = res.at(2).split(",",Qt::SkipEmptyParts);
   qDebug() << "Guard/action validated. LHS vars=" << lhs_vars << "RHS vars" << rhs_vars;
-  return true;
+  return SyntaxCheckerResult(true, lhs_vars, rhs_vars);
 }
 
-QString SyntaxChecker::check_guard(QStringList inps, QStringList outps, QStringList vars, QString guard)
+SyntaxCheckerResult SyntaxChecker::check_guard(QStringList inps, QStringList outps, QStringList vars, QString guard)
 {
   Q_UNUSED(outps);
   QStringList lhs_vars, rhs_vars;
-  if ( ! check(QStringList("-guard"), guard, lhs_vars, rhs_vars) ) return "Invalid guard: \"" + guard + "\""; 
-  foreach ( QString rhs, rhs_vars ) {
-    if ( ! inps.contains(rhs) && ! vars.contains(rhs) )
-      return "The symbol \"" + rhs + "\" occuring in the guard \"" + guard + "\" is neither an input nor a variable";
+  SyntaxCheckerResult r = check(QStringList("-guard"), guard);
+  if ( ! r.ok ) { r.msg = "Invalid guard: \"" + guard + "\""; return r; }
+  foreach ( QString rhs, r.rhs_vars ) {
+    if ( ! inps.contains(rhs) && ! vars.contains(rhs) ) {
+      r.msg = "The symbol \"" + rhs + "\" occuring in the guard \"" + guard + "\" is neither an input nor a variable";
+      return r;
+      }
     }
-  return "Ok";
+  return r;
 }
 
-QString SyntaxChecker::check_action(QStringList inps, QStringList outps, QStringList vars, QString action)
+SyntaxCheckerResult SyntaxChecker::check_action(QStringList inps, QStringList outps, QStringList vars, QString action)
 {
-  QStringList lhs_vars, rhs_vars;
-  if ( ! check(QStringList("-action"), action, lhs_vars, rhs_vars) ) return "Invalid action: \"" + action + "\""; 
-  foreach ( QString rhs, rhs_vars ) {
-    if ( ! inps.contains(rhs) && ! vars.contains(rhs) )
-      return "The symbol \"" + rhs + "\" occuring in the action \"" + action + "\" is neither an input nor a variable";
+  SyntaxCheckerResult r = check(QStringList("-action"), action);
+  if ( ! r.ok ) { r.msg = "Invalid action: \"" + action + "\""; return r; }
+  foreach ( QString rhs, r.rhs_vars ) {
+    if ( ! inps.contains(rhs) && ! vars.contains(rhs) ) {
+      r.msg = "The symbol \"" + rhs + "\" occuring in the action \"" + action + "\" is neither an input nor a variable";
+      return r;
+      }
     }
-  foreach ( QString lhs, lhs_vars ) {
-    if ( ! outps.contains(lhs) && ! vars.contains(lhs) ) 
-      return "The symbol \"" + lhs + "\" modified in the action \"" + action + "\" is neither an output nor a variable";
+  foreach ( QString lhs, r.lhs_vars ) {
+    if ( ! outps.contains(lhs) && ! vars.contains(lhs) ) {
+      r.msg = "The symbol \"" + lhs + "\" modified in the action \"" + action + "\" is neither an output nor a variable";
+      return r;
+      }
     }
-  return "Ok";
+  return r;
 }
 
-QString SyntaxChecker::check_valuation(QStringList outps, QString valuation)
+SyntaxCheckerResult SyntaxChecker::check_valuation(QStringList outps, QString valuation)
 {
-  QStringList lhs_vars, rhs_vars;
-  if ( ! check(QStringList("-sval"), valuation, lhs_vars, rhs_vars) ) return "Invalid valuation: \"" + valuation + "\""; 
-  foreach ( QString lhs, lhs_vars ) {
-    if ( ! outps.contains(lhs) ) 
-      return "The symbol \"" + lhs + "\" set in the valuation \"" + valuation + "\" is not an output";
+  SyntaxCheckerResult r = check(QStringList("-sval"), valuation);
+  if ( ! r.ok ) { r.msg = "Invalid valuation: \"" + valuation + "\""; return r; }
+  foreach ( QString lhs, r.lhs_vars ) {
+    if ( ! outps.contains(lhs) )  {
+      r.msg = "The symbol \"" + lhs + "\" set in the valuation \"" + valuation + "\" is not an output";
+      return r;
+      }
     }
-  return "Ok";
+  return r;
 }
