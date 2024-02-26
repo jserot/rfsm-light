@@ -4,7 +4,6 @@
 - Allow attachement of priorities to transitions
 - VHDL and SystemC syntax highlighters
 - Allow multi-FSM models (use SCC-based partitionning of the graph)
-- Draw state boxes with round corners
 - Allow resizing of state boxes
 - Export to SCXML ?
 - reject multiple state valuations (ex: `o=1 o=2`) ?

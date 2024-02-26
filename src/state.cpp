@@ -108,7 +108,11 @@ void State::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
   else {
     painter->setPen(QPen(isSelected() ? selectedColor : unSelectedColor, 1));
     painter->setBrush(boxBackground);
-    painter->drawPolygon(myPolygon);
+    // painter->drawPolygon(myPolygon);
+    // painter->setRenderHint(QPainter::Antialiasing);
+    QPainterPath path;
+    path.addRoundedRect(myPolygon.boundingRect(), 10, 10);
+    painter->drawPath(path); 
     QString lbl = id;
     foreach ( QString attr, attrs)
       lbl += "\n" + attr;
