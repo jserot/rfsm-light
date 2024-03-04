@@ -104,7 +104,6 @@ void StateProperties::accept()
 
 bool StateProperties::build_fragment_file(QString frag)
 {
-  // Build fragment file
   QFile file(tmpFragmentFileName);
   file.open(QIODevice::WriteOnly | QIODevice::Text);
   if ( file.error() != QFile::NoError ) {
@@ -113,7 +112,9 @@ bool StateProperties::build_fragment_file(QString frag)
     }
   QTextStream os(&file);
   os << "-- context" << Qt::endl;
-  // TBW
+  foreach ( Iov* iov, model->getIos() ) {
+    os << Iov::stringOfKind(iov->kind) << " " << iov->name << ": " << Iov::stringOfType(iov->type) << ";" << Qt::endl;
+    }
   os << "-- fragment" << Qt::endl;
   os << "sval " << frag << ";" << Qt::endl;
   file.close();
