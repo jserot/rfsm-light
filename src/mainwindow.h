@@ -42,6 +42,7 @@ class CompilerPaths;
 class CompilerOptions;
 class Model;
 class CommandExec;
+class Compiler;
 class SyntaxChecker;
 QT_END_NAMESPACE
 
@@ -89,6 +90,7 @@ private slots:
     void setCodeFont();
     void updateCursor();
     void resetCursor();
+    void compilerPathUpdated(QString path); 
 
 private:
     void createActions();
@@ -117,8 +119,9 @@ private:
     CompilerPaths *compilerPaths;
     CompilerOptions *compilerOptions;
     QStatusBar *statusBar;
-    CommandExec *executor;
-    SyntaxChecker *syntaxChecker;
+    Compiler *compiler; // For calling the rfsmc compiler
+    CommandExec *executor; // For calling externals commands
+    SyntaxChecker *syntaxChecker; // TO BE REMOVED
 
     QAction *newDiagramAction;
     QAction *openFileAction;
@@ -204,8 +207,8 @@ public:
   CompilerPaths *getCompilerPaths() const { return compilerPaths; }
   CompilerOptions *getCompilerOptions() const { return compilerOptions; }
   Model* getModel() const { return model; }
-  CommandExec *getExecutor() { return executor; }
-  SyntaxChecker *getSyntaxChecker() { return syntaxChecker; }
+  //CommandExec *getExecutor() { return executor; }
+  //SyntaxChecker *getSyntaxChecker() { return syntaxChecker; }
   void setUnsavedChanges(bool unsaved_changes = true);
 
 };

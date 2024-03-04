@@ -22,6 +22,7 @@
 #include "compilerPaths.h"
 #include "compilerOptions.h"
 #include "commandExec.h"
+#include "compiler.h"
 #include "syntaxChecker.h"
 #include "debug.h"
 #include "stimuli.h"
@@ -75,6 +76,7 @@ MainWindow::MainWindow()
     compilerPaths = new CompilerPaths(appDir + "/rfsm-light.ini", this);
     compilerOptions = new CompilerOptions(appDir + "/options_spec.txt", this);
     initDir = compilerPaths->getPath("INITDIR");
+    connect(compilerPaths, SIGNAL(compilerPathChanged(QString)), this, SLOT(compilerPathUpdated(QString)));
 
     executor = new CommandExec();
 
@@ -130,6 +132,11 @@ MainWindow::MainWindow()
     splitter->setSizes(splitterSizes); 
 
     currentScaleFactor = 1.0;
+
+    QString compilerPath = compilerPaths->getPath("COMPILER");
+    if ( compilerPath.isNull() || compilerPath.isEmpty() ) compilerPath = "rfsmc"; // Last chance..
+
+    compiler = new Compiler(compilerPath);
 }
 
 
@@ -140,9 +147,7 @@ void MainWindow::stateInserted(State *state)
 
 void MainWindow::editState(State *state)
 {
-  QString compiler = compilerPaths->getPath("COMPILER");
-  if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmc"; // Last chance..
-  StateProperties dialog(state, model, compiler, executor, view);
+  StateProperties dialog(state, model, compiler, view);
   int r = dialog.exec();
   switch ( r ) {
     case QDialog::Accepted:
@@ -185,6 +190,12 @@ void MainWindow::modelModified()
 {
   qDebug() << "Model modified !";
   setUnsavedChanges(true);
+}
+
+void MainWindow::compilerPathUpdated(QString path)
+{
+  qDebug() << "Compiler path updated to" << path;
+  compiler->setPath(path);
 }
 
 void MainWindow::about()
@@ -696,58 +707,6 @@ void MainWindow::resultTabChanged(int index)
   updateActions();
 }
 
-// Interface to RFSMC compiler
-
-QStringList MainWindow::compile(QString target, QString wDir, QString sFname, QStringList args)
-{
-  if ( sFname.isEmpty() ) return QStringList();
-  qDebug() << "compile: srcFile=" << sFname << " wDir=" << wDir;
-  QString compiler = compilerPaths->getPath("COMPILER");
-  if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmc"; // Last chance..
-  // if ( targetDir != "" ) dir.mkdir(targetDir);
-  // Clean target directory
-  // removeFiles(wDir + "/" + targetDir, eraseFirst);
-  if ( executor->execute(wDir, compiler, args << "-gui" << sFname) )
-    return getOutputFiles(target, wDir);
-  else {
-    QStringList compileErrors = executor->getErrors();
-    QMessageBox::warning(this, "", "Error when compiling model\n" + compileErrors.join("\n"));
-    return QStringList();
-    }
-  return QStringList();
-}
-
-QStringList MainWindow::getOutputFiles(QString target, QString wDir)
-{
-  QString rfile = wDir + "/rfsm.output";
-  QFile ff(rfile);
-  QStringList res;
-  qDebug() << "Output files: rfile=" << rfile;
-  if ( ! ff.exists() ) {
-      QMessageBox::warning(NULL, "", "Cannot open file " + rfile);
-      return res;
-    }
-  ff.open(QIODevice::ReadOnly | QIODevice::Text);
-  if ( target == "sim" )
-    res.append(wDir+"/"+"main.vcd");  // TO FIX : this is a hack while waiting rfsmc to correctly write rsfm.output
-  else {
-    QTextStream is(&ff);
-    while( ! is.atEnd() ) {
-      QString of = is.readLine(); // One file per line
-      QFileInfo f(of);
-      if (  (target == "systemc" && (f.suffix() == "cpp" || f.suffix() == "h"))
-            || (target == "vhdl" && f.suffix() == "vhd")
-            || (target == "ctask" && f.suffix() == "c")
-            || (target == "dot" && f.suffix() == "dot") 
-            || (target == "sim" && f.suffix() == "vcd") )
-        res.append(wDir+"/"+of);
-      }
-    }
-  ff.close();
-  qDebug() << "Output files: " << res;
-  return res;
-}
-
 void MainWindow::generate(QString target, bool withTestbench)
 {
   QString fname = generateRfsm(withTestbench);
@@ -777,11 +736,17 @@ void MainWindow::generate(QString target, bool withTestbench)
     << compilerOptions->getOptions(target);
   //if ( target == "sim" ) args << "-main" <<  fi.baseName();
   if ( target == "ctask" || target == "systemc" ) args << "-show_models";
-  QStringList resFiles = compile(target, wDir, fi.fileName(), args);
-  if ( ! resFiles.isEmpty() ) {
+  if ( compiler->run(fi.fileName(), args, wDir) ) {
+    QStringList resFiles = compiler->getOutputFiles(target, wDir); 
+    if ( ! resFiles.isEmpty() ) {
     logMessage("Generated file(s) : " + resFiles.join(", "));
     foreach ( QString rFile, resFiles) 
       openResultFile(rFile);
+      }
+    }
+  else {
+    QStringList compileErrors = compiler->getErrors();
+    QMessageBox::warning(this, "", "Error when compiling model\n" + compileErrors.join("\n"));
     }
   updateActions();
 }

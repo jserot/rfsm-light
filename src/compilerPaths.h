@@ -38,6 +38,9 @@ private slots:
   void valueChanged(const QString&);
   void buttonClicked(QAbstractButton*);
 
+signals:
+    void compilerPathChanged(QString newPath);
+
 private:
     QWidget *parent;
     QDialog *dialog;

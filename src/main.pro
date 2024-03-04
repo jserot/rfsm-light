@@ -32,6 +32,7 @@ HEADERS += include/nlohmann_json.h \
            iov.h  \
            model.h  \
            commandExec.h \
+           compiler.h \
            syntaxChecker.h \
            dynamicPanel.h \
            stateValuations.h \
@@ -57,6 +58,7 @@ SOURCES += transition.cpp \
            iov.cpp  \
            model.cpp \
            commandExec.cpp \
+           compiler.cpp \
            syntaxChecker.cpp \
            dynamicPanel.cpp \
            stateValuations.cpp \

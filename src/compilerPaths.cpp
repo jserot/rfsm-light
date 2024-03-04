@@ -121,7 +121,10 @@ void CompilerPaths::edit(QWidget *parent)
 void CompilerPaths::valueChanged(const QString& txt)
 {
   QString path = sender()->objectName();
-  editedPaths.insert(path, txt.trimmed());
+  QString value = txt.trimmed();
+  editedPaths.insert(path, value);
+  if ( path == "COMPILER" )
+    emit(compilerPathChanged(value));
 }
 
 void CompilerPaths::buttonClicked(QAbstractButton *button)

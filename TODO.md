@@ -1,5 +1,5 @@
 * GUI
-- encapsulate calls to `rfsmc` compiler in a class
+- remove `syntaxChecker` class (no longer used)
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions

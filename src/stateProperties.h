@@ -7,8 +7,7 @@ class State;
 class Model;
 class QLineEdit;
 class StateValuations;
-//class SyntaxChecker;
-class CommandExec;
+class Compiler;
 
 class StateProperties : public QDialog
 {
@@ -18,16 +17,13 @@ class StateProperties : public QDialog
   static const QString tmpFragmentFileName;
 
 public:
-  StateProperties(State *state, Model *model, // SyntaxChecker *syntaxChecker,
-                                                   QString compiler, CommandExec *executor, QWidget *parent);
+  StateProperties(State *state, Model *model, Compiler *compiler, QWidget *parent);
   ~StateProperties();
 
 private:
   State *state;
   Model *model;
-  //SyntaxChecker *syntaxChecker;
-  CommandExec *executor;
-  QString compiler;
+  Compiler *compiler;
   bool build_fragment_file(QString frag);
   bool check_fragment(QString frag);
 

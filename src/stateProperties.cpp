@@ -11,15 +11,13 @@
 #include "state.h"
 #include "model.h"
 #include "stateValuations.h"
-//#include "syntaxChecker.h"
-#include "commandExec.h"
+#include "compiler.h"
 
 const QRegularExpression StateProperties::re_uid("[A-Z][A-Za-z0-9_]*");
 
 const QString StateProperties::tmpFragmentFileName = "_rfsm_fragment.fsp";
 
-StateProperties::StateProperties(State *state, Model *model, // SyntaxChecker *syntaxChecker,
-                                 QString compiler, CommandExec *executor, QWidget *parent)
+StateProperties::StateProperties(State *state, Model *model, Compiler *compiler, QWidget *parent)
   : QDialog(parent)
 {
   QString id = state->getId();
@@ -59,8 +57,6 @@ StateProperties::StateProperties(State *state, Model *model, // SyntaxChecker *s
 
   this->state = state;
   this->model = model;
-  //this->syntaxChecker = syntaxChecker;
-  this->executor = executor;
   this->compiler = compiler;
 
   setModal(true);
@@ -74,7 +70,7 @@ void StateProperties::accept()
   bool ok = true;
   QSet<QString> lhss;
   QStringList outps = model->getOutpNonEvents();
-  qDebug() << "Syntax checking valuations" << valuations << "with outputs=" << outps;
+  qDebug() << "Syntax checking valuations" << valuations;
   foreach ( QString valuation, valuations) {
     // SyntaxCheckerResult r = syntaxChecker->check_valuation(model->getOutpNonEvents(), valuation);
     // if ( ! r.ok ) {
@@ -90,7 +86,7 @@ void StateProperties::accept()
     //     lhss.insert(o);
     //   }
     if ( ! check_fragment(valuation) ) {
-      QStringList compileErrors = executor->getErrors();
+      QStringList compileErrors = compiler->getErrors();
       QMessageBox::warning(this, "", "Illegal state valuation: \"" + valuation + "\"\n" + compileErrors.join("\n"));
       ok = false;
       }
@@ -118,7 +114,7 @@ bool StateProperties::build_fragment_file(QString frag)
   QTextStream os(&file);
   os << "-- context" << Qt::endl;
   // TBW
-  os << "-- fragments" << Qt::endl;
+  os << "-- fragment" << Qt::endl;
   os << "sval " << frag << ";" << Qt::endl;
   file.close();
   qDebug() << "Created fragment file" << file.fileName();
@@ -128,8 +124,8 @@ bool StateProperties::build_fragment_file(QString frag)
 bool StateProperties::check_fragment(QString frag)
 {
   if ( ! build_fragment_file(frag) ) return false;
-  QStringList args;
-  return executor->execute(".", compiler, args << "-check_fragment" << tmpFragmentFileName);
+  QStringList args = { "-check_fragment" };
+  return compiler->run(tmpFragmentFileName, args, ".");
 }
 
 void StateProperties::cancel()
