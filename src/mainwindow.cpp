@@ -140,7 +140,9 @@ void MainWindow::stateInserted(State *state)
 
 void MainWindow::editState(State *state)
 {
-  StateProperties dialog(state, model, syntaxChecker, view);
+  QString compiler = compilerPaths->getPath("COMPILER");
+  if ( compiler.isNull() || compiler.isEmpty() ) compiler = "rfsmc"; // Last chance..
+  StateProperties dialog(state, model, compiler, executor, view);
   int r = dialog.exec();
   switch ( r ) {
     case QDialog::Accepted:

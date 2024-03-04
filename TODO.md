@@ -1,4 +1,5 @@
 * GUI
+- encapsulate calls to `rfsmc` compiler in a class
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions

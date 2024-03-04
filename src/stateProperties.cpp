@@ -6,15 +6,20 @@
 #include <QLineEdit>
 #include <QRegularExpressionValidator>
 #include <QMessageBox>
+#include <QFile>
 
 #include "state.h"
 #include "model.h"
 #include "stateValuations.h"
-#include "syntaxChecker.h"
+//#include "syntaxChecker.h"
+#include "commandExec.h"
 
 const QRegularExpression StateProperties::re_uid("[A-Z][A-Za-z0-9_]*");
 
-StateProperties::StateProperties(State *state, Model *model, SyntaxChecker *syntaxChecker, QWidget *parent)
+const QString StateProperties::tmpFragmentFileName = "_rfsm_fragment.fsp";
+
+StateProperties::StateProperties(State *state, Model *model, // SyntaxChecker *syntaxChecker,
+                                 QString compiler, CommandExec *executor, QWidget *parent)
   : QDialog(parent)
 {
   QString id = state->getId();
@@ -54,7 +59,9 @@ StateProperties::StateProperties(State *state, Model *model, SyntaxChecker *synt
 
   this->state = state;
   this->model = model;
-  this->syntaxChecker = syntaxChecker;
+  //this->syntaxChecker = syntaxChecker;
+  this->executor = executor;
+  this->compiler = compiler;
 
   setModal(true);
 }
@@ -69,18 +76,23 @@ void StateProperties::accept()
   QStringList outps = model->getOutpNonEvents();
   qDebug() << "Syntax checking valuations" << valuations << "with outputs=" << outps;
   foreach ( QString valuation, valuations) {
-    SyntaxCheckerResult r = syntaxChecker->check_valuation(model->getOutpNonEvents(), valuation);
-    if ( ! r.ok ) {
-      QMessageBox::warning(this, "Error", r.msg);
+    // SyntaxCheckerResult r = syntaxChecker->check_valuation(model->getOutpNonEvents(), valuation);
+    // if ( ! r.ok ) {
+    //   QMessageBox::warning(this, "Error", r.msg);
+    //   ok = false;
+    //   }
+    // foreach ( QString o, r.lhs_vars ) {
+    //   if ( lhss.contains(o) ) { // Assignation of an already assigned output
+    //     QMessageBox::warning(this, "Error", "The output " + o + " is assigned several times by the valuations");
+    //     ok = false;
+    //     }
+    //   else
+    //     lhss.insert(o);
+    //   }
+    if ( ! check_fragment(valuation) ) {
+      QStringList compileErrors = executor->getErrors();
+      QMessageBox::warning(this, "", "Illegal state valuation: \"" + valuation + "\"\n" + compileErrors.join("\n"));
       ok = false;
-      }
-    foreach ( QString o, r.lhs_vars ) {
-      if ( lhss.contains(o) ) { // Assignation of an already assigned output
-        QMessageBox::warning(this, "Error", "The output " + o + " is assigned several times by the valuations");
-        ok = false;
-        }
-      else
-        lhss.insert(o);
       }
     }
   if ( ok ) {
@@ -92,6 +104,32 @@ void StateProperties::accept()
     qDebug() << "StateProperties::accept(nok)";
     // Do not accept and leave dialog opened
   }
+}
+
+bool StateProperties::build_fragment_file(QString frag)
+{
+  // Build fragment file
+  QFile file(tmpFragmentFileName);
+  file.open(QIODevice::WriteOnly | QIODevice::Text);
+  if ( file.error() != QFile::NoError ) {
+    QMessageBox::warning(this, "","Cannot open file " + file.fileName());
+    return false;
+    }
+  QTextStream os(&file);
+  os << "-- context" << Qt::endl;
+  // TBW
+  os << "-- fragments" << Qt::endl;
+  os << "sval " << frag << ";" << Qt::endl;
+  file.close();
+  qDebug() << "Created fragment file" << file.fileName();
+  return true;
+}
+
+bool StateProperties::check_fragment(QString frag)
+{
+  if ( ! build_fragment_file(frag) ) return false;
+  QStringList args;
+  return executor->execute(".", compiler, args << "-check_fragment" << tmpFragmentFileName);
 }
 
 void StateProperties::cancel()
