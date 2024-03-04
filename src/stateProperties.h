@@ -14,7 +14,6 @@ class StateProperties : public QDialog
   Q_OBJECT
 
   static const QRegularExpression re_uid;
-  static const QString tmpFragmentFileName;
 
 public:
   StateProperties(State *state, Model *model, Compiler *compiler, QWidget *parent);

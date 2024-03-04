@@ -6,16 +6,14 @@
 #include <QLineEdit>
 #include <QRegularExpressionValidator>
 #include <QMessageBox>
-#include <QFile>
 
 #include "state.h"
 #include "model.h"
 #include "stateValuations.h"
 #include "compiler.h"
+#include "fragmentChecker.h"
 
 const QRegularExpression StateProperties::re_uid("[A-Z][A-Za-z0-9_]*");
-
-const QString StateProperties::tmpFragmentFileName = "_rfsm_fragment.fsp";
 
 StateProperties::StateProperties(State *state, Model *model, Compiler *compiler, QWidget *parent)
   : QDialog(parent)
@@ -71,23 +69,11 @@ void StateProperties::accept()
   QSet<QString> lhss;
   QStringList outps = model->getOutpNonEvents();
   qDebug() << "Syntax checking valuations" << valuations;
+  FragmentChecker checker(compiler,model,this);
   foreach ( QString valuation, valuations) {
-    // SyntaxCheckerResult r = syntaxChecker->check_valuation(model->getOutpNonEvents(), valuation);
-    // if ( ! r.ok ) {
-    //   QMessageBox::warning(this, "Error", r.msg);
-    //   ok = false;
-    //   }
-    // foreach ( QString o, r.lhs_vars ) {
-    //   if ( lhss.contains(o) ) { // Assignation of an already assigned output
-    //     QMessageBox::warning(this, "Error", "The output " + o + " is assigned several times by the valuations");
-    //     ok = false;
-    //     }
-    //   else
-    //     lhss.insert(o);
-    //   }
-    if ( ! check_fragment(valuation) ) {
-      QStringList compileErrors = compiler->getErrors();
-      QMessageBox::warning(this, "", "Illegal state valuation: \"" + valuation + "\"\n" + compileErrors.join("\n"));
+    if ( ! checker.check_state_valuation(valuation) ) {
+      QStringList errors = checker.getErrors();
+      QMessageBox::warning(this, "", "Illegal state valuation: \"" + valuation + "\"\n" + errors.join("\n"));
       ok = false;
       }
     }
@@ -100,33 +86,6 @@ void StateProperties::accept()
     qDebug() << "StateProperties::accept(nok)";
     // Do not accept and leave dialog opened
   }
-}
-
-bool StateProperties::build_fragment_file(QString frag)
-{
-  QFile file(tmpFragmentFileName);
-  file.open(QIODevice::WriteOnly | QIODevice::Text);
-  if ( file.error() != QFile::NoError ) {
-    QMessageBox::warning(this, "","Cannot open file " + file.fileName());
-    return false;
-    }
-  QTextStream os(&file);
-  os << "-- context" << Qt::endl;
-  foreach ( Iov* iov, model->getIos() ) {
-    os << Iov::stringOfKind(iov->kind) << " " << iov->name << ": " << Iov::stringOfType(iov->type) << ";" << Qt::endl;
-    }
-  os << "-- fragment" << Qt::endl;
-  os << "sval " << frag << ";" << Qt::endl;
-  file.close();
-  qDebug() << "Created fragment file" << file.fileName();
-  return true;
-}
-
-bool StateProperties::check_fragment(QString frag)
-{
-  if ( ! build_fragment_file(frag) ) return false;
-  QStringList args = { "-check_fragment" };
-  return compiler->run(tmpFragmentFileName, args, ".");
 }
 
 void StateProperties::cancel()

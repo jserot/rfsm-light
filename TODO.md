@@ -1,5 +1,7 @@
 * GUI
+- use FragmentChecker class for checking guards and actions
 - remove `syntaxChecker` class (no longer used)
+- refine context generation in FragmentChecker
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions
