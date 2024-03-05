@@ -68,7 +68,7 @@ void StateProperties::accept()
   bool ok = true;
   QSet<QString> lhss;
   QStringList outps = model->getOutpNonEvents();
-  qDebug() << "Syntax checking valuations" << valuations;
+  // qDebug() << "Syntax checking valuations" << valuations;
   FragmentChecker checker(compiler,model,this);
   foreach ( QString valuation, valuations) {
     if ( ! checker.check_state_valuation(valuation) ) {

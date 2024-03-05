@@ -5,23 +5,23 @@
 class Transition;
 class State;
 class Model;
+class Compiler;
 class QComboBox;
 class TransitionGuards;
 class TransitionActions;
-class SyntaxChecker;
 
 class TransitionProperties : public QDialog
 {
   Q_OBJECT
 
 public:
-  TransitionProperties(Transition *transition, Model *model, bool isInitial, SyntaxChecker *syntaxChecker, QWidget *parent);
+  TransitionProperties(Transition *transition, Model *model, bool isInitial, Compiler *compiler, QWidget *parent);
   ~TransitionProperties();
 
 private:
   Transition *transition;
   Model *model;
-  SyntaxChecker *syntaxChecker;
+  Compiler *compiler;
 
   QComboBox* start_state_field;
   QComboBox* end_state_field;

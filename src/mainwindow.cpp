@@ -23,7 +23,6 @@
 #include "compilerOptions.h"
 #include "commandExec.h"
 #include "compiler.h"
-#include "syntaxChecker.h"
 #include "debug.h"
 #include "stimuli.h"
 #include "stateProperties.h"
@@ -80,8 +79,8 @@ MainWindow::MainWindow()
 
     executor = new CommandExec();
 
-    QString syntaxCheckerPgm = getCompilerPaths()->getPath("SYNTAXCHECKER");
-    syntaxChecker = new SyntaxChecker(executor, syntaxCheckerPgm);
+    // QString syntaxCheckerPgm = getCompilerPaths()->getPath("SYNTAXCHECKER");
+    // syntaxChecker = new SyntaxChecker(executor, syntaxCheckerPgm);
 
     assert(model);
     properties_panel = new ModelProperties(model,this); 
@@ -178,7 +177,7 @@ void MainWindow::editTransition(Transition *transition)
       //delete transition;
       return;
       }
-  TransitionProperties dialog(transition,model,isInitial,syntaxChecker,view);
+  TransitionProperties dialog(transition,model,isInitial,compiler,view);
   if ( dialog.exec() == QDialog::Accepted ) {
     qDebug() << "Transition" << transition->toString() << "updated";
     getModel()->update();

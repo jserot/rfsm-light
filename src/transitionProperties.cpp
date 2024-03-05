@@ -11,10 +11,11 @@
 #include "model.h"
 #include "transitionGuards.h"
 #include "transitionActions.h"
-#include "syntaxChecker.h"
+#include "compiler.h"
+#include "fragmentChecker.h"
 
 TransitionProperties::TransitionProperties(
-  Transition *transition, Model *model, bool isInitial, SyntaxChecker *syntaxChecker, QWidget *parent)
+  Transition *transition, Model *model, bool isInitial, Compiler *compiler, QWidget *parent)
   : QDialog(parent)
 {
   setWindowTitle("Transition");
@@ -114,7 +115,9 @@ TransitionProperties::TransitionProperties(
 
   this->transition = transition;
   this->model = model;
-  this->syntaxChecker = syntaxChecker;
+  this->compiler = compiler;
+
+  setModal(true);
 }
 
 void TransitionProperties::accept()
@@ -137,14 +140,15 @@ void TransitionProperties::accept()
   if ( ! isInitial ) 
     event = event_field->currentText();
 
+  FragmentChecker checker(compiler,model,this);
+
   bool guards_ok = true;
   if ( ! isInitial ) {
     guards = guards_panel->retrieve();
     foreach ( QString guard, guards) {
-      qDebug() << "Syntax checking guard" << guard << "with NEInputs=" << model->getInpNonEvents() << "and vars=" << model->getVars();
-      SyntaxCheckerResult r = syntaxChecker->check_guard(model->getInpNonEvents(), model->getOutputs(), model->getVars(), guard);
-      if ( ! r.ok ) {
-        QMessageBox::warning(this, "Error", r.msg);
+      if ( ! checker.check_guard(guard) ) {
+        QStringList errors = checker.getErrors();
+        QMessageBox::warning(this, "", "Illegal guard: \"" + guard + "\"\n" + errors.join("\n"));
         guards_ok = false;
         }
       }
@@ -160,22 +164,21 @@ void TransitionProperties::accept()
   QSet<QString> lhss;
   actions = actions_panel->retrieve();
   foreach ( QString action, actions) {
-    qDebug() << "Syntax checking action" << action << "with NEInputs=" << model->getInpNonEvents() << "and vars=" << model->getVars();
-    SyntaxCheckerResult r = syntaxChecker->check_action(model->getInpNonEvents(), model->getOutputs(), model->getVars(), action);
-    if ( ! r.ok ) {
-      QMessageBox::warning(this, "Error", r.msg);
+    if ( ! checker.check_action(action) ) {
+      QStringList errors = checker.getErrors();
+      QMessageBox::warning(this, "", "Illegal action: \"" + action + "\"\n" + errors.join("\n"));
       actions_ok = false;
       }
-    foreach ( QString v, r.lhs_vars ) {
-      if ( lhss.contains(v) ) { // Assignation of an already assigned output/var 
-        QMessageBox::warning(this, "Error", "The output/variable " + v + " is assigned several times by the actions");
-        actions_ok = false;
-        }
-      else
-        lhss.insert(v);
-      }
     }
-
+    // foreach ( QString v, r.lhs_vars ) {
+    //   if ( lhss.contains(v) ) { // Assignation of an already assigned output/var 
+    //     QMessageBox::warning(this, "Error", "The output/variable " + v + " is assigned several times by the actions");
+    //     actions_ok = false;
+    //     }
+    //   else
+    //     lhss.insert(v);
+    //   }
+    // }
   if ( guards_ok && actions_ok ) {
     transition->setDstState(dstState);
     transition->setActions(actions);

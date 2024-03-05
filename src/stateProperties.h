@@ -23,8 +23,6 @@ private:
   State *state;
   Model *model;
   Compiler *compiler;
-  bool build_fragment_file(QString frag);
-  bool check_fragment(QString frag);
 
   QLineEdit* state_name_field;
   StateValuations *valuations_panel;

@@ -33,7 +33,6 @@ HEADERS += include/nlohmann_json.h \
            model.h  \
            commandExec.h \
            compiler.h \
-           syntaxChecker.h \
            fragmentChecker.h \
            dynamicPanel.h \
            stateValuations.h \
@@ -61,7 +60,6 @@ SOURCES += transition.cpp \
            commandExec.cpp \
            compiler.cpp \
            fragmentChecker.cpp \
-           syntaxChecker.cpp \
            dynamicPanel.cpp \
            stateValuations.cpp \
            stateProperties.cpp \
