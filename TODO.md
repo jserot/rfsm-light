@@ -1,5 +1,4 @@
 * GUI
-- check that a given output is not both as a state valuation and by an incoming action (ex: `.../o:=1 -> S[o=2]`)
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions

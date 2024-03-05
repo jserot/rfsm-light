@@ -159,16 +159,29 @@ void TransitionProperties::accept()
   //   }
   // }
     }
-
+ 
   bool actions_ok = true;
-  QSet<QString> lhss;
   actions = actions_panel->retrieve();
   foreach ( QString action, actions) {
+    // First check action is well-formed and typed
     if ( ! checker.check_action(action) ) {
       QStringList errors = checker.getErrors();
       QMessageBox::warning(this, "", "Illegal action: \"" + action + "\"\n" + errors.join("\n"));
       actions_ok = false;
+      continue;
       }
+    // Then, if the above succeeded, test that an output modified by an action is not assigned in the target state 
+      QString lhs = action.split(":=").at(0);
+      QStringList ovs = dstState->getAttrs();
+      for ( int i = 0; i<ovs.length(); i++ ) { // It's a pity QList does not have a [map] operator ..
+        QString lhs = ovs.at(i).split("=").at(0);
+        ovs.replace(i, lhs);
+        }
+      if ( ovs.contains(lhs) ) {
+        QMessageBox::warning(this, "", "Action \"" + action + "\" sets output \"" + lhs + "\", which is already assigned in the target state"); 
+        actions_ok = false;
+        break;
+        }
     }
     // foreach ( QString v, r.lhs_vars ) {
     //   if ( lhss.contains(v) ) { // Assignation of an already assigned output/var 
