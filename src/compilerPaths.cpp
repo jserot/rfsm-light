@@ -23,7 +23,6 @@ static const QString defaultCompiler = "rfsmc";  // Fall-back, default values
 static const QString defaultDotProgram = "dot";
 static const QString defaultDotViewer = "graphviz";
 static const QString defaultVcdViewer = "gtkwave";
-static const QString defaultSyntaxChecker = "rscheck";
 
 CompilerPaths::CompilerPaths(QString iniFile, QWidget *parent) : parent(parent)
 {
@@ -43,7 +42,6 @@ void CompilerPaths::setDefaults()
   paths.insert("DOTPROGRAM", defaultDotProgram);
   paths.insert("DOTVIEWER", defaultDotViewer);
   paths.insert("VCDVIEWER", defaultDotViewer);
-  paths.insert("SYNTAXCHECKER", defaultSyntaxChecker);
   paths.insert("INITDIR", "");
 }
 

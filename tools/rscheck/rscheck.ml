@@ -1,4 +1,4 @@
-let usage = "usage: rfsmlint [options] text"
+let usage = "usage: rscheck [options] text"
 
 type target = Nothing | CheckExpr | CheckAction | CheckStateValuation
 let target = ref Nothing

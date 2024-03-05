@@ -1,7 +1,7 @@
 * GUI
-- use FragmentChecker class for checking guards and actions
-- remove `syntaxChecker` class (no longer used)
 - refine context generation in FragmentChecker
+- check that a given output is not assigned several times in a set of state valuations
+- check that a given output is not both as a state valuation and by an incoming action (ex: `.../o:=1 -> S[o=2]`)
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions
@@ -13,9 +13,6 @@
 * BUILD
 
 * TOOLS
-- rewrite the parsers combination operators `(++)` and `(+++)` in _monadic_ style 
-- automatically derive the `rscheck` parsers from those specified in the `rfsm` language ...
-  ... OR: rely on a full-fledged checker (with type checking !) integrated within the next `rfsm` distro (2.1)
 
 * DOC
 - update figs in Readme.md

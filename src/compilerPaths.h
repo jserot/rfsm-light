@@ -32,7 +32,6 @@ public:
   const QString defaultDotProgram;
   const QString defaultDotViewer;
   const QString defaultVcdViewer;
-  const QString defaultSyntaxChecker;
 
 private slots:
   void valueChanged(const QString&);

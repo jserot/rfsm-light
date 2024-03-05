@@ -1,5 +1,4 @@
 byte:
-	dune build rscheck.bc
 	dune build rscheck.exe
 
 test: 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CHECKER=../_build/default/rscheck.bc
+CHECKER=../_build/default/rscheck.exe
 
 GUARD_TESTS="x x+1 x+y x+y*2-a[z+1]"
 ACTION_TESTS="x:=1 x:=y+1 t[i]:=i+1 ev"
