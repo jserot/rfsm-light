@@ -1,6 +1,4 @@
 * GUI
-- refine context generation in FragmentChecker
-- check that a given output is not assigned several times in a set of state valuations
 - check that a given output is not both as a state valuation and by an incoming action (ex: `.../o:=1 -> S[o=2]`)
 - add sized ints
 - add type_coercions in accepted expressions

@@ -66,15 +66,27 @@ void StateProperties::accept()
   state->setId(id);
   QStringList valuations = valuations_panel->retrieve();
   bool ok = true;
-  QSet<QString> lhss;
-  QStringList outps = model->getOutpNonEvents();
-  // qDebug() << "Syntax checking valuations" << valuations;
   FragmentChecker checker(compiler,model,this);
+  // First, check each valuation separately
   foreach ( QString valuation, valuations) {
     if ( ! checker.check_state_valuation(valuation) ) {
       QStringList errors = checker.getErrors();
       QMessageBox::warning(this, "", "Illegal state valuation: \"" + valuation + "\"\n" + errors.join("\n"));
       ok = false;
+      }
+    }
+  // Then check for multiple assignements of the same output (only if all previous tests succeeded) 
+  if ( ok ) {
+    QStringList lhss;
+    foreach ( QString valuation, valuations) {
+      QString lhs = valuation.split("=").at(0);
+      if ( lhss.contains(lhs) ) {
+        QMessageBox::warning(this, "", "Duplicate state valuation: \"" + valuation);
+        ok = false;
+        break;
+        }
+      else 
+        lhss << lhs;
       }
     }
   if ( ok ) {
