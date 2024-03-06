@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef DotViewer_H
-#define DotViewer_H
+#pragma once
 
 #include <QGraphicsView>
 
@@ -33,4 +32,3 @@ private:
   QGVScene *scene;
 };
 
-#endif

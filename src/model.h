@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
 
 #include <QStringListModel>
 #include <QTextStream>
@@ -141,4 +140,3 @@ private:
     static QColor boxColor;
 };
 
-#endif // MODEL_H

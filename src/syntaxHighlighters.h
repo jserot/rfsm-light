@@ -10,9 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-
-#ifndef _SYNTAX_HIGHLIGHTERS_H
-#define _SYNTAX_HIGHLIGHTERS_H
+#pragma once
 
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
@@ -52,4 +50,3 @@ public:
   CTaskSyntaxHighlighter(QTextDocument *parent = 0);
 };
 
-#endif

@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef STIMULUS_H
-#define STIMULUS_H
+#pragma once
 
 #include <QList>
 
@@ -57,4 +56,3 @@ public:
   QString toString() const ;
 };
 
-#endif

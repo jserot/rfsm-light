@@ -10,9 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-
-#ifndef TextViewer_H
-#define TextViewer_H
+#pragma once
 
 #include <QPlainTextEdit>
 #include "syntaxHighlighters.h"
@@ -29,4 +27,3 @@ private:
   SyntaxHighlighter* highlighter;
 };
 
-#endif

@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef STIMULI_DIALOG_H
-#define STIMULI_DIALOG_H
+#pragma once
 
 #include <QDialog>
  #include "iov.h"
@@ -62,4 +61,3 @@ private slots:
   void cancelChanges();
 };
 
-#endif

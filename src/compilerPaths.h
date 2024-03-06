@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef _compilerPaths_h
-#define _compilerPaths_h
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -51,4 +50,3 @@ private:
     void logMessage(QString msg);
 };
 
-#endif

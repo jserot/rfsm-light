@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include "state.h"
 #include "modelProperties.h"
@@ -213,4 +212,3 @@ public:
 
 };
 
-#endif // MAINWINDOW_H

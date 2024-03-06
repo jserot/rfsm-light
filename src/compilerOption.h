@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef _COMPILER_OPTION_H
-#define _COMPILER_OPTION_H
+#pragma once
 
 #include <QCheckBox>
 #include <QLineEdit>
@@ -39,4 +38,3 @@ class CompilerOption
   QString desc;
   QVariant val;
 };
-#endif

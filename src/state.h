@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef STATE_H
-#define STATE_H
+#pragma once
 
 #include <QGraphicsPixmapItem>
 #include <QList>
@@ -81,4 +80,3 @@ private:
     bool isPseudoState;
 };
 
-#endif // STATE_H

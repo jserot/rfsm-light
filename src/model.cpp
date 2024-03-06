@@ -342,7 +342,6 @@ void Model::editItem(QGraphicsItem *item)
   }
 }
 
-
 // void Model::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent)
 // {
 //   QGraphicsItem *item = itemAt(contextMenuEvent->scenePos(), QTransform());

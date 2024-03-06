@@ -37,8 +37,6 @@ bool FragmentChecker::check(QString kind, QString frag)
     }
   QTextStream os(&file);
   os << "-- context" << Qt::endl;
-  // TODO: the context should depend on the kind.
-  // For instance, for state valuations, it only includes non-event outputs
   foreach ( Iov* iov, model->getIos() ) {
     os << Iov::stringOfKind(iov->kind) << " " << iov->name << ": " << Iov::stringOfType(iov->type) << ";" << Qt::endl;
     }

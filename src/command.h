@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef _COMMANDLINE_H
-#define _COMMANDLINE_H
+#pragma once
 
 #include <QString>
 
@@ -28,4 +27,3 @@ public:
   QString toString(void);
 };
 
-#endif

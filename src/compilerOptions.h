@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef _compilerOptions_h
-#define _compilerOptions_h
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -48,4 +47,3 @@ private:
     void logMessage(QString msg);
 };
 
-#endif

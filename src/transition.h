@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef TRANSITION_H
-#define TRANSITION_H
+#pragma once
 
 #include <QGraphicsPolygonItem>
 #include <QGraphicsSimpleTextItem>
@@ -76,4 +75,3 @@ private:
     State::Location location;
 };
 
-#endif // TRANSITION_H

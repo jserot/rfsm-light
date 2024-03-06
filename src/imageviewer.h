@@ -10,9 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-
-#ifndef ImageViewer_H
-#define ImageViewer_H
+#pragma once
 
 #include <QScrollArea>
 
@@ -46,4 +44,3 @@ private:
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 };
 
-#endif

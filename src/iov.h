@@ -10,8 +10,7 @@
 /*                                                                     */
 /***********************************************************************/
 
-#ifndef IOV
-#define IOV
+#pragma once
 
 #include <QString>
 #include "stimulus.h"
@@ -41,4 +40,3 @@ public:
   QString toString(bool withStim=true);
   };
 
-#endif
