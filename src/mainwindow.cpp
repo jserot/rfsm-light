@@ -33,7 +33,7 @@
 #include <QVariant>
 
 const QString MainWindow::title = "RFSM Light";
-const QString MainWindow::version = "1.3.0"; 
+const QString MainWindow::version = "1.3.1"; 
 const int MainWindow::canvas_width = 500;
 const int MainWindow::canvas_height = 1000;
 const QList<int> MainWindow::splitterSizes = { 250, 250, 250 };
