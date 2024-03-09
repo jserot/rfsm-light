@@ -58,13 +58,13 @@ ModelProperties::ModelProperties(Model *model, MainWindow* parent) : QFrame(pare
     vars_panel = new ModelIovs(Iov::IoVar, "Variables", model, io_name_validator);
     layout->addWidget(vars_panel);
 
-    QPushButton *dump_button = new QPushButton("dump");  // For debug only
-    layout->addWidget(dump_button);
+    // QPushButton *dump_button = new QPushButton("dump");  // For debug only
+    // layout->addWidget(dump_button);
     
     this->setLayout(layout);
 
     connect(model_name_field, &QLineEdit::editingFinished, this, &ModelProperties::setModelName);
-    connect(dump_button, &QPushButton::clicked, this, &ModelProperties::dumpModel);
+    // connect(dump_button, &QPushButton::clicked, this, &ModelProperties::dumpModel);
     connect(inps_panel, SIGNAL(modelModified()), this, SLOT(modelUpdated()));
     connect(outps_panel, SIGNAL(modelModified()), this, SLOT(modelUpdated()));
     connect(vars_panel, SIGNAL(modelModified()), this, SLOT(modelUpdated()));
