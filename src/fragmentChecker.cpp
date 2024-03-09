@@ -13,11 +13,9 @@
 #include "fragmentChecker.h"
 #include "model.h"
 #include "compiler.h"
-#include <QFile>
+#include <QTemporaryFile>
 #include <QMessageBox>
 #include <QtDebug>
-
-const QString FragmentChecker::tmpFileName = "_rfsm_fragment.fsp";
 
 FragmentChecker::FragmentChecker(Compiler *compiler, Model *model, QWidget *parent)
 {
@@ -29,24 +27,20 @@ FragmentChecker::FragmentChecker(Compiler *compiler, Model *model, QWidget *pare
 bool FragmentChecker::check(QString kind, QString frag)
 {
   // Build fragment file
-  QFile file(tmpFileName);
-  file.open(QIODevice::WriteOnly | QIODevice::Text);
-  if ( file.error() != QFile::NoError ) {
-    QMessageBox::warning(parent, "", "Fragment checker cannot open file " + file.fileName());
-    return false;
-    }
+  QTemporaryFile file;
+  if ( ! file.open() ) return false;
+  QString fname = file.fileName();
   QTextStream os(&file);
   os << "-- context" << Qt::endl;
   foreach ( Iov* iov, model->getIos() ) {
     os << Iov::stringOfKind(iov->kind) << " " << iov->name << ": " << Iov::stringOfType(iov->type) << ";" << Qt::endl;
-    }
+  }
   os << "-- fragment" << Qt::endl;
   os << kind<< " " << frag << ";" << Qt::endl;
   file.close();
-  qDebug() << "Created fragment file" << file.fileName();
   QStringList args = { "-check_fragment" };
   // Call compiler
-  return compiler->run(tmpFileName, args, ".");
+  return compiler->run(fname, args, ".");
 }
 
 bool FragmentChecker::check_state_valuation(QString valuation)

@@ -20,7 +20,6 @@ class QWidget;
 
 class FragmentChecker
 {
-  static const QString tmpFileName;
  public:
   FragmentChecker(Compiler *compiler, Model *model, QWidget *parent);
   bool check_state_valuation(QString valuation);
