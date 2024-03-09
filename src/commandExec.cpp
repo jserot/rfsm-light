@@ -11,6 +11,7 @@
 /***********************************************************************/
 
 #include "commandExec.h"
+#include "qt_compat.h"
 #include <QDebug>
 
 CommandExec::CommandExec()
@@ -27,11 +28,7 @@ bool CommandExec::execute(QString wDir, QString cmd, QStringList args)
   proc.setWorkingDirectory(wDir);
   proc.start(cmd,args);
   if ( proc.error() == QProcess::FailedToStart ) {
-#if QT_VERSION >= 0x060000
-    qDebug() << "CommandExec: failed to start" << Qt::endl;
-#else
-    qDebug() << "CommandExec: failed to start" << endl;
-#endif
+    qDebug() << "CommandExec: failed to start" << QT_ENDL;
     return false;
     }
   // qDebug() << "CommandExec: sync process launched. Waiting for termination";

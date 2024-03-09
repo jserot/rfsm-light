@@ -12,18 +12,18 @@
 
 #pragma once
 
-#include <QList>
-#include <QSet>
-#include "qt_compat.h"
-
-template <typename T>
-QSet<T> QListToQSet(const QList<T>& qlist)
-{
-  return QSET_FROM_LIST(T,qlist);
-}
-
-template <typename T>
-QList<T> remove_duplicates(const QList<T>& l)
-{
-  return QListToQSet(l).values();
-}
+#if QT_VERSION >= 0x060000
+#define QT_ENDL Qt::endl
+#define PIXMAP_SIZE(image) (image->pixmap().size())
+#define QCOMBOBOX_INDEX_CHANGED (&QComboBox::currentIndexChanged)
+#define QCOMBOBOX_ACTIVATED (&QComboBox::activated)
+#define POLYLINE_INTERSECT polyLine.intersects
+#define QSET_FROM_LIST(type,qlist) (QSet<type> (qlist.constBegin(), qlist.constEnd()))
+#else
+#define QT_ENDL endl
+#define PIXMAP_SIZE(image) (image->pixmap()->size())
+#define QCOMBOBOX_INDEX_CHANGED (QOverload<int>::of(&QComboBox::currentIndexChanged))
+#define QCOMBOBOX_ACTIVATED (QOverload<int>::of(&QComboBox::activated))
+#defined POLYLINE_INTERSECT polyLine.intersect
+#define QSET_FROM_LIST(type,qlist) (QSet<type>::fromList(qlist))
+#endif

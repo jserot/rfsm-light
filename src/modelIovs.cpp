@@ -11,6 +11,7 @@
 /***********************************************************************/
 
 #include "modelIovs.h"
+#include "qt_compat.h"
 
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -128,11 +129,7 @@ void ModelIovs::addRowFields(QHBoxLayout *row_layout, void *row_data)
   type_selector->addItem("bool", QVariant(Iov::TyBool));
   setTypeSelector(type_selector, io->name != "", io);
   row_layout->addWidget(type_selector);
-#if QT_VERSION >= 0x060000
-  connect(type_selector, &QComboBox::currentIndexChanged, this, &ModelIovs::typeEdited);
-#else
-  connect(type_selector, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelIovs::typeEdited);
-#endif
+  connect(type_selector, QCOMBOBOX_INDEX_CHANGED, this, &ModelIovs::typeEdited);
 
   QComboBox *stim_selector;
   if ( kind == Iov::IoIn ) {
@@ -143,11 +140,7 @@ void ModelIovs::addRowFields(QHBoxLayout *row_layout, void *row_data)
     stim_selector->addItem("ValueChanges", QVariant(Stimulus::ValueChanges));
     setStimSelector(stim_selector, io->name != "", io);
     row_layout->addWidget(stim_selector);
-#if QT_VERSION >= 0x060000
-    connect(stim_selector, &QComboBox::activated, this, &ModelIovs::stimEdited);
-#else
-    connect(stim_selector, QOverload<int>::of(&QComboBox::activated), this, &ModelIovs::stimEdited);
-#endif
+    connect(stim_selector, QCOMBOBOX_ACTIVATED, this, &ModelIovs::stimEdited);
     }
   else
     stim_selector = nullptr;

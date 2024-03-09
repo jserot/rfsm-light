@@ -16,6 +16,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <stdio.h>
+#include "qt_compat.h"
 
 bool traceMode = false;
 
@@ -33,11 +34,7 @@ void debugMessageHandler(QtMsgType type, const QMessageLogContext &, const QStri
       QFile outFile("rfsm-light.log");
       outFile.open(QIODevice::WriteOnly | QIODevice::Append);
       QTextStream ts(&outFile);
-#if QT_VERSION >= 0x060000
-      ts << txt << Qt::endl;
-#else
-      ts << txt << endl;
-#endif
+      ts << txt << QT_ENDL;
       }
     else
       fprintf(stderr, "%s\n", txt.toStdString().c_str());

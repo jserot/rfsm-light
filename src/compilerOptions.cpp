@@ -18,6 +18,7 @@
 #include <QDialog>
 #include <QFileDialog>
 
+#include "qt_compat.h"
 #include "compilerOptions.h"
 
 CompilerOptions::CompilerOptions(QString specFile, QWidget *parent)
@@ -239,11 +240,7 @@ void CompilerOptions::saveToFile(QString fname)
     CompilerOption opt = i.value();
     QString v = opt.val.toString();
     if ( ! v.isEmpty() ) 
-#if QT_VERSION >= 0x060000
-      os << i.key() << "=" << v << Qt::endl;
-#else
-      os << i.key() << "=" << v << endl;
-#endif
+      os << i.key() << "=" << v << QT_ENDL;
     }
   os.flush();
   f.close();

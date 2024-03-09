@@ -16,6 +16,7 @@
 #include <QPen>
 #include <QPainter>
 #include <QSet>
+#include "qt_compat.h"
 
 const qreal Pi = 3.141592654;
 
@@ -173,11 +174,7 @@ void Transition::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
         // Iterating over the end box sides to find the intersection (there must be exactly one)
         p2 = endPolygon.at(side) + dstState->pos();
         polyLine = QLineF(p1, p2);
-#if QT_VERSION >= 0x060000
-        QLineF::IntersectType intersectType = polyLine.intersects(centerLine, &intersectPoint);
-#else
-        QLineF::IntersectType intersectType = polyLine.intersect(centerLine, &intersectPoint);
-#endif
+        QLineF::IntersectType intersectType = POLYLINE_INTERSECT(centerLine, &intersectPoint);
         if (intersectType == QLineF::BoundedIntersection) break;
         p1 = p2;
       }

@@ -13,6 +13,7 @@
 
 #include <QtWidgets>
 #include "imageviewer.h"
+#include "qt_compat.h"
 
 #include <QtGui>
 #include <QPainter>
@@ -32,11 +33,7 @@ ImageViewer::ImageViewer(const QPixmap& pixmap, QWidget *parent) : QScrollArea(p
 
 void ImageViewer::scaleImage(double scaleFactor)
 {
-#if QT_VERSION >= 0x060000
-  image->resize( scaleFactor * image->pixmap().size());
-#else
-  image->resize( scaleFactor * image->pixmap()->size());
-#endif
+  image->resize(scaleFactor * PIXMAP_SIZE(image));
   adjustScrollBar(this->horizontalScrollBar(), scaleFactor);
   adjustScrollBar(this->verticalScrollBar(), scaleFactor);
   update();
