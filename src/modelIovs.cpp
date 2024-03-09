@@ -19,6 +19,7 @@
 #include <QMessageBox>
 #include <QStandardItemModel>
 #include <QRegularExpressionValidator>
+#include <QtDebug>
 
 #include "model.h"
 #include "iov.h"

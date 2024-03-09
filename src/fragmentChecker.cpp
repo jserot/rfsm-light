@@ -16,6 +16,7 @@
 #include <QTemporaryFile>
 #include <QMessageBox>
 #include <QtDebug>
+#include "qt_compat.h"
 
 FragmentChecker::FragmentChecker(Compiler *compiler, Model *model, QWidget *parent)
 {
@@ -31,12 +32,12 @@ bool FragmentChecker::check(QString kind, QString frag)
   if ( ! file.open() ) return false;
   QString fname = file.fileName();
   QTextStream os(&file);
-  os << "-- context" << Qt::endl;
+  os << "-- context" << QT_ENDL;
   foreach ( Iov* iov, model->getIos() ) {
-    os << Iov::stringOfKind(iov->kind) << " " << iov->name << ": " << Iov::stringOfType(iov->type) << ";" << Qt::endl;
+    os << Iov::stringOfKind(iov->kind) << " " << iov->name << ": " << Iov::stringOfType(iov->type) << ";" << QT_ENDL;
   }
-  os << "-- fragment" << Qt::endl;
-  os << kind<< " " << frag << ";" << Qt::endl;
+  os << "-- fragment" << QT_ENDL;
+  os << kind<< " " << frag << ";" << QT_ENDL;
   file.close();
   QStringList args = { "-check_fragment" };
   // Call compiler

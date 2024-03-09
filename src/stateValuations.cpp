@@ -16,6 +16,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <QtDebug>
 
 StateValuations::StateValuations(QString title, QStringList& valuations) : DynamicPanel(title)
 {

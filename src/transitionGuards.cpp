@@ -16,6 +16,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <QtDebug>
 
 TransitionGuards::TransitionGuards(QString title, QStringList& guards) : DynamicPanel(title)
 {

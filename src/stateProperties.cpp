@@ -18,6 +18,7 @@
 #include <QLineEdit>
 #include <QRegularExpressionValidator>
 #include <QMessageBox>
+#include <QtDebug>
 
 #include "state.h"
 #include "model.h"

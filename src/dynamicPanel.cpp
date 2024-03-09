@@ -17,6 +17,7 @@
 #include <QPushButton>
 #include <QBoxLayout>
 #include <QHBoxLayout>
+#include <QtDebug>
 
 DynamicPanel::DynamicPanel(QString title) : QGroupBox(title)
 {

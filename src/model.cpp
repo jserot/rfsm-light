@@ -228,7 +228,7 @@ bool Model::event(QEvent *event)
     case QEvent::Enter:
       emit mouseEnter();
       return true;
-    case QEvent::GraphicsSceneLeave:
+    case QEVENT_LEAVE:
       emit mouseLeave();
       return true;
     default:

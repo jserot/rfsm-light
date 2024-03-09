@@ -105,7 +105,7 @@ void ModelProperties::clearModelName()
 void ModelProperties::fillModelIovs()
 {
   Q_ASSERT(model);
-  QList ios = model->getIos();
+  QList<Iov*> ios = model->getIos();
   foreach (Iov *io, ios) {
     switch ( io->kind ) {
     case Iov::IoIn: inps_panel->addRow((void *)(io)); break;

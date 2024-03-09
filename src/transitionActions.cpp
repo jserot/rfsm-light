@@ -16,6 +16,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <QtDebug>
 
 TransitionActions::TransitionActions(QString title, QStringList& actions) : DynamicPanel(title)
 {
