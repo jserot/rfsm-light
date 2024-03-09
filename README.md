@@ -56,7 +56,7 @@ For Windows, a quick Install Guide is available
 
 * [ocaml](http://ocaml.org) (version>=5.0) with latest version of the following [opam](http://opam.ocaml.org) packages installed:
   - [dune](http://opam.ocaml.org/packages/dune) (version>=3.11)
-  - [rfsm](http://opam.ocaml.org/packages/rfsm) (version>=2.0)
+  - [rfsm](http://opam.ocaml.org/packages/rfsm) (version>=2.1)
 * [Qt](http://www.qt.io) (version>=5.8)
 
 #### How to build
