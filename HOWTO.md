@@ -23,8 +23,9 @@ Because `ocaml 5.0` cannot easily installed on W64 (it should be with `opam 2.2`
 then, from a *Gygwin terminal on the W64 side*:
 - `cd /cygdrive/z/Caml/rfsm`
 - replace `dune 3.11` by `dune 2.6` in `dune-project`
-- edit `src/guests/std/lib/{dune,Makefile}` to de-automatize the generation of `options.ml` (see notes in files)
-- `make` 
+- edit `src/host/lib/{dune,Makefile}` to de-automatize the generation of `options.ml` (see notes in files)
+- `make host` 
+- `make std_guest` 
 Then
 - `cd ~/Desktop/SF1/Caml; rm -r rfsm-light`
 - `git clone https://github.com/jserot/rfsm-light.git`
