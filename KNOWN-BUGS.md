@@ -17,8 +17,8 @@ Known bugs and limitations
 
 * When running on a Mac M1 under Mac OS 12 - but this may also occur on other versions - when the Rfsm-Light, 
   app is launched by double-clicking, it seems unable to launch the gtkwave application. This does _not_ happen 
-  when the app is launched from the terminal (by invoking "/Applications/Rfsm-light.app/Contents/MacOS/rfsm-light"
-  from a terminal for example, or event "open /Applications/Rfsm-light.app").  
+  when the app is launched from the terminal (by invoking
+  `/Applications/Rfsm-light.app/Contents/MacOS/rfsm-light` or `open /Applications/Rfsm-light.app`).
 
 * When running on a Mac M1 under Mac OS 12 - but this may also occur on other versions - 
   the right-click emulation sequence on a trackpad (two fingers + click) on an item to
