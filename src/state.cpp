@@ -16,6 +16,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <QtDebug>
 
 QSize State::dskSize = QSize(15,15);
 QSize State::boxSize = QSize(100,70);

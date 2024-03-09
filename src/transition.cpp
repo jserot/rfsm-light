@@ -16,6 +16,7 @@
 #include <QPen>
 #include <QPainter>
 #include <QSet>
+#include <QtDebug>
 #include "qt_compat.h"
 
 const qreal Pi = 3.141592654;

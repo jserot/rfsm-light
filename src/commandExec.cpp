@@ -46,12 +46,12 @@ bool CommandExec::execute(QString wDir, QString cmd, QStringList args)
 
 QStringList CommandExec::getOutputs()
 {
-  return outputs.split("\n", Qt::SkipEmptyParts);
+  return outputs.split("\n", SKIP_EMPTY_PARTS);
 }
 
 QStringList CommandExec::getErrors()
 {
-  return errors.split("\n", Qt::SkipEmptyParts);
+  return errors.split("\n", SKIP_EMPTY_PARTS);
 }
 
 void CommandExec::readStdout()

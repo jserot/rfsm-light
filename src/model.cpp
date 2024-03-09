@@ -26,6 +26,7 @@
 #include "QGVNode.h"
 #include "QGVEdge.h"
 #endif
+#include "qt_compat.h"
 
 QString Model::statePrefix = "S";
 int Model::stateCounter = 0;
@@ -525,7 +526,7 @@ void Model::readFromFile(QString fname)
         state = new State(QPointF(x,y));
       else 
         state = new State(QString::fromStdString(id),
-                          QString::fromStdString(attrs).split(",",Qt::SkipEmptyParts),
+                          QString::fromStdString(attrs).split(",",SKIP_EMPTY_PARTS),
                           QPointF(x,y));
       states.insert(id, state);
       }   
@@ -552,8 +553,8 @@ void Model::readFromFile(QString fname)
       Transition *transition = new Transition(srcState,
                                               dstState,
                                               QString::fromStdString(event),
-                                              QString::fromStdString(guards).split(",",Qt::SkipEmptyParts),
-                                              QString::fromStdString(actions).split(",",Qt::SkipEmptyParts),
+                                              QString::fromStdString(guards).split(",",SKIP_EMPTY_PARTS),
+                                              QString::fromStdString(actions).split(",",SKIP_EMPTY_PARTS),
                                               location);
       transitions.append(transition);
       }
@@ -645,7 +646,7 @@ void Model::saveToFile(QString fname)
 
 QString dotTransitionLabel(QString label, QString lrpad="")
 {
-  QStringList l = label.split("/",Qt::SkipEmptyParts);
+  QStringList l = label.split("/",SKIP_EMPTY_PARTS);
   if ( l.length() != 2 ) return label;
   int n = std::max(l.at(0).length(), l.at(1).length());
   return lrpad + l.at(0) + lrpad

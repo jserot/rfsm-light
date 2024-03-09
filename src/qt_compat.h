@@ -14,6 +14,8 @@
 
 #if QT_VERSION >= 0x060000
 #define QT_ENDL Qt::endl
+#define SKIP_EMPTY_PARTS Qt::SkipEmptyParts
+#define QEVENT_LEAVE QEvent::GraphicsSceneLeave
 #define PIXMAP_SIZE(image) (image->pixmap().size())
 #define QCOMBOBOX_INDEX_CHANGED (&QComboBox::currentIndexChanged)
 #define QCOMBOBOX_ACTIVATED (&QComboBox::activated)
@@ -21,6 +23,8 @@
 #define QSET_FROM_LIST(type,qlist) (QSet<type> (qlist.constBegin(), qlist.constEnd()))
 #else
 #define QT_ENDL endl
+#define SKIP_EMPTY_PARTS QString::SkipEmptyParts
+#define QEVENT_LEAVE QEvent::Leave
 #define PIXMAP_SIZE(image) (image->pixmap()->size())
 #define QCOMBOBOX_INDEX_CHANGED (QOverload<int>::of(&QComboBox::currentIndexChanged))
 #define QCOMBOBOX_ACTIVATED (QOverload<int>::of(&QComboBox::activated))
