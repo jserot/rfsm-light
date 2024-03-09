@@ -287,14 +287,14 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             switch ( item->type() ) {
             case Transition::Type:
               transition = qgraphicsitem_cast<Transition *>(item);
-              assert(transition);
+              Q_ASSERT(transition);
               removeTransition(transition);
               //emit transitionDeleted(transition);
               // emit fsmModified();
               break;
             case State::Type:
               state = qgraphicsitem_cast<State *>(item);
-              assert(state);
+              Q_ASSERT(state);
               removeState(state);
               // emit stateDeleted(state);
               // emit fsmModified();
@@ -327,7 +327,7 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void Model::editItem(QGraphicsItem *item)
 {
-  assert(item);
+  Q_ASSERT(item);
   switch ( item->type() ) {
   case State::Type:
     qDebug() << "Model::editItem: state " << *qgraphicsitem_cast<State *>(item);

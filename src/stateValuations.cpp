@@ -49,9 +49,9 @@ QStringList StateValuations::retrieve()
   QStringList valuations;
   for ( int i=1; i<layout->count(); i++ ) { // Exclude first row, carrying panel buttons
     QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->itemAt(i));
-    assert(row);
+    Q_ASSERT(row);
     QLineEdit* ledit = qobject_cast<QLineEdit*>(row->itemAt(0)->widget());
-    assert(ledit);
+    Q_ASSERT(ledit);
     QString valuation = ledit->text().trimmed();
     valuations << valuation;
     }

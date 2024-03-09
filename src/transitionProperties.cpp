@@ -143,11 +143,11 @@ void TransitionProperties::accept()
   
   if ( ! isInitial ) {
     srcState = model->getState(start_state_field->currentText());
-    assert(srcState);
+    Q_ASSERT(srcState);
     }
 
   dstState = model->getState(end_state_field->currentText());
-  assert(dstState);
+  Q_ASSERT(dstState);
 
   if ( ! isInitial ) 
     event = event_field->currentText();

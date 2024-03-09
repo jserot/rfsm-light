@@ -34,10 +34,10 @@ ModelIovs::ModelIovs(Iov::IoKind kind, QString title, Model *model, QRegularExpr
 static void setComboBoxItemEnabled(QComboBox * comboBox, int index, bool enabled)
 {
     auto * model = qobject_cast<QStandardItemModel*>(comboBox->model());
-    assert(model);
+    Q_ASSERT(model);
     if(!model) return;
     auto * item = model->item(index);
-    assert(item);
+    Q_ASSERT(item);
     if(!item) return;
     item->setEnabled(enabled);
 }
@@ -99,7 +99,7 @@ void setStimSelector(QComboBox *stim_selector, bool enabled, Iov* io)
 
 void ModelIovs::addRowFields(QHBoxLayout *row_layout, void *row_data)
 {
-  assert(model);
+  Q_ASSERT(model);
 
   Iov *io =
     row_data ?
@@ -163,13 +163,13 @@ void ModelIovs::addRowFields(QHBoxLayout *row_layout, void *row_data)
 void ModelIovs::deleteRowFields(QHBoxLayout *row_layout)
 {
   QLineEdit *name_selector = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-  assert(name_selector);
+  Q_ASSERT(name_selector);
   QComboBox *type_selector = qobject_cast<QComboBox*>(row_layout->itemAt(1)->widget());
-  assert(type_selector);
+  Q_ASSERT(type_selector);
   QComboBox *stim_selector;
   stim_selector = qobject_cast<QComboBox*>(row_layout->itemAt(2)->widget()); // Will be NULL for inputs
   RowDesc *row_desc = widgetToRow.value(name_selector);
-  assert(row_desc);
+  Q_ASSERT(row_desc);
   Iov* io = row_desc->io;
   qDebug() << "Removing IO" << io->toString();
   model->removeIo(io);
@@ -195,9 +195,9 @@ void ModelIovs::updateStimChoices(RowDesc *row_desc) // For inputs only
 void ModelIovs::nameChanged()
 {
   QLineEdit* name_selector = qobject_cast<QLineEdit*>(sender());
-  assert(name_selector);
+  Q_ASSERT(name_selector);
   RowDesc *row_desc = widgetToRow.value(name_selector);
-  assert(row_desc);
+  Q_ASSERT(row_desc);
   updateTypeChoices(row_desc);
   if ( row_desc->io->kind == Iov::IoIn ) 
     updateStimChoices(row_desc); 
@@ -206,9 +206,9 @@ void ModelIovs::nameChanged()
 void ModelIovs::nameEdited()
 {
   QLineEdit* name_selector = qobject_cast<QLineEdit*>(sender());
-  assert(name_selector);
+  Q_ASSERT(name_selector);
   RowDesc *row_desc = widgetToRow.value(name_selector);
-  assert(row_desc);
+  Q_ASSERT(row_desc);
   QString name = name_selector->text().trimmed();
   qDebug() << "** Name edited: " << name << model->getInputs() << model->getOutputs() << model->getVars();
   if ( model->getInputs().contains(name) 
@@ -228,9 +228,9 @@ void ModelIovs::nameEdited()
 void ModelIovs::typeEdited()
 {
   QComboBox* type_selector = qobject_cast<QComboBox*>(sender());
-  assert(type_selector);
+  Q_ASSERT(type_selector);
   RowDesc *row_desc = widgetToRow.value(type_selector);
-  assert(row_desc);
+  Q_ASSERT(row_desc);
   Iov* io = row_desc->io;
   io->type = (Iov::IoType)(type_selector->currentIndex());
   qDebug () << "Setting IO type: " << io->type;
@@ -242,9 +242,9 @@ void ModelIovs::typeEdited()
 void ModelIovs::stimEdited()
 {
   QComboBox* stim_selector = qobject_cast<QComboBox*>(sender());
-  assert(stim_selector);
+  Q_ASSERT(stim_selector);
   RowDesc *row_desc = widgetToRow.value(stim_selector);
-  assert(row_desc);
+  Q_ASSERT(row_desc);
   Iov* io = row_desc->io;
   QString io_name = io->name;
   Stimulus::Kind kind = (Stimulus::Kind)(stim_selector->currentIndex()); 

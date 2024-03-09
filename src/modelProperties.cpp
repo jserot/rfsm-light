@@ -83,7 +83,7 @@ void ModelProperties::modelUpdated()
 
 void ModelProperties::setModelName()
 {
-  assert(model);
+  Q_ASSERT(model);
   QString name = model_name_field->text().trimmed();
   model->setName(name);
   emit modelModified();
@@ -91,7 +91,7 @@ void ModelProperties::setModelName()
 
 void ModelProperties::fillModelName()
 {
-  assert(model);
+  Q_ASSERT(model);
   model_name_field->setText(model->getName());
 }
 
@@ -104,7 +104,7 @@ void ModelProperties::clearModelName()
 
 void ModelProperties::fillModelIovs()
 {
-  assert(model);
+  Q_ASSERT(model);
   QList ios = model->getIos();
   foreach (Iov *io, ios) {
     switch ( io->kind ) {
@@ -142,6 +142,6 @@ void ModelProperties::update()
 
 void ModelProperties::dumpModel() // For debug only
 {
-  assert(model);
+  Q_ASSERT(model);
   model->dump();
 }

@@ -54,7 +54,7 @@ void DynamicPanel::addNewRow()
 {
   QHBoxLayout *row_layout = addRow(nullptr);
   QWidget* first = qobject_cast<QWidget*>(row_layout->itemAt(0)->widget());
-  assert(first);
+  Q_ASSERT(first);
   first->setFocus();
 }
 
@@ -80,7 +80,7 @@ void DynamicPanel::clear()
 {
   while ( layout->count() > 1 ) { // Do not erase first row !
     QHBoxLayout* row = static_cast<QHBoxLayout*>(layout->takeAt(1));
-    assert(row);
+    Q_ASSERT(row);
     qDebug() << "DynamicPanel: deleting row" << row->objectName();
     delete_row(row);
   }

@@ -84,8 +84,8 @@ void State::removeTransitions()
     foreach (Transition *transition, transitions) {
       State *srcState = transition->getSrcState();
       State *dstState = transition->getDstState();
-      assert(srcState);
-      assert(dstState);
+      Q_ASSERT(srcState);
+      Q_ASSERT(dstState);
       srcState->removeTransition(transition);
       dstState->removeTransition(transition);
       scene()->removeItem(transition);

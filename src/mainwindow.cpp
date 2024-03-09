@@ -82,7 +82,7 @@ MainWindow::MainWindow()
     // QString syntaxCheckerPgm = getCompilerPaths()->getPath("SYNTAXCHECKER");
     // syntaxChecker = new SyntaxChecker(executor, syntaxCheckerPgm);
 
-    assert(model);
+    Q_ASSERT(model);
     properties_panel = new ModelProperties(model,this); 
     properties_panel->setMinimumWidth(280);
     properties_panel->setMaximumWidth(360);
