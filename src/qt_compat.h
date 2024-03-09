@@ -24,6 +24,6 @@
 #define PIXMAP_SIZE(image) (image->pixmap()->size())
 #define QCOMBOBOX_INDEX_CHANGED (QOverload<int>::of(&QComboBox::currentIndexChanged))
 #define QCOMBOBOX_ACTIVATED (QOverload<int>::of(&QComboBox::activated))
-#defined POLYLINE_INTERSECT polyLine.intersect
+#define POLYLINE_INTERSECT polyLine.intersect
 #define QSET_FROM_LIST(type,qlist) (QSet<type>::fromList(qlist))
 #endif
