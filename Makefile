@@ -98,6 +98,7 @@ clean:
 clobber: clean
 	(cd src; make clean)
 	(cd doc; make clobber)
+	(cd examples; make clobber)
 	\rm -f src/rfsm-light.app/Contents/MacOS/rfsm
 	\rm -f *~
 	\rm -f README.html CHANGES.html

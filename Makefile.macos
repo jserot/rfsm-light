@@ -33,6 +33,7 @@ install:
 	cp -r doc/imgs $(INSTALL_DIR)/doc
 	mkdir $(INSTALL_DIR)/examples
 	cp -r examples/* $(INSTALL_DIR)/examples
+	rm -f $(INSTALL_DIR)/examples/Makefile
 	cp {CHANGES.md,KNOWN-BUGS.md,LICENSE,README.md} $(INSTALL_DIR)
 
 RFSM_VOLUME=RfsmLight-$(VERSION)
