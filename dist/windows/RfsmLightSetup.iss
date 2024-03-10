@@ -1,7 +1,7 @@
 [Setup]
 AppId={{5D1BF4DD-8593-48B4-96CA-0225513733D7}
 AppName=RfsmLight
-AppVersion=1.3.0
+AppVersion=1.3.1
 AppContact=jocelyn.serot@uca.fr
 AppCopyright=Copyright (C) 2019-2021 J. Serot
 AppPublisher=J. Serot / Clermont-Auvergne University
@@ -13,7 +13,7 @@ DefaultGroupName=RfsmLight
 Compression=none
 ;Compression=lzma2
 ;SolidCompression=yes
-OutputBaseFilename=RfsmLight-1.3.0_setup
+OutputBaseFilename=RfsmLight-1.3.1_setup
 OutputDir=.
 WizardImageFile=Z:\Qt\rfsm-light\build\rfsm.bmp
 WizardSmallImageFile=Z:\Qt\rfsm-light\build\rfsm_small.bmp

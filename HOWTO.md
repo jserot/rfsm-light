@@ -35,6 +35,7 @@ Then
     file are wrong; they will be overriden in the sequel)
   - `make win-build`
   - `make win-install`
+  - adjust version in `./dist/windows/RfsmLightSetup.iss` file
   - `make win-installer`
 
 # Build under Linux (ex: LinuxMint)
