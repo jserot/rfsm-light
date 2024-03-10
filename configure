@@ -11,8 +11,8 @@ install_prefix='/usr/local/rfsm-light'
 install_bindir=''
 install_libdir=''
 install_docdir=''
-rfsmc='~/.opam/5.0.0/bin/rfsmc'
-rfsmlib='~/.opam/5.0.0/share/rfsm/lib'
+rfsmc='~/Dev/ml/rfsm/_build/default/src/guests/std/bin/rfsmc.exe'
+rfsmlib='~/Dev/ml/rfsm/etc/lib'
 doc='yes'
 sysc_dir='/usr/local/systemc-2.3.0'
 local=''
@@ -60,7 +60,8 @@ while : ; do
     -dotviewer|--dotviewer)
         dotviewer=$2; shift;;
     -qgv|--qgv)
-        qgv_dir=$2; shift;;
+        qgv_dir=$2;
+        shift;;
     -vcdviewer|--vcdviewer)
         vcdviewer=$2; shift;;
     -txtviewer|--txtviewer)
@@ -163,6 +164,7 @@ if [ -n "$qgv_dir" ]; then
 echo "USE_QGV=yes" >> platform
 echo "QGVDIR=$qgv_dir" >> platform
 else
+echo "## $qgv_dir"
 echo "DOT=dot" >> platform
 echo "DOTVIEWER=graphviz" >> platform
 fi

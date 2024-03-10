@@ -1,10 +1,13 @@
 # Makefile to build the Windows distribution
 
+include platform
+
 QMAKE=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin/qmake.exe
 MAKE=C:/Qt/Qt5.8.0/Tools/mingw530_32/bin/mingw32-make
 QTLIBDIR=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
 OTHERLIBDIR=../otherlibs
 
+GRAPHVIZDIR="C:/Program Files/Graphviz"
 DOTPROGRAM="C:/Program Files/Graphviz/bin/dot.exe"
 DOTVIEWER="C:/Program Files/Graphviz/bin/dotty.exe"
 VCDVIEWER="C:/Program Files/gtkwave/bin/gtkwave.exe"
@@ -44,6 +47,10 @@ ifeq ($(BINVER),debug)
 	cp $(OTHERLIBDIR)/{qwindowsd.dll,qminimald.dll} $(INSTALL_DIR)/platforms
 else
 	cp $(OTHERLIBDIR)/{qwindows.dll,qminimal.dll} $(INSTALL_DIR)/platforms
+endif
+ifeq ($(USE_QGV),yes)
+	cp $(GRAPHVIZ)/lib/release/dll/*.dll $(INSTALL_DIR)
+	cp ../gvg_bin/{ldtl,libexpat,zlib1}.dll $(INSTALL_DIR)
 endif
 	cp {CHANGES.md,KNOWN-BUGS.md,LICENSE,README.md} $(INSTALL_DIR)
 	cp ./dist/windows/icons/*.{bmp,ico} $(INSTALL_DIR)

@@ -28,6 +28,8 @@ Known bugs and limitations
   - add a new state, validate it with `Done`
   - select the `select` (arrow) tool and right-click on the state
   - hit `Cancel`
-  - it is now impossible to change to tool, add an input, etc (keyboard-triggered actions like Save,
+* The  - it is now impossible to change to tool, add an input, etc (keyboard-triggered actions like Save,
     ... are still operational though)
    *Note* : this bug does _not_ show if item editing is performed by using the `Ctl+Click` sequence 
+
+* On Windows, the version of the application using the QGV library does not work well

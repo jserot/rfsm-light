@@ -52,7 +52,11 @@ installer:
 	hdiutil convert /tmp/RfsmLight.dmg -format UDZO -o /tmp/RfsmLight_ro.dmg
 	@echo "** Copying disk image into ./binaries"
 	mkdir -p ./binaries # May not exist on cloned repositories
+ifeq ($(USE_QGV),yes)
+	mv /tmp/RfsmLight_ro.dmg ./binaries/RfsmLight-$(VERSION)-$(QT_CONFIG)-qgv.dmg
+else
 	mv /tmp/RfsmLight_ro.dmg ./binaries/RfsmLight-$(VERSION)-$(QT_CONFIG).dmg
+endif
 
 clean:
 	(cd src; make clean)
