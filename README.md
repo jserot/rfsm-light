@@ -50,6 +50,14 @@ Prebuilt Windows and MacOS (Intel and M1) versions can be downloaded
 For Windows, a quick Install Guide is available
 [here](https://github.com/jserot/rfsm-light/blob/master/dist/windows/windows-install-guide.pdf)
 
+**Note** the [Graphviz](http://www.graphviz.org) package and the [gtkwave](http://gtkwave.sourceforge.net)
+application (used, respectively, to display diagrams and viewing simulation results) are _not_
+included in the distribution and must be installed separately. If you cannot (or don't want) install
+the `Graphviz` package, versions of **Rfsm-Light** using the [QGV](https://github.com/nbergont/qgv)
+library instead are provided (the corresponding files have the `_qgv` suffix in the [corresponding
+directory](https://github.com/jserot/rfsm-light/releases). These versions are provided only as
+workarounds because the rendering is poorer than when using the external `Graphviz` package. 
+
 ### Building from source 
 
 #### Pre-requisites
