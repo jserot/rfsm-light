@@ -73,15 +73,22 @@ Same as above but
 
 # Build under Linux (ex: LinuxMint)
 
-- if required, install `ocaml` and `opam`: `apt install ocaml`
-- if required, install `Qt` (`qt5-default` is pre-installed in `LinuxMint 19`)
-- install latest version of `rfsm` package : `opam install rfsm`
-- clone the source dir
-  - `cd /media/sf_SF2`
-  - `rm -rf rfsm-light`
+If the `rfsm` source tree is not present or obsolete, from the MacOS side:
+  - `cd ~/Desktop/SF2/ml`
+  - `git clone https://github.com/jserot/rfsm`
+Then, from the Linux side
+- `cd /media/sf_SF2/ml/rfsm`
+- `make host; make std_guest` 
+If the `rfsm-tree` source tree is not present or obsolete, from the MacOS side:
+  - `cd ~/Desktop/SF2/Qt`
   - `git clone https://github.com/jserot/rfsm-light`
-- build 
-  - `cd rfsm-light`
-  - `./configure --platform linux --no-doc`
+Then, from the Linux side
+  - `cd /media/sf_SF2/Qt/rfsm-light`
+  - `./configure --platform linux -rfsmc
+    /media/sf_SF2/ml/rfsm/_build/default/src/guests/std/bin/rfsmc.exe -rfsmlib
+    /media/sf_SF2/ml/rfsm/etc/lib --no-doc`
   - `make`
-  - `make install`
+  - `make install` 
+By default, this will install in `/usr/local/rfsm-light/{bin,lib}`.
+Update `PATH` accordingly.
+The examples will stay in `/media/sf_SF2/Qt/rfsm-light/examples`. Move them if appropriate.
