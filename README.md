@@ -47,6 +47,7 @@ This sequence of short videos can be used as tutorials
 4. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/5-Simulation.mov) shows
    how to simulate the model and view simulation results using [gtkwave](http://gtkwave.sourceforge.net)
 5. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/6-GeneratioCode.mov)
+   shows how to translate the model into C, SystemC or VHDL code 
 
 ## INSTALLATION
 
