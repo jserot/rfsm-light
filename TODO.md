@@ -15,5 +15,4 @@
 * TOOLS
 
 * DOC
-- make several videos for showing different features (entering a model, generating code, ...)
 
