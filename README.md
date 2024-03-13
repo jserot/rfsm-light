@@ -39,14 +39,16 @@ A minimalistic "Howto" is available
 This sequence of short videos can be used as tutorials
 1. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/0-Chrono.mov) is an
    introduction, describing a simple model of a stopwatch, to be used in the sequel
-2. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/1-SaisieModele.mov) and
-   [this video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/2-SaisieModele-suite.mov)
-   briefly describe the GUI and show of to enter the model
-3. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/4-Visualisation.mov)
+2. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/1-Interface.mov) 
+   briefly describes the GUI
+3. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/2-SaisieModele.mov) and
+   [this video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/3-SaisieModele-suite.mov)
+   show of to enter the model using the GUI
+4. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/4-Visualisation.mov)
    shows how to redisplay the entered model in a nice way using [Graphviz](http://www.graphviz.org)
-4. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/5-Simulation.mov) shows
+5. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/5-Simulation.mov) shows
    how to simulate the model and view simulation results using [gtkwave](http://gtkwave.sourceforge.net)
-5. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/6-GeneratioCode.mov)
+6. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/6-GenerationCode.mov)
    shows how to translate the model into C, SystemC or VHDL code 
 
 ## INSTALLATION
