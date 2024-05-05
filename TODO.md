@@ -1,4 +1,5 @@
 * GUI
+- better error reporting when launching an external tool (ex: gtkwave) fails 
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions

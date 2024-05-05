@@ -1,31 +1,27 @@
-TEMPLATE = app
-TARGET = rfsm-light
+!include(../config) { error("Cannot open config file. Run configure script in top directory") }
 
+QT       += core widgets gui
+
+QMAKE_PROJECT_NAME = ssde
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.6
 
-QT       += core gui
-QT 		 += widgets
-greaterThan(QT_MAJOR_VERSION,5) {
-QT 		 += core5compat
-}
-
-include(../platform)
+TARGET = rfsm-light
+TEMPLATE = app
 
 equals(USE_QGV,"yes") {
 message("Building with QGV support")
 message($$QGVDIR)
-INCLUDEPATH += $$QGVDIR/QGVCore
-LIBS += -L$$QGVDIR/lib -lQGVCore
-DEPENDPATH += $$QGVDIR//QGVCore
-include(./GraphViz.pri)
+INCLUDEPATH += $$QGVLIBDIR
+LIBS += -L$$QGVLIBDIR -lQGVCore
+DEPENDPATH += $$QGVLIBDIR
 QMAKE_CXXFLAGS += -DUSE_QGV
 } else {
 message("Building without QGV support")
 }
 
-CONFIG += c++11 console debug
 
-# Input
+!include(./GraphViz.pri) { error("Cannot open GraphViz.pri file") }
+
 HEADERS += include/nlohmann_json.h \
            transition.h  \
            state.h  \

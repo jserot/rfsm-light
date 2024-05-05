@@ -12,6 +12,7 @@
 
 
 #include "syntaxHighlighters.h"
+#include <QRegularExpression>
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
@@ -21,13 +22,17 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
 void SyntaxHighlighter::highlightBlock(const QString &text)
 {
     foreach (const HighlightingRule &rule, highlightingRules) {
-        QRegExp expression(rule.pattern);
-        int index = expression.indexIn(text);
-        while (index >= 0) {
-            int length = expression.matchedLength();
-            setFormat(index, length, rule.format);
-            index = expression.indexIn(text, index + length);
-        }
+        QRegularExpression re(rule.pattern);
+        // int index = re.indexIn(text);
+        //  while (index >= 0) {
+        //     int length = re.matchedLength();
+        //     setFormat(index, length, rule.format);
+        //     index = re.indexIn(text, index + length);
+        // }
+        QRegularExpressionMatch match = re.match(text);
+        int index = match.capturedStart();
+        int length = match.capturedLength();
+        setFormat(index, length, rule.format);
     }
     setCurrentBlockState(0);
 }
@@ -39,40 +44,40 @@ FsmSyntaxHighlighter::FsmSyntaxHighlighter(QTextDocument *parent)
 
     rule.format.setForeground(Qt::blue);
     //rule.format.setFontWeight(QFont::Bold);
-    rule.pattern = QRegExp("\\btype\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bfsm\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bmodel\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\binput\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\boutput\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bshared\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\s->\\s"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bon\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bwhen\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bwith\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\|\\s"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("!\\s"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\btype\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bfsm\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bmodel\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\binput\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\boutput\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bshared\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\s->\\s"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bon\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bwhen\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bwith\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\|\\s"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("!\\s"); highlightingRules.append(rule);
     rule.format.setForeground(Qt::darkGreen);
     rule.format.setFontWeight(QFont::Normal);
-    //rule.pattern = QRegExp("#[a-z]+\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bin\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bout\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\binout\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bstates\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bvars\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\btrans\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bitrans\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bsporadic\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bperiodic\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bvalue_changes\\b"); highlightingRules.append(rule);
+    //rule.pattern = QRegularExpression("#[a-z]+\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bin\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bout\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\binout\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bstates\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bvars\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\btrans\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bitrans\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bsporadic\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bperiodic\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bvalue_changes\\b"); highlightingRules.append(rule);
     rule.format.setForeground(Qt::darkMagenta);
-    rule.pattern = QRegExp("\\bevent\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bint\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bbool\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\barray\\b"); highlightingRules.append(rule);
-    //rule.pattern = QRegExp("[A-Za-z]+\\s*:"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bevent\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bint\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bbool\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\barray\\b"); highlightingRules.append(rule);
+    //rule.pattern = QRegularExpression("[A-Za-z]+\\s*:"); highlightingRules.append(rule);
     rule.format.setForeground(Qt::gray);
     rule.format.setFontItalic(true);
-    rule.pattern = QRegExp("-- [^\n]*"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("-- [^\n]*"); highlightingRules.append(rule);
 }
 
 CTaskSyntaxHighlighter::CTaskSyntaxHighlighter(QTextDocument *parent)
@@ -82,29 +87,29 @@ CTaskSyntaxHighlighter::CTaskSyntaxHighlighter(QTextDocument *parent)
 
     rule.format.setForeground(Qt::blue);
     rule.format.setFontWeight(QFont::Bold);
-    rule.pattern = QRegExp("\\btask\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\btask\\b"); highlightingRules.append(rule);
     rule.format.setFontWeight(QFont::Normal);
-    rule.pattern = QRegExp("\\bin\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bout\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\inout\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bin\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bout\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\inout\\b"); highlightingRules.append(rule);
     rule.format.setForeground(Qt::darkYellow);
-    rule.pattern = QRegExp("\\wait_ev\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\wait_evs\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\notify_ev\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\wait_ev\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\wait_evs\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\notify_ev\\b"); highlightingRules.append(rule);
     rule.format.setForeground(Qt::darkGreen);
-    rule.pattern = QRegExp("#[a-z]+\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bwhile\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bswitch\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bcase\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bbreak\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bif\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\belse\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("#[a-z]+\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bwhile\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bswitch\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bcase\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bbreak\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bif\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\belse\\b"); highlightingRules.append(rule);
     rule.format.setForeground(Qt::darkMagenta);
-    rule.pattern = QRegExp("\\bevent\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bint\\b"); highlightingRules.append(rule);
-    rule.pattern = QRegExp("\\bbool\\b"); highlightingRules.append(rule);
-    //rule.pattern = QRegExp("[A-Za-z]+\\s*:"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bevent\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bint\\b"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("\\bbool\\b"); highlightingRules.append(rule);
+    //rule.pattern = QRegularExpression("[A-Za-z]+\\s*:"); highlightingRules.append(rule);
     rule.format.setForeground(Qt::gray);
     rule.format.setFontItalic(true);
-    rule.pattern = QRegExp("//[^\n]*"); highlightingRules.append(rule);
+    rule.pattern = QRegularExpression("//[^\n]*"); highlightingRules.append(rule);
 }

@@ -63,7 +63,7 @@ For Windows, a quick Install Guide is available
 
 **Note** the [Graphviz](http://www.graphviz.org) package and the [gtkwave](http://gtkwave.sourceforge.net)
 application (used, respectively, to display diagrams and viewing simulation results) are _not_
-included in the distribution and must be installed separately. If you cannot (or don't want) install
+included in the distribution and must be installed separately. If you cannot (or don't want) to install
 the `Graphviz` package, versions of **Rfsm-Light** using the [QGV](https://github.com/nbergont/qgv)
 library instead are provided (the corresponding files have the `_qgv` suffix in the [corresponding
 directory](https://github.com/jserot/rfsm-light/releases). These versions are provided only as
@@ -71,24 +71,4 @@ workarounds because the rendering is poorer than when using the external `Graphv
 
 ### Building from source 
 
-#### Pre-requisites
-
-* [ocaml](http://ocaml.org) (version>=5.0) with latest version of the following [opam](http://opam.ocaml.org) packages installed:
-  - [dune](http://opam.ocaml.org/packages/dune) (version>=3.11)
-  - [rfsm](http://opam.ocaml.org/packages/rfsm) (version>=2.1)
-* [Qt](http://www.qt.io) (version>=5.8)
-
-#### How to build
-
-* Get the source code: `git clone https://github.com/jserot/rfsm-light`
-* `cd rfsm-light`
-* `./configure [options]` (`./configure --help` for the list of options)
-* `make`
-* `make install` 
-
-If you can't or don't want to build the documentation from source, pass the `--no-doc` option to
-`configure`. A pre-built version is available
-[here](https://github.com/jserot/rfsm-light/blob/master/doc/using.md).
-
-Building on Windows requires [Cygwin](https://cygwin.com) or [MinGW](http://www.mingw.org) which
-`gcc`, `ocaml` and `opam` installed.
+See [this file]((https://github.com/jserot/rfsm-light/BUILDING.md)

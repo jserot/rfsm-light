@@ -14,7 +14,7 @@
 
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
-#include <QRegExp>
+#include <QRegularExpression>
 
 QT_BEGIN_NAMESPACE
 class QTextDocument;
@@ -32,7 +32,7 @@ protected:
 
     struct HighlightingRule
     {
-        QRegExp pattern;
+        QRegularExpression pattern;
         QTextCharFormat format;
     };
     QVector<HighlightingRule> highlightingRules;
