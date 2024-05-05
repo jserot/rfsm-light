@@ -48,7 +48,7 @@ Same as above but configure with
 If the `rfsm` source tree is not present or obsolete, on the MacOS side:
   - `cd ~/Desktop/SF1/Caml`
   - `git clone https://github.com/jserot/rfsm`
-Then, from a *Gygwin terminal* on the W64 side:
+Then, from a *Cygwin terminal* on the W64 side:
   - `cd /cygdrive/z/Caml/rfsm`
   - replace `dune 3.11` by `dune 2.6` in `dune-project`
   - edit `src/host/lib/{dune,Makefile}` to de-automatize the generation of `options.ml` (see notes in files)
