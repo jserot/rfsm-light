@@ -13,14 +13,7 @@ rfsmc='~/Dev/ml/rfsm/_build/default/src/guests/std/bin/rfsmc.exe'
 rfsmlib='~/Dev/ml/rfsm/etc/lib'
 doc='yes'
 sysc_dir='/usr/local/systemc-2.3.0'
-local=''
-qt_spec='macx-clang'
-#qmake='/Developer/Qt5.8/5.8/clang_64/bin/qmake'
-#qt_version='5.8.0'
-#qt_config='x86_64'
-qmake='/Users/jserot/Qt/6.3.1/macos/bin/qmake'
-qt_version='6.3.1'
-qt_config='arm64'
+draft=
 
 # Parse command-line arguments
 
@@ -45,6 +38,8 @@ while : ; do
         vcdviewer=$2; shift;;
     -txtviewer|--txtviewer)
         txtviewer=$2; shift;;
+    -draft|--draft)
+        draft='yes';;
     -help|--help)
         cat <<EOF
 Usage: configure [options]
@@ -58,6 +53,7 @@ Options: [defaults in brackets after descriptions]
   --qgvlibdir PATH        path to the directory containing the QGV library name [default: $qgvlibdir]
   --vcdviewer NAME        command for displaying .vcd files [default: $vcdviewer]
   --txtviewer NAME        command for displaying text files [default: $txtviewer]
+  --draft                 build for local testing (not for building installers) [default: $draft]
   --help                  print this message
 EOF
 	exit 0;;
@@ -105,16 +101,31 @@ if [ -n "$qgvlibdir" ]; then
 echo "USE_QGV=yes" >> config
 echo "QGVDIR=$qgvlibdir" >> config
 else
-echo "## $qgvlibdir"
 echo "DOT=dot" >> config
 echo "DOTVIEWER=graphviz" >> config
 fi
 echo "VCDVIEWER=gtkwave" >> config
 echo "TXTVIEWER=nano" >> config
-# echo "" >> config
-# echo "CXX=g++" >> config
-# echo "LD=g++" >> config
-# echo "CXXFLAGS=-Wall -Wno-deprecated -I." >> config
-# echo "LDFLAGS=" >> config
 
 echo "** Wrote file ./config"
+
+rm -f ./src/rfsm-light.ini
+touch ./src/rfsm-light.ini
+
+case "$platform" in
+  qt5-macx86|qt6-macm1)
+      if [ -n "$draft" ]; then
+          echo "COMPILER=$rfsmc" >> ./src/rfsm-light.ini
+      else
+          echo "COMPILER=/Applications/RfsmLight.app/Contents/MacOS/rfsmc" >> ./src/rfsm-light.ini
+      fi;
+    echo "INITDIR=~/Documents" >> ./src/rfsm-light.ini;;
+  *) 
+      echo "Unknown platform: $platform";
+      exit 3;;
+esac
+echo "DOTPROGRAM=$dotprogram" >> ./src/rfsm-light.ini
+echo "DOTVIEWER=$dotviewer" >> ./src/rfsm-light.ini
+echo "VCDVIEWER=$vcdviewer" >> ./src/rfsm-light.ini
+
+echo "** Wrote file ./src/rfsm-light.ini"

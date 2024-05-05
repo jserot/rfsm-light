@@ -75,6 +75,7 @@ ifeq ($(PLATFORM_TYPE), macos)
 	rm -rf $(DIST_DIR)/macos/$(APPNAME).app
 	cp -r $(APPNAME).app $(DIST_DIR)/macos
 	cp rfsm-light.ini options_spec.txt $(DIST_DIR)/macos/$(APPNAME).app/Contents/MacOS
+	cp $(RFSMC) $(DIST_DIR)/macos/$(APPNAME).app/Contents/MacOS
 endif
 
 clean:
