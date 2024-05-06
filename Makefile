@@ -14,4 +14,6 @@ clobber:
 	rm -rf ./dist/macos/*.dmg
 	rm -f ./dist/windows/*.exe
 	rm -f ./dist/windows/*.dll
+	rm -f ./dist/windows/options_spec.txt
+	rm -f ./dist/windows/rfsm-light.ini
 	rm -rf ./dist/windows/{generic,imageformats,networkinformation,platforms,styles,tls,translations}

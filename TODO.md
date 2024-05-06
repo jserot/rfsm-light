@@ -1,5 +1,6 @@
 * GUI
-- better error reporting when launching an external tool (ex: gtkwave) fails 
+- better error reporting when launching an external tool (ex:compiler, dot, gtkwave) fails 
+- fix spurious "Failed to launch VCDVIEWER message"
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions

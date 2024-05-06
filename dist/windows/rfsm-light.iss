@@ -3,7 +3,7 @@ AppId={{5D1BF4DD-8593-48B4-96CA-0225513733D7}
 AppName=RfsmLight
 AppVersion=1.3.1
 AppContact=jocelyn.serot@uca.fr
-AppCopyright=Copyright (C) 2019-2021 J. Serot
+AppCopyright=Copyright (C) 2019-2024 J. Serot
 AppPublisher=J. Serot / Clermont-Auvergne University
 AppPublisherURL=https://github.com/jserot/rfsm-light
 LicenseFile=Z:/Qt/rfsm-light/LICENSE
@@ -15,17 +15,17 @@ Compression=none
 ;SolidCompression=yes
 OutputBaseFilename=RfsmLight-1.3.1_setup
 OutputDir=.
-WizardImageFile=Z:\Qt\rfsm-light\build\rfsm.bmp
-WizardSmallImageFile=Z:\Qt\rfsm-light\build\rfsm_small.bmp
+WizardImageFile=Z:\Qt\rfsm-light\dist\windows\icons\rfsm.bmp
+WizardSmallImageFile=Z:\Qt\rfsm-light\dist\windows\icons\rfsm_small.bmp
 
 [Files]
-Source: "Z:\Qt\rfsm-light\build\*"; DestDir: "{app}"; Excludes:"examples"; Flags: recursesubdirs
-Source: "Z:\Qt\rfsm-light\build\examples\*"; DestDir: "{code:GetDirs|0}\RfsmLightExamples"; Flags: recursesubdirs
+Source: "Z:\Qt\rfsm-light\dist\windows\*"; DestDir: "{app}"; Excludes:"examples"; Flags: recursesubdirs
+Source: "Z:\Qt\rfsm-light\examples\*"; DestDir: "{code:GetDirs|0}\RfsmLightExamples"; Flags: recursesubdirs
  
 [Icons]
-Name: "{group}\RfsmLight"; Filename: "{app}\RfsmLight.exe";IconFilename: "Z:\Qt\rfsm-light\build\rfsm.ico"
-Name: "{group}\{cm:UninstallProgram,RfsmLight}"; Filename: "{uninstallexe}";IconFilename: "Z:\Qt\rfsm-light\build\rfsmun.ico"
-Name: "{commondesktop}\RfsmLight"; Filename: "{app}\RfsmLight.exe";    IconFilename: "Z:\Qt\rfsm-light\build\rfsm.ico"
+Name: "{group}\RfsmLight"; Filename: "{app}\RfsmLight.exe";IconFilename: "Z:\Qt\rfsm-light\dist\windows\icons\rfsm.ico"
+Name: "{group}\{cm:UninstallProgram,RfsmLight}"; Filename: "{uninstallexe}";IconFilename: "Z:\Qt\rfsm-light\dist\windows\icons\rfsmun.ico"
+Name: "{commondesktop}\RfsmLight"; Filename: "{app}\RfsmLight.exe";    IconFilename: "Z:\Qt\rfsm-light\dist\windows\icons\rfsm.ico"
 
 [Run]
 Filename: "{app}\rfsm-light.exe"; Description: "Launch application"; Flags: postinstall nowait skipifsilent unchecked
@@ -85,9 +85,9 @@ begin
   FilePage.Add('DOT:', 'Executable files|*.exe|All files|*.*', '.exe');
   FilePage.Add('DOTTY:', 'Executable files|*.exe|All files|*.*', '.exe');
   FilePage.Add('GTKWAVE:', 'Executable files|*.exe|All files|*.*', '.exe');
-  FilePage.Values[0] := ExpandConstant('{pf}\Graphviz\bin\dot.exe'); 
-  FilePage.Values[1] := ExpandConstant('{pf}\Graphviz\bin\dotty.exe'); 
-  FilePage.Values[2] := ExpandConstant('{pf}\Gtkwave\bin\gtkwave.exe'); 
+  FilePage.Values[0] := ExpandConstant('{commonpf}\Graphviz\bin\dot.exe'); 
+  FilePage.Values[1] := ExpandConstant('{commonpf}\Graphviz\bin\dotty.exe'); 
+  FilePage.Values[2] := ExpandConstant('{commonpf}\Gtkwave\bin\gtkwave.exe'); 
   DotProgramLocation := FilePage.Values[0];
   DotViewerLocation := FilePage.Values[1];
   VcdViewerLocation := FilePage.Values[2];

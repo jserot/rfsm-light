@@ -10,7 +10,7 @@ dotviewer='graphviz'
 vcdviewer='gtkwave'
 txtviewer='nano'
 rfsmc='~/Dev/ml/rfsm/_build/default/src/guests/std/bin/rfsmc.exe'
-rfsmlib='~/Dev/ml/rfsm/etc/lib'
+#rfsmlib='~/Dev/ml/rfsm/etc/lib'
 doc='yes'
 sysc_dir='/usr/local/systemc-2.3.0'
 draft=
@@ -24,8 +24,8 @@ while : ; do
         platform=$2; shift;;
     -rfsmc|--rfsmc)
         rfsmc=$2; shift;;
-    -rfsmlib|--rfsmlib)
-        rfsmlib=$2; shift;;
+    # -rfsmlib|--rfsmlib)
+    #     rfsmlib=$2; shift;;
     -no-doc|--no-doc)
         doc='';;
     -dot|--dot)
@@ -46,7 +46,6 @@ Usage: configure [options]
 Options: [defaults in brackets after descriptions]
   --platform NAME         target platform (qt5-macx86, qt6-ucrt64, qt6-macm1) [default: qt6-macm1]
   --rfsmc PATH            path to the rfsmc compiler [default: $rfsmc]
-  --rfsmlib PATH          path to the rfsmc library [default: $rfsmlib]
   --no-doc                do not build the documentation from sources
   --dot NAME              command for runing dot program [default: $dotprogram]
   --dotviewer NAME        command for displaying .dot files [default: $dotviewer]
@@ -95,7 +94,7 @@ if [ -e VERSION ]; then
     cat VERSION >> config;
 fi
 echo "RFSMC=$rfsmc" >> config
-echo "RFSMLIB=$rfsmlib" >> config
+# echo "RFSMLIB=$rfsmlib" >> config
 echo "BUILD_DOC=$doc" >> config
 if [ -n "$qgvlibdir" ]; then
 echo "USE_QGV=yes" >> config
@@ -119,13 +118,19 @@ case "$platform" in
       else
           echo "COMPILER=/Applications/RfsmLight.app/Contents/MacOS/rfsmc" >> ./src/rfsm-light.ini
       fi;
-    echo "INITDIR=~/Documents" >> ./src/rfsm-light.ini;;
+      echo "DOTPROGRAM=$dotprogram" >> ./src/rfsm-light.ini;
+      echo "DOTVIEWER=$dotviewer" >> ./src/rfsm-light.ini;
+      echo "VCDVIEWER=$vcdviewer" >> ./src/rfsm-light.ini;
+      echo "INITDIR=~/Documents" >> ./src/rfsm-light.ini;;
+  qt6-ucrt64)
+# These are temporary, dev-only locations. The definitive ones will be specified when running the Installer wizard
+      echo "COMPILER=Z:/Caml/rfsm-2.1-w7/_build/default/src/guests/std/bin/rfsmc.exe" >> ./src/rfsm-light.ini;
+      echo "DOTPROGRAM=C:/Program Files (x86)/Graphviz2.38/bin/dot.exe" >> ./src/rfsm-light.ini;
+      echo "VCDVIEWER=C:/Users/js/Desktop/gtkwave/bin/gtkwave.exe" >> ./src/rfsm-light.ini;
+      echo "INITDIR=Z:/Qt/rfsm-light/examples" >> ./src/rfsm-light.ini;;
   *) 
       echo "Unknown platform: $platform";
       exit 3;;
 esac
-echo "DOTPROGRAM=$dotprogram" >> ./src/rfsm-light.ini
-echo "DOTVIEWER=$dotviewer" >> ./src/rfsm-light.ini
-echo "VCDVIEWER=$vcdviewer" >> ./src/rfsm-light.ini
 
 echo "** Wrote file ./src/rfsm-light.ini"
