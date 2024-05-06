@@ -1,4 +1,4 @@
-Many problems can be diagnosed by launching the application from a command line interpreter
+Problems can be diagnosed by launching the application from a command line interpreter
 ("console", "terminal", ...) and inspecting the trace/debug messages.
 - under Windows
   - open a terminal (console, PowerShell, Cygwin, MSYS, ...)

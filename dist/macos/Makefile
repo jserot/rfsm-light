@@ -3,9 +3,9 @@ include ../../config
 CWD=`pwd`
 
 ifeq ($(VERSION),)
-	VOLUME_NAME=$(APPNAME)
+	VOLUME_NAME=$(APPNAME)-$(PLATFORM)
 else
-	VOLUME_NAME=$(APPNAME)-$(VERSION)
+	VOLUME_NAME=$(APPNAME)-$(PLATFORM)-$(VERSION)
 endif
 
 installer: $(APPNAME).app
@@ -13,6 +13,7 @@ installer: $(APPNAME).app
 	rm -f /tmp/$(VOLUME_NAME).dmg
 	hdiutil create -size 16m -fs HFS+ -volname "$(VOLUME_NAME)" /tmp/$(VOLUME_NAME).dmg
 	hdiutil attach /tmp/$(VOLUME_NAME).dmg
+	cp $(RFSMC) ./$(APPNAME).app/Contents/MacOS/rfsmc
 	cp -r ./$(APPNAME).app /Volumes/$(VOLUME_NAME)
 	ln -s /Applications /Volumes/$(VOLUME_NAME)/Applications
 	cp INSTALL /Volumes/$(VOLUME_NAME)
@@ -22,7 +23,6 @@ installer: $(APPNAME).app
 	mkdir /Volumes/$(VOLUME_NAME)/Documentation
 	cp ../../doc/Using.{html,pdf} /Volumes/$(VOLUME_NAME)/Documentation
 	cp -r ../../doc/imgs /Volumes/$(VOLUME_NAME)/Documentation
-
 	cp -r ../../examples/[a-z]* /Volumes/$(VOLUME_NAME)/Examples
 	hdiutil detach /Volumes/$(VOLUME_NAME)
 	hdiutil convert /tmp/$(VOLUME_NAME).dmg -format UDZO -o /tmp/$(VOLUME_NAME)_ro.dmg

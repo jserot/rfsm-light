@@ -1,4 +1,6 @@
 * GUI
+- bump version to 1.3.2
+- fix cursors under Windows
 - better error reporting when launching an external tool (ex:compiler, dot, gtkwave) fails 
 - fix spurious "Failed to launch VCDVIEWER message"
 - add sized ints

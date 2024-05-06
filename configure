@@ -4,7 +4,7 @@ configure_options="$*"
 platform=qt6-macm1
 qgvlibdir=
 #qgvlibdir=../../qgv/dist/macos/lib
-appname=rfsm-light
+appname=RfsmLight
 dotprogram='dot'
 dotviewer='graphviz'
 vcdviewer='gtkwave'
@@ -100,11 +100,11 @@ if [ -n "$qgvlibdir" ]; then
 echo "USE_QGV=yes" >> config
 echo "QGVDIR=$qgvlibdir" >> config
 else
-echo "DOT=dot" >> config
-echo "DOTVIEWER=graphviz" >> config
+echo "DOT=$dotprogram" >> config
+echo "DOTVIEWER=$dotviewer" >> config
 fi
-echo "VCDVIEWER=gtkwave" >> config
-echo "TXTVIEWER=nano" >> config
+echo "VCDVIEWER=$vcdviewer" >> config
+echo "TXTVIEWER=$textviewer" >> config
 
 echo "** Wrote file ./config"
 

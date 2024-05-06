@@ -5,7 +5,7 @@ QT       += core widgets gui
 QMAKE_PROJECT_NAME = ssde
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.6
 
-TARGET = rfsm-light
+TARGET = $$APPNAME
 TEMPLATE = app
 
 equals(USE_QGV,"yes") {
