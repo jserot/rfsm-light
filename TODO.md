@@ -17,4 +17,5 @@
 * TOOLS
 
 * DOC
+- video tutorial in fr and en
 

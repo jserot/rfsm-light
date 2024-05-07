@@ -8,7 +8,7 @@ AppPublisher=J. Serot / Clermont-Auvergne University
 AppPublisherURL=https://github.com/jserot/rfsm-light
 LicenseFile=Z:/Qt/rfsm-light/LICENSE
 UsePreviousAppDir=false
-DefaultDirName={pf}/RfsmLight
+DefaultDirName={commonpf}/RfsmLight
 DefaultGroupName=RfsmLight
 Compression=none
 ;Compression=lzma2
@@ -28,7 +28,7 @@ Name: "{group}\{cm:UninstallProgram,RfsmLight}"; Filename: "{uninstallexe}";Icon
 Name: "{commondesktop}\RfsmLight"; Filename: "{app}\RfsmLight.exe";    IconFilename: "Z:\Qt\rfsm-light\dist\windows\icons\rfsm.ico"
 
 [Run]
-Filename: "{app}\rfsm-light.exe"; Description: "Launch application"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\RfsmLight.exe"; Description: "Launch application"; Flags: postinstall nowait skipifsilent unchecked
 
 [INI]
 Filename: "{app}\rfsm-light.ini"; Section: "Settings"; Flags: uninsdeletesection
