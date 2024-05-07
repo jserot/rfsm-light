@@ -13,8 +13,6 @@
 - Export to SCXML ?
 
 * BUILD
-- finalize migration to QT6 (for Intel Macs and W10)
-- use `windeployqt` for Windows distro
 
 * TOOLS
 
