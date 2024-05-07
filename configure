@@ -3,7 +3,6 @@
 configure_options="$*"
 platform=qt6-macm1
 qgvlibdir=
-#qgvlibdir=../../qgv/dist/macos/lib
 appname=RfsmLight
 dotprogram='dot'
 dotviewer='graphviz'

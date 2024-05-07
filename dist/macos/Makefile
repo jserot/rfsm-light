@@ -2,10 +2,10 @@ include ../../config
 
 CWD=`pwd`
 
-ifeq ($(VERSION),)
-	VOLUME_NAME=$(APPNAME)-$(PLATFORM)
-else
+ifeq ($(USE_QGV),)
 	VOLUME_NAME=$(APPNAME)-$(PLATFORM)-$(VERSION)
+else
+	VOLUME_NAME=$(APPNAME)-$(PLATFORM)-$(VERSION)-qgv
 endif
 
 installer: $(APPNAME).app
