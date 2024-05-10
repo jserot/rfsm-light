@@ -696,8 +696,8 @@ void MainWindow::customView(QString toolName, QStringList args, QString wDir)
   QStringList genOpts = compilerOptions->getOptions("general");
   // bool sync = genOpts.contains("-sync_externals");
   // if ( ! executeCmd(wDir, cmd, args, sync ) ) {
-  if ( executor->execute(wDir, cmd, args) ) {
-     QMessageBox::warning(this, "", "Failed to launch external program " + toolName);
+  if ( ! executor->execute(wDir, cmd, args) ) {
+    QMessageBox::warning(this, "", "Failed to launch external program " + toolName + " (" + cmd + ")");
      //addResultTab(fname);
      }
 }
