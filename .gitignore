@@ -46,7 +46,9 @@ examples/*/vhdl/
 *.gif
 *.o
 *.vcd
-src/Makefile-*
+src/debug/
+src/release/
+src/Makefile.*
 src/moc_*.*
 src/qrc_resources.*
 src/rfsm-light.app/
