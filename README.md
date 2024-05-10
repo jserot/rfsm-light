@@ -56,4 +56,4 @@ workarounds because the rendering is poorer than when using the external `Graphv
 
 ### Building from source 
 
-See [this file](https://github.com/jserot/rfsm-light/BUILDING.md)
+See [this file](https://github.com/jserot/rfsm-light/blob/master/BUILDING.md)
