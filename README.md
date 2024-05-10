@@ -36,21 +36,6 @@ files to be viewed using the [gtkwave](http://gtkwave.sourceforge.net) software
 A minimalistic "Howto" is available
 [here](https://github.com/jserot/rfsm-light/blob/master/doc/using.md)
 
-This sequence of short videos can be used as tutorials
-1. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/0-Chrono.mov) is an
-   introduction, describing a simple model of a stopwatch, to be used in the sequel
-2. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/1-Interface.mov) 
-   briefly describes the GUI
-3. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/2-SaisieModele.mov) and
-   [this video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/3-SaisieModele-suite.mov)
-   show of to enter the model using the GUI
-4. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/4-Visualisation.mov)
-   shows how to redisplay the entered model in a nice way using [Graphviz](http://www.graphviz.org)
-5. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/5-Simulation.mov) shows
-   how to simulate the model and view simulation results using [gtkwave](http://gtkwave.sourceforge.net)
-6. [This video](https://github.com/jserot/rfsm-light/releases/download/1.3.1/6-GenerationCode.mov)
-   shows how to translate the model into C, SystemC or VHDL code 
-
 ## INSTALLATION
 
 ### Using binary versions
@@ -71,4 +56,4 @@ workarounds because the rendering is poorer than when using the external `Graphv
 
 ### Building from source 
 
-See [this file]((https://github.com/jserot/rfsm-light/BUILDING.md)
+See [this file](https://github.com/jserot/rfsm-light/BUILDING.md)
