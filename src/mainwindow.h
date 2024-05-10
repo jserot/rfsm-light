@@ -14,6 +14,7 @@
 
 #include "state.h"
 #include "modelProperties.h"
+#include "model.h"
 
 #include <QMainWindow>
 #include <QFileInfo>
@@ -39,7 +40,6 @@ class QActionGroup;
 class ImageViewer;
 class CompilerPaths;
 class CompilerOptions;
-class Model;
 class CommandExec;
 class Compiler;
 class SyntaxChecker;
@@ -184,6 +184,10 @@ private:
     QString initDir;
     QWidget* selectedTab();
     double currentScaleFactor;
+
+    QCursor default_cursor;
+    QMap<Model::Mode,QCursor> cursors;
+    void initCursors();
 
     QFont codeFont;
     static const QString title;
