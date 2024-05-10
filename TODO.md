@@ -1,5 +1,4 @@
 * GUI
-- bump version to 1.3.2
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions
