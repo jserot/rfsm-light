@@ -321,7 +321,9 @@ void Model::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         } // Mode
       } //  Left-button
     else if ( buttonPressed == Qt::RightButton /* && mode == SelectItem */ ) {
+      qDebug() << "** RightSelectItem at" << mouseEvent->scenePos();
       item = itemAt(mouseEvent->scenePos(), QTransform());
+      qDebug() << "** RightSelectItem got" << item;
       if ( item != NULL ) editItem(item);
     }
 }
