@@ -50,6 +50,6 @@ QString Iov::toString(bool withStim)
 {
   QString r;
   r = stringOfKind(kind) + " " + name + " : " + stringOfType(type);
-  if ( withStim ) r += " = " + stim.toString(); 
+  if ( kind == IoIn && withStim ) r += " = " + stim.toString(); 
   return r;
 }
