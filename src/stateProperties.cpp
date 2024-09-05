@@ -69,8 +69,6 @@ StateProperties::StateProperties(State *state, Model *model, Compiler *compiler,
   this->state = state;
   this->model = model;
   this->compiler = compiler;
-
-  setModal(true);
 }
 
 void StateProperties::accept()

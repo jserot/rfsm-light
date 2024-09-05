@@ -33,7 +33,7 @@
 #include <QVariant>
 
 const QString MainWindow::title = "RFSM Light";
-const QString MainWindow::version = "1.3.1"; 
+const QString MainWindow::version = "1.3.2"; 
 const int MainWindow::canvas_width = 500;
 const int MainWindow::canvas_height = 1000;
 const QList<int> MainWindow::splitterSizes = { 250, 250, 250 };
@@ -150,6 +150,7 @@ void MainWindow::editState(State *state)
 {
   StateProperties dialog(state, model, compiler, view);
   int r = dialog.exec();
+  qDebug() << "state properties dialog returned" << r;
   switch ( r ) {
     case QDialog::Accepted:
       qDebug() << "state" << state->getId() << "updated" << "mode=" << model->getMode();

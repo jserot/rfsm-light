@@ -128,8 +128,6 @@ TransitionProperties::TransitionProperties(
   this->transition = transition;
   this->model = model;
   this->compiler = compiler;
-
-  setModal(true);
 }
 
 void TransitionProperties::accept()
