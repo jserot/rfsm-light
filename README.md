@@ -36,6 +36,12 @@ files to be viewed using the [gtkwave](http://gtkwave.sourceforge.net) software
 A minimalistic "Howto" is available
 [here](https://github.com/jserot/rfsm-light/blob/master/doc/using.md)
 
+This sequence of short videos can be used as a tutorial
+1. [Tutorial part 1](https://github.com/jserot/rfsm-light/releases/download/1.3.1/Light-v1.mov)
+2. [Tutorial part 2](https://github.com/jserot/rfsm-light/releases/download/1.3.1/Light-v2.mov)
+3. [Tutorial part 3](https://github.com/jserot/rfsm-light/releases/download/1.3.1/Light-v3.mov)
+4. [Tutorial part 4](https://github.com/jserot/rfsm-light/releases/download/1.3.1/Light-v4.mov)
+
 ## INSTALLATION
 
 ### Using binary versions

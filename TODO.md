@@ -1,4 +1,5 @@
 * GUI
+- do not print stimuli for outputs in DOT files
 - add sized ints
 - add type_coercions in accepted expressions
 - Allow attachement of priorities to transitions
