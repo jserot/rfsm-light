@@ -1,3 +1,8 @@
+# Notice 
+
+**RFSM-Light** is now obsolete. It has been replaced by
+[Grasp](https://github.com/jserot/grasp) !
+
 ## RFSM-Light 
 
 ![](./doc/snapshot.png)
